@@ -30,10 +30,15 @@
                             '0%, 100%': { transform: 'translateX(0)' },
                             '20%, 60%': { transform: 'translateX(-4px)' },
                             '40%, 80%': { transform: 'translateX(4px)' },
+                        },
+                        goldGlow: {
+                            '0%, 100%': { borderColor: 'rgba(250, 204, 21, 0.6)', boxShadow: '0 0 12px rgba(250, 204, 21, 0.25)' },
+                            '50%': { borderColor: 'rgba(250, 204, 21, 1)', boxShadow: '0 0 22px rgba(250, 204, 21, 0.5)' }
                         }
                     },
                     animation: {
-                        shake: 'shake 0.3s ease-in-out'
+                        shake: 'shake 0.3s ease-in-out',
+                        goldGlow: 'goldGlow 2.5s infinite ease-in-out'
                     }
                 }
             }
@@ -53,9 +58,15 @@
             backdrop-filter: blur(12px); 
             border: 1px solid rgba(255, 255, 255, 0.08); 
         }
+        .certified-card {
+            background: linear-gradient(135deg, rgba(30, 27, 12, 0.85) 0%, rgba(15, 23, 42, 0.9) 100%);
+            border: 2px solid #facc15;
+            box-shadow: 0 0 15px rgba(250, 204, 21, 0.3);
+        }
         .popcorn-gradient { background: linear-gradient(135deg, #facc15 0%, #f97316 100%); }
         .zald-gradient { background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%); }
         .micel-gradient { background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%); }
+        .gold-gradient { background: linear-gradient(135deg, #fef08a 0%, #eab308 50%, #ca8a04 100%); }
         
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -147,8 +158,8 @@
                 <!-- Sort Dropdown -->
                 <div class="relative">
                     <select id="sort-select" onchange="renderMovies()" class="px-3 py-2 bg-cinema-900 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-amber-400 transition appearance-none pr-7 cursor-pointer">
-                        <option value="newest">Bulan Terkini</option>
-                        <option value="oldest">Bulan Terlama</option>
+                        <option value="newest">Bulan Terkini[cite: 1]</option>
+                        <option value="oldest">Bulan Terlama[cite: 1]</option>
                         <option value="az">Judul (A-Z)</option>
                     </select>
                     <i class="fa-solid fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 text-[10px] pointer-events-none"></i>
@@ -264,7 +275,24 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 gap-2 pt-2 border-t border-slate-800">
+                <!-- Toggle Certified Fresh -->
+                <div class="p-2.5 rounded-xl bg-amber-950/20 border border-amber-500/30 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-lg gold-gradient flex items-center justify-center text-slate-950 text-xs shadow-md">
+                            <i class="fa-solid fa-award"></i>
+                        </div>
+                        <div>
+                            <span class="block text-[11px] font-bold text-amber-300 font-display">Certified Fresh</span>
+                            <span class="block text-[9px] text-slate-400">Berikan lencana penghargaan khusus</span>
+                        </div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" name="is_certified" id="form-is-certified" value="true" class="sr-only peer">
+                        <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500"></div>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 gap-2 pt-1 border-t border-slate-800">
                     <!-- Zald Rating -->
                     <div class="p-2.5 rounded-xl bg-cinema-950 border border-sky-400/20 space-y-1.5">
                         <div class="flex items-center justify-between">
@@ -323,6 +351,9 @@
                         <div class="flex items-center gap-1.5 mb-0.5">
                             <span id="detail-year" class="text-[10px] text-slate-400">2026</span>
                             <span id="detail-watch-month" class="px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 text-[9px] font-medium">Januari 2026</span>
+                            <span id="detail-badge-wrapper" class="hidden px-1.5 py-0.5 rounded gold-gradient text-slate-950 text-[9px] font-extrabold flex items-center gap-1 shadow-md">
+                                <i class="fa-solid fa-award text-[8px]"></i> Certified Fresh
+                            </span>
                         </div>
                         <h2 id="detail-title" class="text-base font-black font-display text-white tracking-tight line-clamp-1">Title</h2>
                     </div>
@@ -441,7 +472,6 @@
             return '';
         }
 
-        // Helper untuk mengubah string bulan (misal "Juli 2026" atau "2026-07") menjadi format YYYY-MM untuk kemudahan sorting
         function convertToComparableMonth(bulanStr) {
             if (!bulanStr) return "0000-00";
             if (/^\d{4}-\d{2}$/.test(bulanStr)) return bulanStr;
@@ -552,7 +582,6 @@
                 el.innerHTML = `<i class="fa-solid fa-clock-rotate-left text-[9px]"></i> Belum ada film`;
                 return;
             }
-            // Mengambil film berdasarkan urutan data asli atau terbaru
             const lastMovie = moviesData[moviesData.length - 1];
             el.innerHTML = `<i class="fa-solid fa-clock-rotate-left text-[9px]"></i> Terakhir: <span class="text-white font-bold">${lastMovie.judul || 'Film'}</span>`;
         }
@@ -570,19 +599,15 @@
                        formattedBulan.includes(searchVal);
             });
 
-            // Proses Sorting
             filtered.sort((a, b) => {
                 const dateA = convertToComparableMonth(a.bulan);
                 const dateB = convertToComparableMonth(b.bulan);
 
                 if (sortVal === 'newest') {
-                    // Bulan terkini (terbaru) di atas
                     return dateB.localeCompare(dateA);
                 } else if (sortVal === 'oldest') {
-                    // Bulan terlama di atas
                     return dateA.localeCompare(dateB);
                 } else if (sortVal === 'az') {
-                    // Berdasarkan Judul A-Z
                     const titleA = (a.judul || '').toLowerCase();
                     const titleB = (b.judul || '').toLowerCase();
                     return titleA.localeCompare(titleB);
@@ -605,20 +630,34 @@
                 const dispZ = (movie.rating_aku && movie.rating_aku.toString().trim() !== '') ? movie.rating_aku : 'N/A';
                 const dispM = (movie.rating_dia && movie.rating_dia.toString().trim() !== '') ? movie.rating_dia : 'N/A';
                 const displayMonthText = formatMonthDisplay(movie.bulan);
+                const isCertified = movie.is_certified === true || movie.is_certified === 'true' || movie.is_certified === 'TRUE';
 
                 const card = document.createElement('div');
-                card.className = "glass-card rounded-xl overflow-hidden flex flex-col border border-slate-800/80 active:scale-95 transition cursor-pointer";
+                // Beri kelas khusus jika Certified Fresh
+                card.className = isCertified 
+                    ? "rounded-xl overflow-hidden flex flex-col certified-card animate-goldGlow active:scale-95 transition cursor-pointer relative"
+                    : "glass-card rounded-xl overflow-hidden flex flex-col border border-slate-800/80 active:scale-95 transition cursor-pointer";
+                
                 card.onclick = () => openDetailModal(movie.id);
 
                 card.innerHTML = `
                     <div class="relative aspect-[3/4] w-full overflow-hidden bg-cinema-950">
                         <img src="${posterUrl}" alt="${movie.judul}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/300x450/0f172a/cbd5e1?text=No+Poster'">
+                        
+                        <!-- Badge Tahun -->
                         <span class="absolute top-1.5 right-1.5 bg-cinema-950/80 backdrop-blur px-1.5 py-0.5 rounded text-[9px] font-bold text-slate-300 border border-slate-800">${movie.tahun || ''}</span>
+                        
+                        <!-- Badge Certified Fresh di Poster -->
+                        ${isCertified ? `
+                            <div class="absolute top-1.5 left-1.5 gold-gradient px-1.5 py-0.5 rounded text-[8px] font-extrabold text-slate-950 flex items-center gap-1 shadow-lg animate-pulse">
+                                <i class="fa-solid fa-award">*</i> FRESH
+                            </div>
+                        ` : ''}
                     </div>
 
                     <div class="p-2 flex flex-col justify-between flex-grow space-y-1.5">
                         <div>
-                            <h3 class="font-display font-bold text-[11px] text-slate-100 line-clamp-1">${movie.judul || 'Tanpa Judul'}</h3>
+                            <h3 class="font-display font-bold text-[11px] ${isCertified ? 'text-amber-200' : 'text-slate-100'} line-clamp-1">${movie.judul || 'Tanpa Judul'}</h3>
                             <p class="text-[9px] text-slate-400 line-clamp-1">${displayMonthText || '-'}</p>
                         </div>
 
@@ -652,6 +691,7 @@
             const year = now.getFullYear();
             const month = String(now.getMonth() + 1).padStart(2, '0');
             document.getElementById('form-bulan').value = `${year}-${month}`;
+            document.getElementById('form-is-certified').checked = false;
 
             const rAku = document.getElementById('form-rating-aku');
             const rDia = document.getElementById('form-rating-dia');
@@ -677,6 +717,14 @@
             document.getElementById('detail-title').innerText = movie.judul || 'Tanpa Judul';
             document.getElementById('detail-year').innerText = movie.tahun || '';
             document.getElementById('detail-watch-month').innerText = formatMonthDisplay(movie.bulan) || '-';
+
+            const isCertified = movie.is_certified === true || movie.is_certified === 'true' || movie.is_certified === 'TRUE';
+            const badgeWrapper = document.getElementById('detail-badge-wrapper');
+            if (isCertified) {
+                badgeWrapper.classList.remove('hidden');
+            } else {
+                badgeWrapper.classList.add('hidden');
+            }
 
             const rZ = movie.rating_aku || 'N/A';
             const rM = movie.rating_dia || 'N/A';
@@ -715,12 +763,14 @@
 
             const rawBulan = formData.get('bulan'); 
             const formattedBulan = formatMonthDisplay(rawBulan); 
+            const isCertifiedChecked = document.getElementById('form-is-certified').checked;
 
             const payload = {
                 id: editingId || `m_${Date.now()}`,
                 bulan: formattedBulan,
                 judul: formData.get('judul'),
                 tahun: formData.get('tahun'),
+                is_certified: isCertifiedChecked ? 'true' : 'false',
                 review_aku: formData.get('review_aku'),
                 rating_aku: formData.get('rating_aku').trim() !== '' ? formData.get('rating_aku').trim() : 'N/A',
                 review_dia: formData.get('review_dia'),
@@ -769,6 +819,9 @@
             form.poster.value = movie.poster || '';
             form.tahun.value = movie.tahun || '2026';
             form.bulan.value = parseMonthToInputValue(movie.bulan || '');
+            
+            const isCertified = movie.is_certified === true || movie.is_certified === 'true' || movie.is_certified === 'TRUE';
+            document.getElementById('form-is-certified').checked = isCertified;
 
             const rAku = document.getElementById('form-rating-aku');
             const rDia = document.getElementById('form-rating-dia');
