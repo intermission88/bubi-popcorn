@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bubi's Popcorn - Mobile App Cinema Log</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        cinema: { 950: '#080c14', 900: '#0f172a', 800: '#1e293b' }
+                    },
+                    keyframes: {
+                        shake: {
+                            '0%, 100%': { transform: 'translateX(0)' },
+                            '20%, 60%': { transform: 'translateX(-4px)' },
+                            '40%, 80%': { transform: 'translateX(4px)' },
+                        }
+                    },
+                    animation: {
+                        shake: 'shake 0.3s ease-in-out'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background-color: #080c14; 
+            color: #f8fafc; 
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .font-display { font-family: 'Outfit', sans-serif; }
+        .glass-card { 
+            background: rgba(15, 23, 42, 0.75); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+        }
+        .popcorn-gradient { background: linear-gradient(135deg, #facc15 0%, #f97316 100%); }
+        .zald-gradient { background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%); }
+        .micel-gradient { background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%); }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .bottom-sheet {
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        input[type="month"]::-webkit-calendar-picker-indicator {
+            filter: invert(1) brightness(0.8);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-20 pt-14 selection:bg-amber-400 selection:text-slate-950">
+
+    <!-- Header App Bar -->
+    <header class="fixed top-0 inset-x-0 z-40 bg-cinema-950/85 backdrop-blur-md border-b border-slate-800/80 px-4 py-2.5">
+        <div class="max-w-md mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl popcorn-gradient flex items-center justify-center text-slate-950 text-sm shadow-md flex-shrink-0 font-bold">
+                    <i class="fa-solid fa-bowl-food"></i>
+                </div>
+                <div>
+                    <h1 class="font-display font-black text-base text-slate-100 leading-tight">
+                        Bubi's Popcorn
+                    </h1>
+                    <p class="text-[10px] font-medium text-pink-400 flex items-center gap-1">
+                        <i class="fa-solid fa-heart text-[8px] animate-pulse"></i> Zald & Micel Log
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-1.5">
+                <button onclick="refreshDataWithSpin()" class="w-8 h-8 rounded-full bg-slate-900 border border-slate-800 text-slate-300 hover:text-amber-400 flex items-center justify-center transition active:scale-95">
+                    <i id="refresh-icon" class="fa-solid fa-rotate text-xs"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-md mx-auto px-3.5 space-y-3.5 mt-2">
+        
+        <!-- SECTION ATAS: Dual Clocks -->
+        <section class="glass-card rounded-2xl p-3 border border-slate-800 bg-gradient-to-br from-sky-950/30 via-cinema-900 to-pink-950/30 space-y-2.5">
+            <div class="grid grid-cols-2 gap-2">
+                <!-- Zald Clock -->
+                <div class="p-2 rounded-xl bg-sky-950/40 border border-sky-500/20 flex flex-col justify-between">
+                    <div class="flex items-center gap-1.5 mb-1">
+                        <div class="w-5 h-5 rounded-md zald-gradient flex items-center justify-center font-bold text-slate-950 text-[10px]">Z</div>
+                        <span class="text-[9px] font-bold text-sky-400 uppercase tracking-wider">Zald (WIB)</span>
+                    </div>
+                    <div id="zald-clock" class="text-sm font-black font-display text-sky-200">00:00:00</div>
+                    <span id="zald-date" class="text-[9px] text-slate-400">-- --- ----</span>
+                </div>
+
+                <!-- Micel Clock -->
+                <div class="p-2 rounded-xl bg-pink-950/40 border border-pink-500/20 flex flex-col justify-between">
+                    <div class="flex items-center gap-1.5 mb-1">
+                        <div class="w-5 h-5 rounded-md micel-gradient flex items-center justify-center font-bold text-slate-950 text-[10px]">M</div>
+                        <span class="text-[9px] font-bold text-pink-400 uppercase tracking-wider">Micel (JST)</span>
+                    </div>
+                    <div id="micel-clock" class="text-sm font-black font-display text-pink-200">00:00:00</div>
+                    <span id="micel-date" class="text-[9px] text-slate-400">-- --- ----</span>
+                </div>
+            </div>
+
+            <!-- Connection Status -->
+            <div class="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-800/80">
+                <span id="last-watched-text" class="text-amber-400 font-medium truncate max-w-[200px]">
+                    <i class="fa-solid fa-clock-rotate-left text-[9px]"></i> Memuat...
+                </span>
+                <span class="text-pink-400 font-semibold text-[9px] flex items-center gap-1">
+                    <i class="fa-solid fa-earth-asia"></i> ~4,800 km
+                </span>
+            </div>
+        </section>
+
+        <!-- SECTION SEARCH -->
+        <section id="search-section" class="space-y-2">
+            <div class="relative w-full">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                <input type="text" id="search-input" oninput="renderMovies()" placeholder="Cari judul film atau bulan..." 
+                    class="w-full pl-9 pr-3 py-2 bg-cinema-900 border border-slate-800 rounded-xl text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition">
+            </div>
+        </section>
+
+        <!-- STATS SECTION -->
+        <section id="stats-section" class="glass-card rounded-xl p-3 border border-slate-800 space-y-2">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Ringkasan Nonton</span>
+            <div class="grid grid-cols-3 gap-2">
+                <div class="bg-cinema-950 p-2 rounded-lg border border-slate-800 text-center">
+                    <span class="text-[9px] text-slate-400 font-medium block">Bulan Ini</span>
+                    <span id="month-movie-count" class="text-sm font-bold font-display text-sky-400">0</span>
+                </div>
+                <div class="bg-cinema-950 p-2 rounded-lg border border-slate-800 text-center">
+                    <span class="text-[9px] text-slate-400 font-medium block">Tahun Ini</span>
+                    <span id="year-movie-count" class="text-sm font-bold font-display text-pink-400">0</span>
+                </div>
+                <div class="bg-cinema-950 p-2 rounded-lg border border-slate-800 text-center">
+                    <span class="text-[9px] text-slate-400 font-medium block">Total</span>
+                    <span id="total-movie-count" class="text-sm font-bold font-display text-amber-400">0</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-800/60">
+                <div class="flex items-center justify-between bg-sky-950/20 px-2.5 py-1.5 rounded-lg border border-sky-500/20">
+                    <span class="text-[10px] font-bold text-sky-400">Avg Zald</span>
+                    <span id="avg-zald-score" class="text-xs font-black text-slate-200">0.0</span>
+                </div>
+                <div class="flex items-center justify-between bg-pink-950/20 px-2.5 py-1.5 rounded-lg border border-pink-500/20">
+                    <span class="text-[10px] font-bold text-pink-400">Avg Micel</span>
+                    <span id="avg-micel-score" class="text-xs font-black text-slate-200">0.0</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Movies Grid List -->
+        <section class="space-y-2">
+            <div class="flex items-center justify-between px-1">
+                <h2 class="text-xs font-bold text-slate-300 font-display uppercase tracking-wider">Koleksi Film</h2>
+                <span id="movie-count-badge" class="text-[10px] text-slate-500 font-medium">0 Film</span>
+            </div>
+
+            <div id="movie-grid" class="grid grid-cols-2 gap-2.5"></div>
+
+            <div id="empty-state" class="hidden py-10 text-center space-y-2">
+                <i class="fa-solid fa-film text-slate-600 text-2xl"></i>
+                <p class="text-xs text-slate-400 font-medium">Tidak ada film ditemukan</p>
+                <button onclick="resetSearch()" class="px-3 py-1 bg-slate-800 text-amber-400 text-[11px] font-bold rounded-lg">Reset Pencarian</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- App Bottom Navigation Bar -->
+    <nav class="fixed bottom-0 inset-x-0 z-40 bg-cinema-950/90 backdrop-blur-md border-t border-slate-800 px-6 py-2">
+        <div class="max-w-md mx-auto flex items-center justify-around">
+            <button onclick="scrollToTop()" class="flex flex-col items-center gap-0.5 text-amber-400 active:scale-90 transition">
+                <i class="fa-solid fa-house text-base"></i>
+                <span class="text-[9px] font-semibold">Home</span>
+            </button>
+            <button onclick="focusSearch()" class="flex flex-col items-center gap-0.5 text-slate-400 active:scale-90 transition">
+                <i class="fa-solid fa-magnifying-glass text-base"></i>
+                <span class="text-[9px] font-semibold">Cari</span>
+            </button>
+            <button onclick="openAddModal()" class="w-11 h-11 rounded-full popcorn-gradient flex items-center justify-center text-slate-950 shadow-lg -translate-y-3 border-2 border-cinema-950 active:scale-95 transition">
+                <i class="fa-solid fa-plus text-lg"></i>
+            </button>
+            <button onclick="scrollToStats()" class="flex flex-col items-center gap-0.5 text-slate-400 active:scale-90 transition">
+                <i class="fa-solid fa-chart-simple text-base"></i>
+                <span class="text-[9px] font-semibold">Stats</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Bottom Sheet / Modal Form (Tambah/Edit) -->
+    <div id="add-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-end sm:items-center justify-center hidden">
+        <div class="bg-cinema-900 border-t sm:border border-slate-800 w-full max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden bottom-sheet max-h-[90vh] flex flex-col">
+            <div class="w-12 h-1 bg-slate-700 rounded-full mx-auto my-2 sm:hidden"></div>
+            
+            <div class="px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+                <h3 id="modal-form-title" class="font-bold text-xs text-slate-100 font-display">Tambah Ulasan Baru</h3>
+                <button onclick="closeAddModal()" class="text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <form id="add-movie-form" onsubmit="handleFormSubmit(event)" class="p-4 overflow-y-auto space-y-3">
+                <input type="hidden" name="editing_id" id="editing_id" value="">
+                
+                <div>
+                    <label class="block text-[10px] font-medium text-slate-400 mb-1">Judul Film *</label>
+                    <input type="text" name="judul" id="form-judul" required placeholder="Judul film..." 
+                        class="w-full px-3 py-2 bg-cinema-950 border border-slate-800 rounded-xl text-xs focus:outline-none focus:border-amber-400 text-slate-200">
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-medium text-slate-400 mb-1">URL Poster Gambar (Opsional)</label>
+                    <input type="url" name="poster" id="form-poster" placeholder="https://..." 
+                        class="w-full px-3 py-2 bg-cinema-950 border border-slate-800 rounded-xl text-xs focus:outline-none focus:border-amber-400 text-slate-200">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[10px] font-medium text-slate-400 mb-1">Tahun Rilis *</label>
+                        <input type="number" name="tahun" id="form-tahun" required min="1900" max="2030" value="2026" 
+                            class="w-full px-3 py-2 bg-cinema-950 border border-slate-800 rounded-xl text-xs focus:outline-none focus:border-amber-400 text-slate-200">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-medium text-slate-400 mb-1">Bulan Nonton *</label>
+                        <input type="month" name="bulan" id="form-bulan" required 
+                            class="w-full px-3 py-2 bg-cinema-950 border border-slate-800 rounded-xl text-xs focus:outline-none focus:border-amber-400 text-slate-200">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-2 pt-2 border-t border-slate-800">
+                    <!-- Zald Rating -->
+                    <div class="p-2.5 rounded-xl bg-cinema-950 border border-sky-400/20 space-y-1.5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] font-bold text-sky-400">ZALD</span>
+                            <div class="flex items-center gap-1.5">
+                                <span id="err-hint-aku" class="hidden text-[9px] font-bold text-red-400 animate-pulse">Max 10!</span>
+                                <input type="number" step="0.1" name="rating_aku" id="form-rating-aku" placeholder="0 - 10" 
+                                    oninput="validateRatingInput(this, 'err-hint-aku', 'sky')"
+                                    onblur="clampRatingOnBlur(this, 'err-hint-aku', 'sky')"
+                                    class="w-20 px-2 py-0.5 bg-cinema-900 border border-slate-700 rounded-lg text-center text-xs font-bold text-sky-400 placeholder-slate-600 focus:outline-none focus:border-sky-400 transition">
+                            </div>
+                        </div>
+                        <textarea name="review_aku" id="form-review-aku" rows="2" placeholder="Ulasan Zald..." 
+                            class="w-full p-2 bg-cinema-900 border border-slate-800 rounded-lg text-xs text-slate-200 focus:outline-none focus:border-sky-400"></textarea>
+                    </div>
+
+                    <!-- Micel Rating -->
+                    <div class="p-2.5 rounded-xl bg-cinema-950 border border-pink-400/20 space-y-1.5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] font-bold text-pink-400">MICEL</span>
+                            <div class="flex items-center gap-1.5">
+                                <span id="err-hint-dia" class="hidden text-[9px] font-bold text-red-400 animate-pulse">Max 10!</span>
+                                <input type="number" step="0.1" name="rating_dia" id="form-rating-dia" placeholder="0 - 10" 
+                                    oninput="validateRatingInput(this, 'err-hint-dia', 'pink')"
+                                    onblur="clampRatingOnBlur(this, 'err-hint-dia', 'pink')"
+                                    class="w-20 px-2 py-0.5 bg-cinema-900 border border-slate-700 rounded-lg text-center text-xs font-bold text-pink-400 placeholder-slate-600 focus:outline-none focus:border-pink-400 transition">
+                            </div>
+                        </div>
+                        <textarea name="review_dia" id="form-review-dia" rows="2" placeholder="Ulasan Micel..." 
+                            class="w-full p-2 bg-cinema-900 border border-slate-800 rounded-lg text-xs text-slate-200 focus:outline-none focus:border-pink-400"></textarea>
+                    </div>
+                </div>
+
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="closeAddModal()" class="px-3 py-2 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300">Batal</button>
+                    <button type="submit" id="submit-btn" class="px-4 py-2 rounded-xl popcorn-gradient font-bold text-xs text-slate-950 shadow-md">
+                        <span id="submit-btn-text">Simpan Ulasan</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mobile Detail Modal -->
+    <div id="detail-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
+        <div class="bg-cinema-900 border-t sm:border border-slate-800 w-full max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            <div class="relative h-44 bg-cinema-950 overflow-hidden">
+                <img id="detail-banner-img" src="" alt="Banner" class="w-full h-full object-cover opacity-40 blur-sm scale-105">
+                <div class="absolute inset-0 bg-gradient-to-t from-cinema-900 via-cinema-900/60 to-transparent"></div>
+                <button onclick="closeDetailModal()" class="absolute top-3 right-3 z-10 w-7 h-7 rounded-full bg-cinema-900/80 border border-slate-700 text-slate-300 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+
+                <div class="absolute bottom-3 left-4 right-4 flex items-end justify-between gap-2">
+                    <div>
+                        <div class="flex items-center gap-1.5 mb-0.5">
+                            <span id="detail-year" class="text-[10px] text-slate-400">2026</span>
+                            <span id="detail-watch-month" class="px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 text-[9px] font-medium">Januari 2026</span>
+                        </div>
+                        <h2 id="detail-title" class="text-base font-black font-display text-white tracking-tight line-clamp-1">Title</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 overflow-y-auto space-y-3">
+                <div class="grid grid-cols-2 gap-2 bg-cinema-950 border border-slate-800 p-2.5 rounded-xl">
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-lg zald-gradient flex items-center justify-center font-bold text-slate-950 text-xs">Z</div>
+                        <div>
+                            <div class="text-[9px] font-semibold text-slate-400">Rating Zald</div>
+                            <div id="detail-zald-score" class="text-xs font-bold text-sky-400">8.0</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 border-l border-slate-800 pl-2">
+                        <div class="w-7 h-7 rounded-lg micel-gradient flex items-center justify-center font-bold text-slate-950 text-xs">M</div>
+                        <div>
+                            <div class="text-[9px] font-semibold text-slate-400">Rating Micel</div>
+                            <div id="detail-micel-score" class="text-xs font-bold text-pink-400">8.5</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="bg-cinema-950/60 border border-sky-400/20 rounded-xl p-2.5">
+                        <span class="text-[10px] font-bold text-sky-400">Pendapat Zald</span>
+                        <p id="detail-zald-text" class="text-xs text-slate-300 italic whitespace-pre-line mt-0.5">--</p>
+                    </div>
+                    <div class="bg-cinema-950/60 border border-pink-400/20 rounded-xl p-2.5">
+                        <span class="text-[10px] font-bold text-pink-400">Pendapat Micel</span>
+                        <p id="detail-micel-text" class="text-xs text-slate-300 italic whitespace-pre-line mt-0.5">--</p>
+                    </div>
+                </div>
+
+                <div class="pt-2 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <button onclick="editCurrentMovie()" class="px-3 py-1.5 rounded-lg bg-sky-400/10 border border-sky-400/20 text-sky-400 text-xs font-semibold">Edit</button>
+                        <button onclick="deleteCurrentMovie()" class="px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold">Hapus</button>
+                    </div>
+                    <button onclick="closeDetailModal()" class="px-3 py-1.5 rounded-lg bg-slate-800 text-xs font-semibold text-slate-200">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container Mobile -->
+    <div id="toast-container" class="fixed top-16 inset-x-0 z-50 flex flex-col items-center gap-2 pointer-events-none px-4"></div>
+
+    <script>
+        const SHEETDB_URL = 'https://sheetdb.io/api/v1/gs9uo4i31ls7p';
+        let moviesData = [];
+        let currentDetailMovieId = null;
+
+        function updateDualClocks() {
+            const now = new Date();
+            const zaldTime = now.toLocaleTimeString('id-ID', { timeZone: 'Asia/Colombo', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const zaldDate = now.toLocaleDateString('id-ID', { timeZone: 'Asia/Colombo', weekday: 'short', day: 'numeric', month: 'short' });
+            const micelTime = now.toLocaleTimeString('id-ID', { timeZone: 'Asia/Tokyo', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const micelDate = now.toLocaleDateString('id-ID', { timeZone: 'Asia/Tokyo', weekday: 'short', day: 'numeric', month: 'short' });
+
+            document.getElementById('zald-clock').innerText = zaldTime;
+            document.getElementById('zald-date').innerText = zaldDate;
+            document.getElementById('micel-clock').innerText = micelTime;
+            document.getElementById('micel-date').innerText = micelDate;
+        }
+        setInterval(updateDualClocks, 1000);
+        updateDualClocks();
+
+        function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        function focusSearch() { document.getElementById('search-input').focus(); }
+        function scrollToStats() { document.getElementById('stats-section').scrollIntoView({ behavior: 'smooth' }); }
+
+        async function refreshDataWithSpin() {
+            const icon = document.getElementById('refresh-icon');
+            if (icon) icon.classList.add('fa-spin');
+            await fetchSheetDBData();
+            setTimeout(() => icon && icon.classList.remove('fa-spin'), 600);
+            showToast("Data diperbarui!", "info");
+        }
+
+        function parseRating(val) {
+            if (!val || val.toString().trim().toUpperCase() === 'N/A') return null;
+            const num = parseFloat(val);
+            return isNaN(num) ? null : num;
+        }
+
+        function formatMonthDisplay(monthYearStr) {
+            if (!monthYearStr || !monthYearStr.includes('-')) return monthYearStr;
+            const [year, month] = monthYearStr.split('-');
+            const monthsNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            const monthIdx = parseInt(month, 10) - 1;
+            if (monthIdx >= 0 && monthIdx < 12) {
+                return `${monthsNames[monthIdx]} ${year}`;
+            }
+            return monthYearStr;
+        }
+
+        function parseMonthToInputValue(textStr) {
+            if (!textStr) return '';
+            if (/^\d{4}-\d{2}$/.test(textStr)) return textStr;
+            
+            const parts = textStr.trim().split(' ');
+            if (parts.length === 2) {
+                const monthName = parts[0].toLowerCase();
+                const year = parts[1];
+                const monthsMap = {
+                    "januari": "01", "februari": "02", "maret": "03", "april": "04", 
+                    "mei": "05", "juni": "06", "juli": "07", "agustus": "08", 
+                    "september": "09", "oktober": "10", "november": "11", "desember": "12"
+                };
+                if (monthsMap[monthName]) {
+                    return `${year}-${monthsMap[monthName]}`;
+                }
+            }
+            return '';
+        }
+
+        function validateRatingInput(el, hintId, themeColor) {
+            const hint = document.getElementById(hintId);
+            const val = parseFloat(el.value);
+
+            if (!isNaN(val) && (val > 10 || val < 0)) {
+                el.classList.add('border-red-500', 'bg-red-950/40', 'text-red-400', 'animate-shake');
+                el.classList.remove(`text-${themeColor}-400`, 'border-slate-700');
+                if (hint) hint.classList.remove('hidden');
+                return false;
+            } else {
+                el.classList.remove('border-red-500', 'bg-red-950/40', 'text-red-400', 'animate-shake');
+                el.classList.add('border-slate-700', `text-${themeColor}-400`);
+                if (hint) hint.classList.add('hidden');
+                return true;
+            }
+        }
+
+        function clampRatingOnBlur(el, hintId, themeColor) {
+            let val = parseFloat(el.value);
+            if (!isNaN(val) && val > 10) {
+                el.value = "10";
+                validateRatingInput(el, hintId, themeColor);
+                showToast("Rating otomatis disesuaikan ke 10", "warning");
+            } else if (!isNaN(val) && val < 0) {
+                el.value = "0";
+                validateRatingInput(el, hintId, themeColor);
+            }
+        }
+
+        async function fetchSheetDBData() {
+            try {
+                const res = await fetch(SHEETDB_URL);
+                if (!res.ok) throw new Error("Fetch error");
+                const data = await res.json();
+                if (Array.isArray(data)) moviesData = data;
+            } catch (err) {
+                console.warn("SheetDB Fetch Failed:", err);
+            } finally {
+                calculateStats();
+                calculateAverages();
+                updateLastWatchedStatus();
+                renderMovies();
+            }
+        }
+
+        function calculateStats() {
+            const now = new Date();
+            const currYear = now.getFullYear().toString();
+            const monthNames = ["januari", "februari", "maret", "april", "mei", "juni", "juli", "agustus", "september", "oktober", "november", "desember"];
+            const currMonth = monthNames[now.getMonth()];
+
+            let monthCount = 0, yearCount = 0;
+
+            moviesData.forEach(m => {
+                const bulanStr = (m.bulan || '').toLowerCase();
+                const tahunStr = (m.tahun || '').toString();
+
+                if (tahunStr === currYear || bulanStr.includes(currYear)) {
+                    yearCount++;
+                    if (bulanStr.includes(currMonth)) monthCount++;
+                }
+            });
+
+            document.getElementById('month-movie-count').innerText = monthCount;
+            document.getElementById('year-movie-count').innerText = yearCount;
+            document.getElementById('total-movie-count').innerText = moviesData.length;
+        }
+
+        function calculateAverages() {
+            let zSum = 0, zCount = 0, mSum = 0, mCount = 0;
+
+            moviesData.forEach(m => {
+                const rZ = parseRating(m.rating_aku);
+                const rM = parseRating(m.rating_dia);
+
+                if (rZ !== null) { zSum += rZ; zCount++; }
+                if (rM !== null) { mSum += rM; mCount++; }
+            });
+
+            document.getElementById('avg-zald-score').innerText = zCount ? (zSum / zCount).toFixed(1) : '0.0';
+            document.getElementById('avg-micel-score').innerText = mCount ? (mSum / mCount).toFixed(1) : '0.0';
+        }
+
+        function updateLastWatchedStatus() {
+            const el = document.getElementById('last-watched-text');
+            if (!el) return;
+            if (moviesData.length === 0) {
+                el.innerHTML = `<i class="fa-solid fa-clock-rotate-left text-[9px]"></i> Belum ada film`;
+                return;
+            }
+            const lastMovie = moviesData[moviesData.length - 1];
+            el.innerHTML = `<i class="fa-solid fa-clock-rotate-left text-[9px]"></i> Terakhir: <span class="text-white font-bold">${lastMovie.judul || 'Film'}</span>`;
+        }
+
+        function renderMovies() {
+            const grid = document.getElementById('movie-grid');
+            const emptyState = document.getElementById('empty-state');
+            const searchVal = document.getElementById('search-input').value.toLowerCase();
+
+            let filtered = moviesData.filter(movie => {
+                const formattedBulan = formatMonthDisplay(movie.bulan).toLowerCase();
+                return (movie.judul && movie.judul.toLowerCase().includes(searchVal)) ||
+                       (movie.bulan && movie.bulan.toLowerCase().includes(searchVal)) ||
+                       formattedBulan.includes(searchVal);
+            });
+
+            document.getElementById('movie-count-badge').innerText = `${filtered.length} Film`;
+
+            grid.innerHTML = '';
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            filtered.forEach(movie => {
+                const posterUrl = movie.poster || 'https://via.placeholder.com/300x450/0f172a/cbd5e1?text=No+Poster';
+                const dispZ = (movie.rating_aku && movie.rating_aku.toString().trim() !== '') ? movie.rating_aku : 'N/A';
+                const dispM = (movie.rating_dia && movie.rating_dia.toString().trim() !== '') ? movie.rating_dia : 'N/A';
+                const displayMonthText = formatMonthDisplay(movie.bulan);
+
+                const card = document.createElement('div');
+                card.className = "glass-card rounded-xl overflow-hidden flex flex-col border border-slate-800/80 active:scale-95 transition cursor-pointer";
+                card.onclick = () => openDetailModal(movie.id);
+
+                card.innerHTML = `
+                    <div class="relative aspect-[3/4] w-full overflow-hidden bg-cinema-950">
+                        <img src="${posterUrl}" alt="${movie.judul}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/300x450/0f172a/cbd5e1?text=No+Poster'">
+                        <span class="absolute top-1.5 right-1.5 bg-cinema-950/80 backdrop-blur px-1.5 py-0.5 rounded text-[9px] font-bold text-slate-300 border border-slate-800">${movie.tahun || ''}</span>
+                    </div>
+
+                    <div class="p-2 flex flex-col justify-between flex-grow space-y-1.5">
+                        <div>
+                            <h3 class="font-display font-bold text-[11px] text-slate-100 line-clamp-1">${movie.judul || 'Tanpa Judul'}</h3>
+                            <p class="text-[9px] text-slate-400 line-clamp-1">${displayMonthText || '-'}</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-1 text-[10px]">
+                            <div class="bg-sky-400/10 border border-sky-400/20 rounded-md p-0.5 text-center">
+                                <span class="block text-[7px] font-bold text-sky-400">ZALD</span>
+                                <span class="font-black text-slate-100">${dispZ}</span>
+                            </div>
+                            <div class="bg-pink-400/10 border border-pink-400/20 rounded-md p-0.5 text-center">
+                                <span class="block text-[7px] font-bold text-pink-400">MICEL</span>
+                                <span class="font-black text-slate-100">${dispM}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function resetSearch() {
+            document.getElementById('search-input').value = '';
+            renderMovies();
+        }
+
+        function openAddModal() {
+            document.getElementById('editing_id').value = '';
+            document.getElementById('add-movie-form').reset();
+            
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            document.getElementById('form-bulan').value = `${year}-${month}`;
+
+            const rAku = document.getElementById('form-rating-aku');
+            const rDia = document.getElementById('form-rating-dia');
+            rAku.value = '';
+            rDia.value = '';
+            validateRatingInput(rAku, 'err-hint-aku', 'sky');
+            validateRatingInput(rDia, 'err-hint-dia', 'pink');
+
+            document.getElementById('modal-form-title').innerText = "Tambah Ulasan Baru";
+            document.getElementById('submit-btn-text').innerText = "Simpan Ulasan";
+            document.getElementById('add-modal').classList.remove('hidden');
+        }
+
+        function closeAddModal() {
+            document.getElementById('add-modal').classList.add('hidden');
+        }
+
+        function openDetailModal(id) {
+            const movie = moviesData.find(m => m.id === id);
+            if (!movie) return;
+
+            currentDetailMovieId = id;
+            document.getElementById('detail-title').innerText = movie.judul || 'Tanpa Judul';
+            document.getElementById('detail-year').innerText = movie.tahun || '';
+            document.getElementById('detail-watch-month').innerText = formatMonthDisplay(movie.bulan) || '-';
+
+            const rZ = movie.rating_aku || 'N/A';
+            const rM = movie.rating_dia || 'N/A';
+
+            document.getElementById('detail-zald-score').innerText = rZ !== 'N/A' ? `${rZ} / 10` : 'N/A';
+            document.getElementById('detail-micel-score').innerText = rM !== 'N/A' ? `${rM} / 10` : 'N/A';
+
+            document.getElementById('detail-zald-text').innerText = movie.review_aku ? `"${movie.review_aku}"` : "Belum ada review.";
+            document.getElementById('detail-micel-text').innerText = movie.review_dia ? `"${movie.review_dia}"` : "Belum ada review.";
+
+            document.getElementById('detail-banner-img').src = movie.poster || 'https://via.placeholder.com/800x400/0f172a/cbd5e1?text=No+Cover';
+
+            document.getElementById('detail-modal').classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detail-modal').classList.add('hidden');
+        }
+
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const editingId = formData.get('editing_id');
+
+            const rAkuEl = document.getElementById('form-rating-aku');
+            const rDiaEl = document.getElementById('form-rating-dia');
+
+            const validAku = validateRatingInput(rAkuEl, 'err-hint-aku', 'sky');
+            const validDia = validateRatingInput(rDiaEl, 'err-hint-dia', 'pink');
+
+            if (!validAku || !validDia) {
+                showToast("Nilai rating tidak boleh lebih dari 10!", "warning");
+                return;
+            }
+
+            const rawBulan = formData.get('bulan'); 
+            const formattedBulan = formatMonthDisplay(rawBulan); 
+
+            const payload = {
+                id: editingId || `m_${Date.now()}`,
+                bulan: formattedBulan,
+                judul: formData.get('judul'),
+                tahun: formData.get('tahun'),
+                review_aku: formData.get('review_aku'),
+                rating_aku: formData.get('rating_aku').trim() !== '' ? formData.get('rating_aku').trim() : 'N/A',
+                review_dia: formData.get('review_dia'),
+                rating_dia: formData.get('rating_dia').trim() !== '' ? formData.get('rating_dia').trim() : 'N/A',
+                poster: formData.get('poster')
+            };
+
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+
+            try {
+                if (editingId) {
+                    await fetch(`${SHEETDB_URL}/id/${editingId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ data: payload })
+                    });
+                    showToast("Ulasan diperbarui!", "success");
+                } else {
+                    await fetch(SHEETDB_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ data: [payload] })
+                    });
+                    showToast("Ulasan berhasil ditambah!", "success");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Gagal menyimpan ke server.", "warning");
+            } finally {
+                submitBtn.disabled = false;
+                closeAddModal();
+                await fetchSheetDBData();
+            }
+        }
+
+        function editCurrentMovie() {
+            const movie = moviesData.find(m => m.id === currentDetailMovieId);
+            if (!movie) return;
+
+            closeDetailModal();
+
+            document.getElementById('editing_id').value = movie.id;
+            const form = document.getElementById('add-movie-form');
+            form.judul.value = movie.judul || '';
+            form.poster.value = movie.poster || '';
+            form.tahun.value = movie.tahun || '2026';
+            form.bulan.value = parseMonthToInputValue(movie.bulan || '');
+
+            const rAku = document.getElementById('form-rating-aku');
+            const rDia = document.getElementById('form-rating-dia');
+
+            rAku.value = (movie.rating_aku && movie.rating_aku !== 'N/A') ? movie.rating_aku : '';
+            rDia.value = (movie.rating_dia && movie.rating_dia !== 'N/A') ? movie.rating_dia : '';
+            
+            validateRatingInput(rAku, 'err-hint-aku', 'sky');
+            validateRatingInput(rDia, 'err-hint-dia', 'pink');
+
+            form.review_aku.value = movie.review_aku || '';
+            form.review_dia.value = movie.review_dia || '';
+
+            document.getElementById('modal-form-title').innerText = "Edit Ulasan Film";
+            document.getElementById('submit-btn-text').innerText = "Simpan Perubahan";
+            document.getElementById('add-modal').classList.remove('hidden');
+        }
+
+        async function deleteCurrentMovie() {
+            if (!currentDetailMovieId || !confirm("Hapus ulasan film ini?")) return;
+
+            const idToDelete = currentDetailMovieId;
+            closeDetailModal();
+
+            try {
+                await fetch(`${SHEETDB_URL}/id/${idToDelete}`, { method: 'DELETE' });
+                showToast("Ulasan dihapus!", "success");
+            } catch (err) {
+                showToast("Gagal menghapus.", "warning");
+            } finally {
+                await fetchSheetDBData();
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-emerald-900 border-emerald-500' : 
+                            type === 'warning' ? 'bg-amber-900 border-amber-500' : 'bg-slate-900 border-slate-700';
+            
+            toast.className = `px-3 py-1.5 rounded-xl border ${bgColor} text-slate-100 text-xs font-semibold shadow-lg backdrop-blur-md transition-all duration-200 transform -translate-y-2 opacity-0 pointer-events-auto`;
+            toast.innerText = message;
+
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove('-translate-y-2', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', '-translate-y-2');
+                setTimeout(() => toast.remove(), 200);
+            }, 2500);
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchSheetDBData);
+    </script>
+</body>
+</html>
