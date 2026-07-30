@@ -104,31 +104,29 @@
 <body class="min-h-screen pb-24 pt-14 selection:bg-amber-400 selection:text-slate-950">
 
     <!-- Header App Bar -->
-<header class="fixed top-0 inset-x-0 z-40 bg-cinema-950/85 backdrop-blur-md border-b border-slate-800/80 px-4 py-2.5">
-    <div class="max-w-md mx-auto flex items-center justify-between">
-        <div class="flex items-center gap-2.5">
-            <!-- Container Foto Profil -->
-            <div class="flex -space-x-2 overflow-hidden">
-                <img class="inline-block h-8 w-8 rounded-full ring-2 ring-slate-900 object-cover" src="assets/pfp_zald.png" alt="Zald">
-                <img class="inline-block h-8 w-8 rounded-full ring-2 ring-slate-900 object-cover" src="assets/pfp_micel.png" alt="Micel">
+    <header class="fixed top-0 inset-x-0 z-40 bg-cinema-950/85 backdrop-blur-md border-b border-slate-800/80 px-4 py-2.5">
+        <div class="max-w-md mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl popcorn-gradient flex items-center justify-center text-slate-950 text-sm shadow-md flex-shrink-0 font-bold animate-pulse">
+                    <i class="fa-solid fa-bowl-food"></i>
+                </div>
+                <div>
+                    <h1 class="font-display font-black text-base text-slate-100 leading-tight">
+                        Bubi's Popcorn
+                    </h1>
+                    <p class="text-[10px] font-medium text-pink-400 flex items-center gap-1">
+                        <i class="fa-solid fa-heart text-[8px] animate-bounce"></i> Zald & Micel Log
+                    </p>
+                </div>
             </div>
-            <div>
-                <h1 class="font-display font-black text-base text-slate-100 leading-tight">
-                    Bubi's Popcorn
-                </h1>
-                <p class="text-[10px] font-medium text-pink-400 flex items-center gap-1">
-                    <i class="fa-solid fa-heart text-[8px] animate-bounce"></i> Zald & Micel Log
-                </p>
-            </div>
-        </div>
 
-        <div class="flex items-center gap-1.5">
-            <button onclick="refreshDataWithSpin()" class="w-8 h-8 rounded-full bg-slate-900 border border-slate-800 text-slate-300 hover:text-amber-400 flex items-center justify-center transition tap-scale">
-                <i id="refresh-icon" class="fa-solid fa-rotate text-xs"></i>
-            </button>
+            <div class="flex items-center gap-1.5">
+                <button onclick="refreshDataWithSpin()" class="w-8 h-8 rounded-full bg-slate-900 border border-slate-800 text-slate-300 hover:text-amber-400 flex items-center justify-center transition tap-scale">
+                    <i id="refresh-icon" class="fa-solid fa-rotate text-xs"></i>
+                </button>
+            </div>
         </div>
-    </div>
-</header>
+    </header>
 
     <!-- Main Container -->
     <main class="max-w-md mx-auto px-3.5 space-y-3.5 mt-2">
