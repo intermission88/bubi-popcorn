@@ -12,6 +12,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
         tailwind.config = {
@@ -158,8 +160,8 @@
                 <!-- Sort Dropdown -->
                 <div class="relative">
                     <select id="sort-select" onchange="renderMovies()" class="px-3 py-2 bg-cinema-900 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-amber-400 transition appearance-none pr-7 cursor-pointer">
-                        <option value="newest">Bulan Terkini[cite: 1]</option>
-                        <option value="oldest">Bulan Terlama[cite: 1]</option>
+                        <option value="newest">Bulan Terkini</option>
+                        <option value="oldest">Bulan Terlama</option>
                         <option value="az">Judul (A-Z)</option>
                     </select>
                     <i class="fa-solid fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 text-[10px] pointer-events-none"></i>
@@ -404,7 +406,12 @@
     <div id="toast-container" class="fixed top-16 inset-x-0 z-50 flex flex-col items-center gap-2 pointer-events-none px-4"></div>
 
     <script>
-        const SHEETDB_URL = 'https://sheetdb.io/api/v1/gs9uo4i31ls7p';
+        // Konfigurasi Supabase
+        const SUPABASE_URL = 'https://fhpyvnbsreoaiaeqfkvk.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_aSPwcLUMW2y7r3nk6cpBpg_3DJH5sky';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const TABLE_NAME = 'Bubi\'s Popcorn';
+
         let moviesData = [];
         let currentDetailMovieId = null;
 
@@ -430,7 +437,7 @@
         async function refreshDataWithSpin() {
             const icon = document.getElementById('refresh-icon');
             if (icon) icon.classList.add('fa-spin');
-            await fetchSheetDBData();
+            await fetchSupabaseData();
             setTimeout(() => icon && icon.classList.remove('fa-spin'), 600);
             showToast("Data diperbarui!", "info");
         }
@@ -521,14 +528,16 @@
             }
         }
 
-        async function fetchSheetDBData() {
+        async function fetchSupabaseData() {
             try {
-                const res = await fetch(SHEETDB_URL);
-                if (!res.ok) throw new Error("Fetch error");
-                const data = await res.json();
+                let { data, error } = await supabaseClient
+                    .from(TABLE_NAME)
+                    .select('*');
+                
+                if (error) throw error;
                 if (Array.isArray(data)) moviesData = data;
             } catch (err) {
-                console.warn("SheetDB Fetch Failed:", err);
+                console.warn("Supabase Fetch Failed:", err);
             } finally {
                 calculateStats();
                 calculateAverages();
@@ -633,7 +642,6 @@
                 const isCertified = movie.is_certified === true || movie.is_certified === 'true' || movie.is_certified === 'TRUE';
 
                 const card = document.createElement('div');
-                // Beri kelas khusus jika Certified Fresh
                 card.className = isCertified 
                     ? "rounded-xl overflow-hidden flex flex-col certified-card animate-goldGlow active:scale-95 transition cursor-pointer relative"
                     : "glass-card rounded-xl overflow-hidden flex flex-col border border-slate-800/80 active:scale-95 transition cursor-pointer";
@@ -644,10 +652,8 @@
                     <div class="relative aspect-[3/4] w-full overflow-hidden bg-cinema-950">
                         <img src="${posterUrl}" alt="${movie.judul}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/300x450/0f172a/cbd5e1?text=No+Poster'">
                         
-                        <!-- Badge Tahun -->
                         <span class="absolute top-1.5 right-1.5 bg-cinema-950/80 backdrop-blur px-1.5 py-0.5 rounded text-[9px] font-bold text-slate-300 border border-slate-800">${movie.tahun || ''}</span>
                         
-                        <!-- Badge Certified Fresh di Poster -->
                         ${isCertified ? `
                             <div class="absolute top-1.5 left-1.5 gold-gradient px-1.5 py-0.5 rounded text-[8px] font-extrabold text-slate-950 flex items-center gap-1 shadow-lg animate-pulse">
                                 <i class="fa-solid fa-award">*</i> FRESH
@@ -710,7 +716,7 @@
         }
 
         function openDetailModal(id) {
-            const movie = moviesData.find(m => m.id === id);
+            const movie = moviesData.find(m => m.id == id);
             if (!movie) return;
 
             currentDetailMovieId = id;
@@ -766,15 +772,14 @@
             const isCertifiedChecked = document.getElementById('form-is-certified').checked;
 
             const payload = {
-                id: editingId || `m_${Date.now()}`,
                 bulan: formattedBulan,
                 judul: formData.get('judul'),
-                tahun: formData.get('tahun'),
-                is_certified: isCertifiedChecked ? 'true' : 'false',
+                tahun: parseInt(formData.get('tahun')) || 2026,
+                is_certified: isCertifiedChecked,
                 review_aku: formData.get('review_aku'),
-                rating_aku: formData.get('rating_aku').trim() !== '' ? formData.get('rating_aku').trim() : 'N/A',
+                rating_aku: formData.get('rating_aku').trim() !== '' ? formData.get('rating_aku').trim() : null,
                 review_dia: formData.get('review_dia'),
-                rating_dia: formData.get('rating_dia').trim() !== '' ? formData.get('rating_dia').trim() : 'N/A',
+                rating_dia: formData.get('rating_dia').trim() !== '' ? formData.get('rating_dia').trim() : null,
                 poster: formData.get('poster')
             };
 
@@ -783,18 +788,20 @@
 
             try {
                 if (editingId) {
-                    await fetch(`${SHEETDB_URL}/id/${editingId}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ data: payload })
-                    });
+                    const { error } = await supabaseClient
+                        .from(TABLE_NAME)
+                        .update(payload)
+                        .eq('id', editingId);
+                    
+                    if (error) throw error;
                     showToast("Ulasan diperbarui!", "success");
                 } else {
-                    await fetch(SHEETDB_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ data: [payload] })
-                    });
+                    payload.id = `m_${Date.now()}`;
+                    const { error } = await supabaseClient
+                        .from(TABLE_NAME)
+                        .insert([payload]);
+                    
+                    if (error) throw error;
                     showToast("Ulasan berhasil ditambah!", "success");
                 }
             } catch (err) {
@@ -803,12 +810,12 @@
             } finally {
                 submitBtn.disabled = false;
                 closeAddModal();
-                await fetchSheetDBData();
+                await fetchSupabaseData();
             }
         }
 
         function editCurrentMovie() {
-            const movie = moviesData.find(m => m.id === currentDetailMovieId);
+            const movie = moviesData.find(m => m.id == currentDetailMovieId);
             if (!movie) return;
 
             closeDetailModal();
@@ -847,12 +854,18 @@
             closeDetailModal();
 
             try {
-                await fetch(`${SHEETDB_URL}/id/${idToDelete}`, { method: 'DELETE' });
+                const { error } = await supabaseClient
+                    .from(TABLE_NAME)
+                    .delete()
+                    .eq('id', idToDelete);
+
+                if (error) throw error;
                 showToast("Ulasan dihapus!", "success");
             } catch (err) {
+                console.error(err);
                 showToast("Gagal menghapus.", "warning");
             } finally {
-                await fetchSheetDBData();
+                await fetchSupabaseData();
             }
         }
 
@@ -875,7 +888,7 @@
             }, 2500);
         }
 
-        document.addEventListener('DOMContentLoaded', fetchSheetDBData);
+        document.addEventListener('DOMContentLoaded', fetchSupabaseData);
     </script>
 </body>
 </html>
