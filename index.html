@@ -48,6 +48,10 @@
                         fadeIn: {
                             '0%': { opacity: '0' },
                             '100%': { opacity: '1' }
+                        },
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-50%)' }
                         }
                     },
                     animation: {
@@ -55,7 +59,8 @@
                         goldGlow: 'goldGlow 2.5s infinite ease-in-out',
                         popIn: 'popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
                         slideUp: 'slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-                        fadeIn: 'fadeIn 0.25s ease-out forwards'
+                        fadeIn: 'fadeIn 0.25s ease-out forwards',
+                        marquee: 'marquee 28s linear infinite'
                     }
                 }
             }
@@ -104,6 +109,11 @@
             position: fixed !important;
             width: 100% !important;
             height: 100% !important;
+        }
+
+        /* Marquee Pause on Hover/Touch */
+        .marquee-container:hover .marquee-track {
+            animation-play-state: paused;
         }
     </style>
 </head>
@@ -161,10 +171,67 @@
                 </div>
             </div>
 
-            <div class="flex items-center justify-between text-xs text-slate-400 pt-1.5 border-t border-slate-800/80">
-                <span class="text-pink-400 font-semibold text-[11px] flex items-center gap-1">
-                    <i class="fa-solid fa-earth-asia"></i> ~4,800 km
-                </span>
+            <!-- INFINITE MARQUEE LDR QUOTES & DISTANCE -->
+            <div class="pt-2 border-t border-slate-800/80 overflow-hidden relative marquee-container">
+                <!-- Gradient Fade Mask for Left & Right Edges -->
+                <div class="absolute left-0 inset-y-0 w-6 bg-gradient-to-r from-slate-900 to-transparent z-10 pointer-events-none"></div>
+                <div class="absolute right-0 inset-y-0 w-6 bg-gradient-to-l from-slate-900 to-transparent z-10 pointer-events-none"></div>
+
+                <div class="flex whitespace-nowrap overflow-hidden">
+                    <div class="flex items-center gap-6 marquee-track animate-marquee py-0.5">
+                        <!-- Content Item Set 1 -->
+                        <span class="inline-flex items-center gap-1.5 text-xs text-pink-400 font-semibold flex-shrink-0">
+                            <i class="fa-solid fa-earth-asia"></i> ~4,800 km apart
+                        </span>
+                        <span class="text-slate-600 text-[10px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-xs text-slate-300 italic flex-shrink-0">
+                            "Distance is just a test of how far love can travel."
+                        </span>
+                        <span class="text-slate-600 text-[10px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-xs text-pink-400 font-semibold flex-shrink-0">
+                            <i class="fa-solid fa-heart text-[10px]"></i> Two hearts, different time zones
+                        </span>
+                        <span class="text-slate-600 text-[10px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-xs text-slate-300 italic flex-shrink-0">
+                            "In true love the smallest distance is too great, and the greatest distance can be bridged."
+                        </span>
+                        <span class="text-slate-600 text-[10px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-xs text-amber-400 font-semibold flex-shrink-0">
+                            <i class="fa-solid fa-plane text-[10px]"></i> Counting down the days to meet
+                        </span>
+                        <span class="text-slate-600 text-[10px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-xs text-slate-300 italic flex-shrink-0">
+                            "Miles apart, but close at heart."
+                        </span>
+                        <span class="text-slate-600 text-[10px]">•</span>
+
+                        <!-- Content Item Set 2 (Exact Duplicate for Infinite Seamless Loop) -->
+                        <span class="inline-flex items-center gap-1.5 text-xs text-pink-400 font-semibold flex-shrink-0">
+                            <i class="fa-solid fa-earth-asia"></i> ~4,800 km apart
+                        </span>
+                        <span class="text-slate-600 text-[10px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-xs text-slate-300 italic flex-shrink-0">
+                            "Distance is just a test of how far love can travel."
+                        </span>
+                        <span class="text-slate-600 text-[10px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-xs text-pink-400 font-semibold flex-shrink-0">
+                            <i class="fa-solid fa-heart text-[10px]"></i> Two hearts, different time zones
+                        </span>
+                        <span class="text-slate-600 text-[10px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-xs text-slate-300 italic flex-shrink-0">
+                            "In true love the smallest distance is too great, and the greatest distance can be bridged."
+                        </span>
+                        <span class="text-slate-600 text-[10px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-xs text-amber-400 font-semibold flex-shrink-0">
+                            <i class="fa-solid fa-plane text-[10px]"></i> Counting down the days to meet
+                        </span>
+                        <span class="text-slate-600 text-[10px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-xs text-slate-300 italic flex-shrink-0">
+                            "Miles apart, but close at heart."
+                        </span>
+                        <span class="text-slate-600 text-[10px]">•</span>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -321,12 +388,12 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1.5">Tahun Rilis *</label>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5 text-center">Tahun Rilis *</label>
                         <input type="number" name="tahun" id="form-tahun" required min="1900" max="2030" value="2026" 
                             class="w-full px-3.5 py-3 bg-cinema-950 border border-slate-800 rounded-xl text-xs sm:text-sm text-center focus:outline-none focus:border-amber-400 text-slate-200 transition shadow-inner">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1.5">Bulan Nonton *</label>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5 text-center">Bulan Nonton *</label>
                         <input type="month" name="bulan" id="form-bulan" required 
                             class="w-full px-3.5 py-3 bg-cinema-950 border border-slate-800 rounded-xl text-xs sm:text-sm text-center focus:outline-none focus:border-amber-400 text-slate-200 transition shadow-inner">
                     </div>
