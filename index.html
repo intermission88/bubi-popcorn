@@ -101,7 +101,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen pb-20 pt-14 selection:bg-amber-400 selection:text-slate-950">
+<body class="min-h-screen pb-24 pt-14 selection:bg-amber-400 selection:text-slate-950">
 
     <!-- Header App Bar -->
     <header class="fixed top-0 inset-x-0 z-40 bg-cinema-950/85 backdrop-blur-md border-b border-slate-800/80 px-4 py-2.5">
@@ -241,26 +241,12 @@
         </section>
     </main>
 
-    <!-- App Bottom Navigation Bar -->
-    <nav class="fixed bottom-0 inset-x-0 z-40 bg-cinema-950/90 backdrop-blur-md border-t border-slate-800 px-6 py-2 shadow-2xl">
-        <div class="max-w-md mx-auto flex items-center justify-around">
-            <button onclick="scrollToTop()" class="flex flex-col items-center gap-0.5 text-amber-400 tap-scale transition">
-                <i class="fa-solid fa-house text-base"></i>
-                <span class="text-[9px] font-semibold">Home</span>
-            </button>
-            <button onclick="focusSearch()" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200 tap-scale transition">
-                <i class="fa-solid fa-magnifying-glass text-base"></i>
-                <span class="text-[9px] font-semibold">Cari</span>
-            </button>
-            <button onclick="openAddModal()" class="w-11 h-11 rounded-full popcorn-gradient flex items-center justify-center text-slate-950 shadow-lg -translate-y-3 border-2 border-cinema-950 tap-scale transition hover:rotate-90 duration-300">
-                <i class="fa-solid fa-plus text-lg"></i>
-            </button>
-            <button onclick="scrollToStats()" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200 tap-scale transition">
-                <i class="fa-solid fa-chart-simple text-base"></i>
-                <span class="text-[9px] font-semibold">Stats</span>
-            </button>
-        </div>
-    </nav>
+    <!-- Floating Action Button (Tombol Plus Saja) -->
+    <div class="fixed bottom-5 right-5 z-40">
+        <button onclick="openAddModal()" class="w-14 h-14 rounded-full popcorn-gradient flex items-center justify-center text-slate-950 shadow-2xl border-2 border-cinema-950 tap-scale transition hover:rotate-90 duration-300">
+            <i class="fa-solid fa-plus text-xl"></i>
+        </button>
+    </div>
 
     <!-- Mobile Bottom Sheet / Modal Form (Tambah/Edit) -->
     <div id="add-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-end sm:items-center justify-center hidden">
@@ -480,10 +466,6 @@
         }
         setInterval(updateDualClocks, 1000);
         updateDualClocks();
-
-        function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
-        function focusSearch() { document.getElementById('search-input').focus(); }
-        function scrollToStats() { document.getElementById('stats-section').scrollIntoView({ behavior: 'smooth' }); }
 
         async function refreshDataWithSpin() {
             const icon = document.getElementById('refresh-icon');
