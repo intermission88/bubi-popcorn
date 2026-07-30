@@ -2,7 +2,7 @@
 <html lang="id" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-visual">
     <title>Bubi's Popcorn - Mobile App Cinema Log</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -67,7 +67,7 @@
             background-color: #080c14; 
             color: #f8fafc; 
             font-family: 'Inter', sans-serif;
-            font-size: 14px; /* Diperbesar sedikit dari 12px standar agar lebih nyaman */
+            font-size: 14px;
             -webkit-tap-highlight-color: transparent;
         }
         .font-display { font-family: 'Outfit', sans-serif; }
@@ -97,6 +97,20 @@
         }
         .tap-scale:active {
             transform: scale(0.94);
+        }
+
+        /* Khusus Mobile Floating Modal saat Keyboard Muncul */
+        @media screen and (max-width: 768px) {
+            #add-modal {
+                align-items: flex-end !important;
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+            #add-modal-content {
+                max-height: 80vh !important;
+                border-bottom-left-radius: 0 !important;
+                border-bottom-right-radius: 0 !important;
+                transition: transform 0.2s ease-out, max-height 0.2s ease-out;
+            }
         }
     </style>
 </head>
@@ -267,14 +281,14 @@
         <div id="add-modal-content" class="bg-cinema-900 border-t sm:border border-slate-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col transform transition-all">
             <div class="w-12 h-1.5 bg-slate-700 rounded-full mx-auto my-2.5 sm:hidden"></div>
             
-            <div class="px-5 py-3.5 border-b border-slate-800 flex items-center justify-between">
+            <div class="px-5 py-3.5 border-b border-slate-800 flex items-center justify-between flex-shrink-0">
                 <h3 id="modal-form-title" class="font-bold text-sm text-slate-100 font-display">Tambah Ulasan Baru</h3>
                 <button onclick="closeAddModal()" class="text-slate-400 hover:text-white p-1.5 tap-scale rounded-lg bg-cinema-950 border border-slate-800">
                     <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
             </div>
 
-            <form id="add-movie-form" onsubmit="handleFormSubmit(event)" class="p-5 overflow-y-auto space-y-3.5">
+            <form id="add-movie-form" onsubmit="handleFormSubmit(event)" class="p-5 overflow-y-auto space-y-3.5 flex-grow">
                 <input type="hidden" name="editing_id" id="editing_id" value="">
                 
                 <div>
@@ -384,7 +398,7 @@
                     </div>
                 </div>
 
-                <div class="pt-3 flex justify-end gap-2.5">
+                <div class="pt-3 flex justify-end gap-2.5 pb-4">
                     <button type="button" onclick="closeAddModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 tap-scale">Batal</button>
                     <button type="submit" id="submit-btn" class="px-5 py-2.5 rounded-xl popcorn-gradient font-bold text-xs text-slate-950 shadow-md tap-scale">
                         <span id="submit-btn-text">Simpan Ulasan</span>
@@ -397,7 +411,7 @@
     <!-- Mobile Detail Modal -->
     <div id="detail-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
         <div id="detail-modal-content" class="bg-cinema-900 border-t sm:border border-slate-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col transform transition-all">
-            <div class="relative h-48 bg-cinema-950 overflow-hidden">
+            <div class="relative h-48 bg-cinema-950 overflow-hidden flex-shrink-0">
                 <img id="detail-banner-img" src="" alt="Banner" class="w-full h-full object-cover opacity-40 blur-sm scale-105">
                 <div class="absolute inset-0 bg-gradient-to-t from-cinema-900 via-cinema-900/60 to-transparent"></div>
                 <button onclick="closeDetailModal()" class="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-cinema-900/80 border border-slate-700 text-slate-300 flex items-center justify-center tap-scale">
@@ -419,7 +433,7 @@
                 </div>
             </div>
 
-            <div class="p-5 overflow-y-auto space-y-3.5">
+            <div class="p-5 overflow-y-auto space-y-3.5 flex-grow">
                 <div id="detail-scores-container" class="grid grid-cols-2 gap-2.5 bg-cinema-950 border border-slate-800 p-3 rounded-2xl">
                     <div id="detail-box-zald" class="flex items-center gap-2.5">
                         <img src="assets/pfp_zald.png" alt="Zald" class="w-8 h-8 rounded-xl object-cover shadow-sm">
@@ -478,6 +492,26 @@
         let currentDetailMovieId = null;
         let currentViewerFilter = 'all';
         let isTopRatedActive = false;
+
+        // Auto Resize & Floating Handler untuk Keyboard Mobile
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', () => {
+                const modalContent = document.getElementById('add-modal-content');
+                const modal = document.getElementById('add-modal');
+                if (!modal.classList.contains('hidden')) {
+                    const keyboardHeight = window.innerHeight - window.visualViewport.height;
+                    if (keyboardHeight > 50) {
+                        // Keyboard muncul: sesuaikan max-height dan geser ke atas
+                        modalContent.style.maxHeight = `${window.visualViewport.height - 40}px`;
+                        modal.style.paddingBottom = `${keyboardHeight + 10}px`;
+                    } else {
+                        // Keyboard ditutup
+                        modalContent.style.maxHeight = '80vh';
+                        modal.style.paddingBottom = '0px';
+                    }
+                }
+            });
+        }
 
         function updateDualClocks() {
             const now = new Date();
@@ -893,7 +927,6 @@
             modal.classList.remove('hidden');
             content.classList.add('animate-slideUp');
 
-            // UX Improvement: Auto focus ke input judul film setelah modal terbuka
             setTimeout(() => {
                 const titleInput = document.getElementById('form-judul');
                 if (titleInput) titleInput.focus();
@@ -903,6 +936,8 @@
         function closeAddModal() {
             const modal = document.getElementById('add-modal');
             modal.classList.add('hidden');
+            document.getElementById('add-modal-content').style.maxHeight = '80vh';
+            modal.style.paddingBottom = '0px';
         }
 
         function openDetailModal(id) {
