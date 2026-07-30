@@ -99,7 +99,6 @@
             transform: scale(0.94);
         }
 
-        /* Khusus Mobile Floating Modal saat Keyboard Muncul */
         @media screen and (max-width: 768px) {
             #add-modal {
                 align-items: flex-end !important;
@@ -169,16 +168,38 @@
             </div>
 
             <div class="flex items-center justify-between text-xs text-slate-400 pt-1.5 border-t border-slate-800/80">
-                <span id="last-watched-text" class="text-amber-400 font-medium truncate max-w-[210px]">
-                    <i class="fa-solid fa-clock-rotate-left text-[10px]"></i> Memuat...
-                </span>
                 <span class="text-pink-400 font-semibold text-[11px] flex items-center gap-1">
                     <i class="fa-solid fa-earth-asia"></i> ~4,800 km
                 </span>
             </div>
         </section>
 
-        <!-- SECTION SEARCH & SORT & VIEWER FILTER -->
+        <!-- SECTION GABUNGAN: Ringkasan Nonton & Terakhir Nonton -->
+        <section id="stats-section" class="glass-card rounded-2xl p-3.5 border border-slate-800 space-y-3 shadow-xl">
+            <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Ringkasan & Terakhir Nonton</span>
+                <span id="last-watched-text" class="text-amber-400 font-medium text-xs truncate max-w-[210px]">
+                    <i class="fa-solid fa-clock-rotate-left text-[10px]"></i> Memuat...
+                </span>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-2">
+                <div class="bg-cinema-950 p-2.5 rounded-xl border border-slate-800 text-center transform transition hover:scale-105 duration-200 shadow-inner">
+                    <span class="text-[10px] text-slate-400 font-medium block">Bulan Ini</span>
+                    <span id="month-movie-count" class="text-base font-bold font-display text-sky-400">0</span>
+                </div>
+                <div class="bg-cinema-950 p-2.5 rounded-xl border border-slate-800 text-center transform transition hover:scale-105 duration-200 shadow-inner">
+                    <span class="text-[10px] text-slate-400 font-medium block">Tahun Ini</span>
+                    <span id="year-movie-count" class="text-base font-bold font-display text-pink-400">0</span>
+                </div>
+                <div class="bg-cinema-950 p-2.5 rounded-xl border border-slate-800 text-center transform transition hover:scale-105 duration-200 shadow-inner">
+                    <span class="text-[10px] text-slate-400 font-medium block">Total</span>
+                    <span id="total-movie-count" class="text-base font-bold font-display text-amber-400">0</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION SEARCH & SORT & VIEWER FILTER (Kolom Cari di atas, disusul kategori Semua & Nonton Bareng) -->
         <section id="search-section" class="space-y-2.5">
             <div class="flex items-center gap-2">
                 <div class="relative flex-grow">
@@ -198,7 +219,7 @@
                 </div>
             </div>
 
-            <!-- Filter Siapa yang Nonton & Quick Filters -->
+            <!-- Filter Kategori: Semua & Nonton Bareng (di depan) -->
             <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
                 <button onclick="setViewerFilter('all', this)" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-400 text-slate-950 tap-scale flex-shrink-0 transition shadow-sm">Semua</button>
                 <button onclick="setViewerFilter('both', this)" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition">Nonton Bareng</button>
@@ -208,42 +229,6 @@
                 <button onclick="toggleTopRatedFilter(this)" id="top-rated-btn" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-cinema-900 border border-slate-800 text-amber-400 tap-scale flex-shrink-0 transition flex items-center gap-1">
                     <i class="fa-solid fa-star text-[10px]"></i> Top 9+
                 </button>
-            </div>
-        </section>
-
-        <!-- STATS SECTION -->
-        <section id="stats-section" class="glass-card rounded-2xl p-3.5 border border-slate-800 space-y-2.5 shadow-xl">
-            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Ringkasan Nonton</span>
-            <div class="grid grid-cols-3 gap-2">
-                <div class="bg-cinema-950 p-2.5 rounded-xl border border-slate-800 text-center transform transition hover:scale-105 duration-200 shadow-inner">
-                    <span class="text-[10px] text-slate-400 font-medium block">Bulan Ini</span>
-                    <span id="month-movie-count" class="text-base font-bold font-display text-sky-400">0</span>
-                </div>
-                <div class="bg-cinema-950 p-2.5 rounded-xl border border-slate-800 text-center transform transition hover:scale-105 duration-200 shadow-inner">
-                    <span class="text-[10px] text-slate-400 font-medium block">Tahun Ini</span>
-                    <span id="year-movie-count" class="text-base font-bold font-display text-pink-400">0</span>
-                </div>
-                <div class="bg-cinema-950 p-2.5 rounded-xl border border-slate-800 text-center transform transition hover:scale-105 duration-200 shadow-inner">
-                    <span class="text-[10px] text-slate-400 font-medium block">Total</span>
-                    <span id="total-movie-count" class="text-base font-bold font-display text-amber-400">0</span>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-800/60">
-                <div class="flex items-center justify-between bg-sky-950/25 px-3 py-2 rounded-xl border border-sky-500/20">
-                    <div class="flex items-center gap-1.5">
-                        <img src="assets/pfp_zald.png" class="w-4 h-4 rounded-full object-cover">
-                        <span class="text-xs font-bold text-sky-400">Avg Zald</span>
-                    </div>
-                    <span id="avg-zald-score" class="text-xs sm:text-sm font-black text-slate-100">0.0</span>
-                </div>
-                <div class="flex items-center justify-between bg-pink-950/25 px-3 py-2 rounded-xl border border-pink-500/20">
-                    <div class="flex items-center gap-1.5">
-                        <img src="assets/pfp_micel.png" class="w-4 h-4 rounded-full object-cover">
-                        <span class="text-xs font-bold text-pink-400">Avg Micel</span>
-                    </div>
-                    <span id="avg-micel-score" class="text-xs sm:text-sm font-black text-slate-100">0.0</span>
-                </div>
             </div>
         </section>
 
@@ -493,7 +478,6 @@
         let currentViewerFilter = 'all';
         let isTopRatedActive = false;
 
-        // Auto Resize & Floating Handler untuk Keyboard Mobile
         if (window.visualViewport) {
             window.visualViewport.addEventListener('resize', () => {
                 const modalContent = document.getElementById('add-modal-content');
@@ -501,11 +485,9 @@
                 if (!modal.classList.contains('hidden')) {
                     const keyboardHeight = window.innerHeight - window.visualViewport.height;
                     if (keyboardHeight > 50) {
-                        // Keyboard muncul: sesuaikan max-height dan geser ke atas
                         modalContent.style.maxHeight = `${window.visualViewport.height - 40}px`;
                         modal.style.paddingBottom = `${keyboardHeight + 10}px`;
                     } else {
-                        // Keyboard ditutup
                         modalContent.style.maxHeight = '80vh';
                         modal.style.paddingBottom = '0px';
                     }
@@ -671,7 +653,6 @@
                 console.warn("Supabase Fetch Failed:", err);
             } finally {
                 calculateStats();
-                calculateAverages();
                 updateLastWatchedStatus();
                 renderMovies();
             }
@@ -698,26 +679,6 @@
             document.getElementById('month-movie-count').innerText = monthCount;
             document.getElementById('year-movie-count').innerText = yearCount;
             document.getElementById('total-movie-count').innerText = moviesData.length;
-        }
-
-        function calculateAverages() {
-            let zSum = 0, zCount = 0, mSum = 0, mCount = 0;
-
-            moviesData.forEach(m => {
-                const watcher = m.watched_by || 'both';
-                const rZ = parseRating(m.rating_aku);
-                const rM = parseRating(m.rating_dia);
-
-                if (watcher === 'both' || watcher === 'zald') {
-                    if (rZ !== null) { zSum += rZ; zCount++; }
-                }
-                if (watcher === 'both' || watcher === 'micel') {
-                    if (rM !== null) { mSum += rM; mCount++; }
-                }
-            });
-
-            document.getElementById('avg-zald-score').innerText = zCount ? (zSum / zCount).toFixed(1) : '0.0';
-            document.getElementById('avg-micel-score').innerText = mCount ? (mSum / mCount).toFixed(1) : '0.0';
         }
 
         function updateLastWatchedStatus() {
