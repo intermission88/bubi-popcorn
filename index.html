@@ -34,11 +34,11 @@
                             '40%, 80%': { transform: 'translateX(4px)' },
                         },
                         goldGlow: {
-                            '0%, 100%': { borderColor: 'rgba(250, 204, 21, 0.6)', boxShadow: '0 0 12px rgba(250, 204, 21, 0.25)' },
-                            '50%': { borderColor: 'rgba(250, 204, 21, 1)', boxShadow: '0 0 22px rgba(250, 204, 21, 0.5)' }
+                            '0%, 100%': { borderColor: 'rgba(250, 204, 21, 0.6)', boxShadow: '0 0 14px rgba(250, 204, 21, 0.3)' },
+                            '50%': { borderColor: 'rgba(250, 204, 21, 1)', boxShadow: '0 0 24px rgba(250, 204, 21, 0.55)' }
                         },
                         popIn: {
-                            '0%': { transform: 'scale(0.9)', opacity: '0' },
+                            '0%': { transform: 'scale(0.92)', opacity: '0' },
                             '100%': { transform: 'scale(1)', opacity: '1' }
                         },
                         slideUp: {
@@ -67,18 +67,19 @@
             background-color: #080c14; 
             color: #f8fafc; 
             font-family: 'Inter', sans-serif;
+            font-size: 14px; /* Diperbesar sedikit dari 12px standar agar lebih nyaman */
             -webkit-tap-highlight-color: transparent;
         }
         .font-display { font-family: 'Outfit', sans-serif; }
         .glass-card { 
-            background: rgba(15, 23, 42, 0.75); 
-            backdrop-filter: blur(12px); 
+            background: rgba(15, 23, 42, 0.8); 
+            backdrop-filter: blur(14px); 
             border: 1px solid rgba(255, 255, 255, 0.08); 
         }
         .certified-card {
-            background: linear-gradient(135deg, rgba(30, 27, 12, 0.85) 0%, rgba(15, 23, 42, 0.9) 100%);
+            background: linear-gradient(135deg, rgba(30, 27, 12, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
             border: 2px solid #facc15;
-            box-shadow: 0 0 15px rgba(250, 204, 21, 0.3);
+            box-shadow: 0 0 16px rgba(250, 204, 21, 0.3);
         }
         .popcorn-gradient { background: linear-gradient(135deg, #facc15 0%, #f97316 100%); }
         .gold-gradient { background: linear-gradient(135deg, #fef08a 0%, #eab308 50%, #ca8a04 100%); }
@@ -87,7 +88,7 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
         input[type="month"]::-webkit-calendar-picker-indicator {
-            filter: invert(1) brightness(0.8);
+            filter: invert(1) brightness(0.85);
             cursor: pointer;
         }
 
@@ -95,31 +96,31 @@
             transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .tap-scale:active {
-            transform: scale(0.93);
+            transform: scale(0.94);
         }
     </style>
 </head>
-<body class="min-h-screen pb-24 pt-14 selection:bg-amber-400 selection:text-slate-950">
+<body class="min-h-screen pb-28 pt-16 selection:bg-amber-400 selection:text-slate-950">
 
     <!-- Header App Bar -->
-    <header class="fixed top-0 inset-x-0 z-40 bg-cinema-950/85 backdrop-blur-md border-b border-slate-800/80 px-4 py-2.5">
+    <header class="fixed top-0 inset-x-0 z-40 bg-cinema-950/90 backdrop-blur-md border-b border-slate-800/80 px-4 py-3">
         <div class="max-w-md mx-auto flex items-center justify-between">
             <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-xl popcorn-gradient flex items-center justify-center text-slate-950 text-sm shadow-md flex-shrink-0 font-bold animate-pulse">
+                <div class="w-9 h-9 rounded-xl popcorn-gradient flex items-center justify-center text-slate-950 text-base shadow-md flex-shrink-0 font-bold animate-pulse">
                     <i class="fa-solid fa-bowl-food"></i>
                 </div>
                 <div>
                     <h1 class="font-display font-black text-base text-slate-100 leading-tight">
                         Bubi's Popcorn
                     </h1>
-                    <p class="text-[10px] font-medium text-pink-400 flex items-center gap-1">
-                        <i class="fa-solid fa-heart text-[8px] animate-bounce"></i> Zald & Micel Log
+                    <p class="text-xs font-medium text-pink-400 flex items-center gap-1">
+                        <i class="fa-solid fa-heart text-[10px] animate-bounce"></i> Zald & Micel Log
                     </p>
                 </div>
             </div>
 
-            <div class="flex items-center gap-1.5">
-                <button onclick="refreshDataWithSpin()" class="w-8 h-8 rounded-full bg-slate-900 border border-slate-800 text-slate-300 hover:text-amber-400 flex items-center justify-center transition tap-scale">
+            <div class="flex items-center gap-2">
+                <button onclick="refreshDataWithSpin()" class="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 text-slate-300 hover:text-amber-400 flex items-center justify-center transition tap-scale shadow-sm">
                     <i id="refresh-icon" class="fa-solid fa-rotate text-xs"></i>
                 </button>
             </div>
@@ -127,250 +128,265 @@
     </header>
 
     <!-- Main Container -->
-    <main class="max-w-md mx-auto px-3.5 space-y-3.5 mt-2">
+    <main class="max-w-md mx-auto px-4 space-y-4 mt-2">
         
         <!-- SECTION ATAS: Dual Clocks -->
-        <section class="glass-card rounded-2xl p-3 border border-slate-800 bg-gradient-to-br from-sky-950/30 via-cinema-900 to-pink-950/30 space-y-2.5 shadow-lg">
-            <div class="grid grid-cols-2 gap-2">
+        <section class="glass-card rounded-2xl p-3.5 border border-slate-800 bg-gradient-to-br from-sky-950/30 via-cinema-900 to-pink-950/30 space-y-3 shadow-xl">
+            <div class="grid grid-cols-2 gap-2.5">
                 <!-- Zald Clock -->
-                <div class="p-2 rounded-xl bg-sky-950/40 border border-sky-500/20 flex flex-col justify-between">
-                    <div class="flex items-center gap-1.5 mb-1">
-                        <img src="assets/pfp_zald.png" alt="Zald" class="w-5 h-5 rounded-md object-cover">
-                        <span class="text-[9px] font-bold text-sky-400 uppercase tracking-wider">Zald</span>
+                <div class="p-2.5 rounded-xl bg-sky-950/50 border border-sky-500/20 flex flex-col justify-between">
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <img src="assets/pfp_zald.png" alt="Zald" class="w-6 h-6 rounded-md object-cover shadow-sm">
+                        <span class="text-[11px] font-bold text-sky-400 uppercase tracking-wider">Zald (WIB)</span>
                     </div>
-                    <div id="zald-clock" class="text-sm font-black font-display text-sky-200">00:00:00</div>
-                    <span id="zald-date" class="text-[9px] text-slate-400">-- --- ----</span>
+                    <div id="zald-clock" class="text-base font-black font-display text-sky-200">00:00:00</div>
+                    <span id="zald-date" class="text-[10px] text-slate-400">-- --- ----</span>
                 </div>
 
                 <!-- Micel Clock -->
-                <div class="p-2 rounded-xl bg-pink-950/40 border border-pink-500/20 flex flex-col justify-between">
-                    <div class="flex items-center gap-1.5 mb-1">
-                        <img src="assets/pfp_micel.png" alt="Micel" class="w-5 h-5 rounded-md object-cover">
-                        <span class="text-[9px] font-bold text-pink-400 uppercase tracking-wider">Micel (JST)</span>
+                <div class="p-2.5 rounded-xl bg-pink-950/50 border border-pink-500/20 flex flex-col justify-between">
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <img src="assets/pfp_micel.png" alt="Micel" class="w-6 h-6 rounded-md object-cover shadow-sm">
+                        <span class="text-[11px] font-bold text-pink-400 uppercase tracking-wider">Micel (JST)</span>
                     </div>
-                    <div id="micel-clock" class="text-sm font-black font-display text-pink-200">00:00:00</div>
-                    <span id="micel-date" class="text-[9px] text-slate-400">-- --- ----</span>
+                    <div id="micel-clock" class="text-base font-black font-display text-pink-200">00:00:00</div>
+                    <span id="micel-date" class="text-[10px] text-slate-400">-- --- ----</span>
                 </div>
             </div>
 
-            <div class="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-800/80">
-                <span id="last-watched-text" class="text-amber-400 font-medium truncate max-w-[200px]">
-                    <i class="fa-solid fa-clock-rotate-left text-[9px]"></i> Memuat...
+            <div class="flex items-center justify-between text-xs text-slate-400 pt-1.5 border-t border-slate-800/80">
+                <span id="last-watched-text" class="text-amber-400 font-medium truncate max-w-[210px]">
+                    <i class="fa-solid fa-clock-rotate-left text-[10px]"></i> Memuat...
                 </span>
-                <span class="text-pink-400 font-semibold text-[9px] flex items-center gap-1">
+                <span class="text-pink-400 font-semibold text-[11px] flex items-center gap-1">
                     <i class="fa-solid fa-earth-asia"></i> ~4,800 km
                 </span>
             </div>
         </section>
 
         <!-- SECTION SEARCH & SORT & VIEWER FILTER -->
-        <section id="search-section" class="space-y-2">
+        <section id="search-section" class="space-y-2.5">
             <div class="flex items-center gap-2">
                 <div class="relative flex-grow">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
                     <input type="text" id="search-input" oninput="renderMovies()" placeholder="Cari judul film atau bulan..." 
-                        class="w-full pl-9 pr-3 py-2 bg-cinema-900 border border-slate-800 rounded-xl text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition shadow-inner">
+                        class="w-full pl-9 pr-3 py-2.5 bg-cinema-900 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition shadow-inner">
                 </div>
                 
                 <!-- Sort Dropdown -->
                 <div class="relative">
-                    <select id="sort-select" onchange="renderMovies()" class="px-3 py-2 bg-cinema-900 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-amber-400 transition appearance-none pr-7 cursor-pointer tap-scale">
+                    <select id="sort-select" onchange="renderMovies()" class="px-3 py-2.5 bg-cinema-900 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-300 focus:outline-none focus:border-amber-400 transition appearance-none pr-8 cursor-pointer tap-scale">
                         <option value="newest">Bulan Terkini</option>
                         <option value="oldest">Bulan Terlama</option>
                         <option value="az">Judul (A-Z)</option>
                     </select>
-                    <i class="fa-solid fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 text-[10px] pointer-events-none"></i>
+                    <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 text-[10px] pointer-events-none"></i>
                 </div>
             </div>
 
-            <!-- Filter Siapa yang Nonton -->
-            <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-                <button onclick="setViewerFilter('all', this)" class="filter-btn px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-amber-400 text-slate-950 tap-scale flex-shrink-0 transition">Semua</button>
-                <button onclick="setViewerFilter('both', this)" class="filter-btn px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition">Nonton Bareng</button>
-                <button onclick="setViewerFilter('zald', this)" class="filter-btn px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition">Zald Picks</button>
-                <button onclick="setViewerFilter('micel', this)" class="filter-btn px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition">Micel Picks</button>
+            <!-- Filter Siapa yang Nonton & Quick Filters -->
+            <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+                <button onclick="setViewerFilter('all', this)" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-400 text-slate-950 tap-scale flex-shrink-0 transition shadow-sm">Semua</button>
+                <button onclick="setViewerFilter('both', this)" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition">Nonton Bareng</button>
+                <button onclick="setViewerFilter('zald', this)" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition">Zald Picks</button>
+                <button onclick="setViewerFilter('micel', this)" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition">Micel Picks</button>
+                <div class="h-4 w-[1px] bg-slate-800 mx-1 flex-shrink-0"></div>
+                <button onclick="toggleTopRatedFilter(this)" id="top-rated-btn" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-cinema-900 border border-slate-800 text-amber-400 tap-scale flex-shrink-0 transition flex items-center gap-1">
+                    <i class="fa-solid fa-star text-[10px]"></i> Top 9+
+                </button>
             </div>
         </section>
 
         <!-- STATS SECTION -->
-        <section id="stats-section" class="glass-card rounded-xl p-3 border border-slate-800 space-y-2 shadow-lg">
-            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Ringkasan Nonton</span>
+        <section id="stats-section" class="glass-card rounded-2xl p-3.5 border border-slate-800 space-y-2.5 shadow-xl">
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Ringkasan Nonton</span>
             <div class="grid grid-cols-3 gap-2">
-                <div class="bg-cinema-950 p-2 rounded-lg border border-slate-800 text-center transform transition hover:scale-105 duration-200">
-                    <span class="text-[9px] text-slate-400 font-medium block">Bulan Ini</span>
-                    <span id="month-movie-count" class="text-sm font-bold font-display text-sky-400">0</span>
+                <div class="bg-cinema-950 p-2.5 rounded-xl border border-slate-800 text-center transform transition hover:scale-105 duration-200 shadow-inner">
+                    <span class="text-[10px] text-slate-400 font-medium block">Bulan Ini</span>
+                    <span id="month-movie-count" class="text-base font-bold font-display text-sky-400">0</span>
                 </div>
-                <div class="bg-cinema-950 p-2 rounded-lg border border-slate-800 text-center transform transition hover:scale-105 duration-200">
-                    <span class="text-[9px] text-slate-400 font-medium block">Tahun Ini</span>
-                    <span id="year-movie-count" class="text-sm font-bold font-display text-pink-400">0</span>
+                <div class="bg-cinema-950 p-2.5 rounded-xl border border-slate-800 text-center transform transition hover:scale-105 duration-200 shadow-inner">
+                    <span class="text-[10px] text-slate-400 font-medium block">Tahun Ini</span>
+                    <span id="year-movie-count" class="text-base font-bold font-display text-pink-400">0</span>
                 </div>
-                <div class="bg-cinema-950 p-2 rounded-lg border border-slate-800 text-center transform transition hover:scale-105 duration-200">
-                    <span class="text-[9px] text-slate-400 font-medium block">Total</span>
-                    <span id="total-movie-count" class="text-sm font-bold font-display text-amber-400">0</span>
+                <div class="bg-cinema-950 p-2.5 rounded-xl border border-slate-800 text-center transform transition hover:scale-105 duration-200 shadow-inner">
+                    <span class="text-[10px] text-slate-400 font-medium block">Total</span>
+                    <span id="total-movie-count" class="text-base font-bold font-display text-amber-400">0</span>
                 </div>
             </div>
 
             <div class="grid grid-cols-2 gap-2 pt-1 border-t border-slate-800/60">
-                <div class="flex items-center justify-between bg-sky-950/20 px-2.5 py-1.5 rounded-lg border border-sky-500/20">
-                    <span class="text-[10px] font-bold text-sky-400">Avg Zald</span>
-                    <span id="avg-zald-score" class="text-xs font-black text-slate-200">0.0</span>
+                <div class="flex items-center justify-between bg-sky-950/25 px-3 py-2 rounded-xl border border-sky-500/20">
+                    <div class="flex items-center gap-1.5">
+                        <img src="assets/pfp_zald.png" class="w-4 h-4 rounded-full object-cover">
+                        <span class="text-xs font-bold text-sky-400">Avg Zald</span>
+                    </div>
+                    <span id="avg-zald-score" class="text-xs sm:text-sm font-black text-slate-100">0.0</span>
                 </div>
-                <div class="flex items-center justify-between bg-pink-950/20 px-2.5 py-1.5 rounded-lg border border-pink-500/20">
-                    <span class="text-[10px] font-bold text-pink-400">Avg Micel</span>
-                    <span id="avg-micel-score" class="text-xs font-black text-slate-200">0.0</span>
+                <div class="flex items-center justify-between bg-pink-950/25 px-3 py-2 rounded-xl border border-pink-500/20">
+                    <div class="flex items-center gap-1.5">
+                        <img src="assets/pfp_micel.png" class="w-4 h-4 rounded-full object-cover">
+                        <span class="text-xs font-bold text-pink-400">Avg Micel</span>
+                    </div>
+                    <span id="avg-micel-score" class="text-xs sm:text-sm font-black text-slate-100">0.0</span>
                 </div>
             </div>
         </section>
 
         <!-- Movies Grid List -->
-        <section class="space-y-2">
+        <section class="space-y-2.5">
             <div class="flex items-center justify-between px-1">
                 <h2 class="text-xs font-bold text-slate-300 font-display uppercase tracking-wider">Koleksi Film</h2>
-                <span id="movie-count-badge" class="text-[10px] text-slate-500 font-medium">0 Film</span>
+                <span id="movie-count-badge" class="text-xs text-slate-400 font-semibold">0 Film</span>
             </div>
 
-            <div id="movie-grid" class="grid grid-cols-2 gap-2.5"></div>
+            <div id="movie-grid" class="grid grid-cols-2 gap-3"></div>
 
-            <div id="empty-state" class="hidden py-10 text-center space-y-2 animate-fadeIn">
-                <i class="fa-solid fa-film text-slate-600 text-2xl animate-bounce"></i>
-                <p class="text-xs text-slate-400 font-medium">Tidak ada film ditemukan</p>
-                <button onclick="resetSearch()" class="px-3 py-1 bg-slate-800 text-amber-400 text-[11px] font-bold rounded-lg tap-scale">Reset Pencarian</button>
+            <div id="empty-state" class="hidden py-12 text-center space-y-3 animate-fadeIn">
+                <div class="w-14 h-14 rounded-2xl bg-cinema-900 border border-slate-800 flex items-center justify-center mx-auto text-slate-500 text-xl shadow-lg">
+                    <i class="fa-solid fa-film"></i>
+                </div>
+                <div class="space-y-1">
+                    <p class="text-sm text-slate-300 font-semibold">Tidak ada film ditemukan</p>
+                    <p class="text-xs text-slate-500">Coba ubah kata kunci pencarian atau reset filter</p>
+                </div>
+                <button onclick="resetSearch()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-amber-400 text-xs font-bold rounded-xl tap-scale shadow-md transition">Reset Pencarian</button>
             </div>
         </section>
     </main>
 
-    <!-- Floating Action Button (Tombol Plus Saja) -->
-    <div class="fixed bottom-5 right-5 z-40">
+    <!-- Floating Action Button -->
+    <div class="fixed bottom-6 right-6 z-40">
         <button onclick="openAddModal()" class="w-14 h-14 rounded-full popcorn-gradient flex items-center justify-center text-slate-950 shadow-2xl border-2 border-cinema-950 tap-scale transition hover:rotate-90 duration-300">
             <i class="fa-solid fa-plus text-xl"></i>
         </button>
     </div>
 
     <!-- Mobile Bottom Sheet / Modal Form (Tambah/Edit) -->
-    <div id="add-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-end sm:items-center justify-center hidden">
-        <div id="add-modal-content" class="bg-cinema-900 border-t sm:border border-slate-800 w-full max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col transform transition-all">
-            <div class="w-12 h-1 bg-slate-700 rounded-full mx-auto my-2 sm:hidden"></div>
+    <div id="add-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-end sm:items-center justify-center hidden">
+        <div id="add-modal-content" class="bg-cinema-900 border-t sm:border border-slate-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col transform transition-all">
+            <div class="w-12 h-1.5 bg-slate-700 rounded-full mx-auto my-2.5 sm:hidden"></div>
             
-            <div class="px-4 py-3 border-b border-slate-800 flex items-center justify-between">
-                <h3 id="modal-form-title" class="font-bold text-xs text-slate-100 font-display">Tambah Ulasan Baru</h3>
-                <button onclick="closeAddModal()" class="text-slate-400 hover:text-white p-1 tap-scale">
+            <div class="px-5 py-3.5 border-b border-slate-800 flex items-center justify-between">
+                <h3 id="modal-form-title" class="font-bold text-sm text-slate-100 font-display">Tambah Ulasan Baru</h3>
+                <button onclick="closeAddModal()" class="text-slate-400 hover:text-white p-1.5 tap-scale rounded-lg bg-cinema-950 border border-slate-800">
                     <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
             </div>
 
-            <form id="add-movie-form" onsubmit="handleFormSubmit(event)" class="p-4 overflow-y-auto space-y-3">
+            <form id="add-movie-form" onsubmit="handleFormSubmit(event)" class="p-5 overflow-y-auto space-y-3.5">
                 <input type="hidden" name="editing_id" id="editing_id" value="">
                 
                 <div>
-                    <label class="block text-[10px] font-medium text-slate-400 mb-1">Judul Film *</label>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Judul Film *</label>
                     <input type="text" name="judul" id="form-judul" required placeholder="Judul film..." 
-                        class="w-full px-3 py-2 bg-cinema-950 border border-slate-800 rounded-xl text-xs focus:outline-none focus:border-amber-400 text-slate-200 transition">
+                        class="w-full px-3.5 py-2.5 bg-cinema-950 border border-slate-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-slate-200 transition">
                 </div>
 
                 <div>
-                    <label class="block text-[10px] font-medium text-slate-400 mb-1">URL Poster Gambar (Opsional)</label>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">URL Poster Gambar (Opsional)</label>
                     <input type="url" name="poster" id="form-poster" placeholder="https://..." 
-                        class="w-full px-3 py-2 bg-cinema-950 border border-slate-800 rounded-xl text-xs focus:outline-none focus:border-amber-400 text-slate-200 transition">
+                        class="w-full px-3.5 py-2.5 bg-cinema-950 border border-slate-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-slate-200 transition">
                 </div>
 
-                <div class="grid grid-cols-2 gap-2">
+                <div class="grid grid-cols-2 gap-2.5">
                     <div>
-                        <label class="block text-[10px] font-medium text-slate-400 mb-1">Tahun Rilis *</label>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Tahun Rilis *</label>
                         <input type="number" name="tahun" id="form-tahun" required min="1900" max="2030" value="2026" 
-                            class="w-full px-3 py-2 bg-cinema-950 border border-slate-800 rounded-xl text-xs focus:outline-none focus:border-amber-400 text-slate-200 transition">
+                            class="w-full px-3.5 py-2.5 bg-cinema-950 border border-slate-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-slate-200 transition">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-medium text-slate-400 mb-1">Bulan Nonton *</label>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Bulan Nonton *</label>
                         <input type="month" name="bulan" id="form-bulan" required 
-                            class="w-full px-3 py-2 bg-cinema-950 border border-slate-800 rounded-xl text-xs focus:outline-none focus:border-amber-400 text-slate-200 transition">
+                            class="w-full px-3.5 py-2.5 bg-cinema-950 border border-slate-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-slate-200 transition">
                     </div>
                 </div>
 
-                <!-- PILIHAN SIAPA YANG NONTON (Default Nonton Bareng) -->
+                <!-- PILIHAN SIAPA YANG NONTON -->
                 <div>
-                    <label class="block text-[10px] font-medium text-slate-400 mb-1">Siapa yang Nonton? *</label>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Siapa yang Nonton? *</label>
                     <div class="grid grid-cols-3 gap-2">
                         <label class="cursor-pointer">
                             <input type="radio" name="watched_by" value="both" checked onchange="handleViewerChange()" class="peer sr-only">
-                            <div class="p-2 rounded-xl bg-cinema-950 border border-slate-800 text-center text-[11px] font-semibold text-slate-400 peer-checked:bg-amber-500/10 peer-checked:border-amber-500 peer-checked:text-amber-400 transition">
-                                Nonton Bareng
+                            <div class="p-2.5 rounded-xl bg-cinema-950 border border-slate-800 text-center text-xs font-semibold text-slate-400 peer-checked:bg-amber-500/10 peer-checked:border-amber-500 peer-checked:text-amber-400 transition shadow-sm">
+                                Bareng
                             </div>
                         </label>
                         <label class="cursor-pointer">
                             <input type="radio" name="watched_by" value="zald" onchange="handleViewerChange()" class="peer sr-only">
-                            <div class="p-2 rounded-xl bg-cinema-950 border border-slate-800 text-center text-[11px] font-semibold text-slate-400 peer-checked:bg-sky-500/10 peer-checked:border-sky-500 peer-checked:text-sky-400 transition">
-                                Zald Picks
+                            <div class="p-2.5 rounded-xl bg-cinema-950 border border-slate-800 text-center text-xs font-semibold text-slate-400 peer-checked:bg-sky-500/10 peer-checked:border-sky-500 peer-checked:text-sky-400 transition shadow-sm">
+                                Zald
                             </div>
                         </label>
                         <label class="cursor-pointer">
                             <input type="radio" name="watched_by" value="micel" onchange="handleViewerChange()" class="peer sr-only">
-                            <div class="p-2 rounded-xl bg-cinema-950 border border-slate-800 text-center text-[11px] font-semibold text-slate-400 peer-checked:bg-pink-500/10 peer-checked:border-pink-500 peer-checked:text-pink-400 transition">
-                                Micel Picks
+                            <div class="p-2.5 rounded-xl bg-cinema-950 border border-slate-800 text-center text-xs font-semibold text-slate-400 peer-checked:bg-pink-500/10 peer-checked:border-pink-500 peer-checked:text-pink-400 transition shadow-sm">
+                                Micel
                             </div>
                         </label>
                     </div>
                 </div>
 
                 <!-- Toggle Certified Fresh -->
-                <div class="p-2.5 rounded-xl bg-amber-950/20 border border-amber-500/30 flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <div class="w-7 h-7 rounded-lg gold-gradient flex items-center justify-center text-slate-950 text-xs shadow-md">
+                <div class="p-3 rounded-xl bg-amber-950/20 border border-amber-500/30 flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl gold-gradient flex items-center justify-center text-slate-950 text-xs shadow-md">
                             <i class="fa-solid fa-award"></i>
                         </div>
                         <div>
-                            <span class="block text-[11px] font-bold text-amber-300 font-display">Certified Fresh</span>
-                            <span class="block text-[9px] text-slate-400">Berikan lencana penghargaan khusus</span>
+                            <span class="block text-xs font-bold text-amber-300 font-display">Certified Fresh</span>
+                            <span class="block text-[10px] text-slate-400">Penghargaan khusus film terbaik</span>
                         </div>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" name="is_certified" id="form-is-certified" value="true" class="sr-only peer">
-                        <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500"></div>
+                        <div class="w-10 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
                     </label>
                 </div>
 
-                <div class="grid grid-cols-1 gap-2 pt-1 border-t border-slate-800">
+                <div class="grid grid-cols-1 gap-2.5 pt-1 border-t border-slate-800">
                     <!-- Zald Rating Section -->
-                    <div id="section-rating-zald" class="p-2.5 rounded-xl bg-cinema-950 border border-sky-400/20 space-y-1.5 transition-all">
+                    <div id="section-rating-zald" class="p-3 rounded-xl bg-cinema-950 border border-sky-400/20 space-y-2 transition-all">
                         <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-1.5">
-                                <img src="assets/pfp_zald.png" alt="Zald" class="w-4 h-4 rounded-full object-cover">
-                                <span class="text-[11px] font-bold text-sky-400">ZALD</span>
+                            <div class="flex items-center gap-2">
+                                <img src="assets/pfp_zald.png" alt="Zald" class="w-5 h-5 rounded-full object-cover">
+                                <span class="text-xs font-bold text-sky-400">ZALD</span>
                             </div>
                             <div class="flex items-center gap-1.5">
-                                <span id="err-hint-aku" class="hidden text-[9px] font-bold text-red-400 animate-pulse">Max 10!</span>
+                                <span id="err-hint-aku" class="hidden text-[10px] font-bold text-red-400 animate-pulse">Max 10!</span>
                                 <input type="number" step="0.1" name="rating_aku" id="form-rating-aku" placeholder="0 - 10" 
                                     oninput="validateRatingInput(this, 'err-hint-aku', 'sky')"
                                     onblur="clampRatingOnBlur(this, 'err-hint-aku', 'sky')"
-                                    class="w-20 px-2 py-0.5 bg-cinema-900 border border-slate-700 rounded-lg text-center text-xs font-bold text-sky-400 placeholder-slate-600 focus:outline-none focus:border-sky-400 transition">
+                                    class="w-24 px-2.5 py-1 bg-cinema-900 border border-slate-700 rounded-xl text-center text-xs font-bold text-sky-400 placeholder-slate-600 focus:outline-none focus:border-sky-400 transition">
                             </div>
                         </div>
                         <textarea name="review_aku" id="form-review-aku" rows="2" placeholder="Ulasan Zald..." 
-                            class="w-full p-2 bg-cinema-900 border border-slate-800 rounded-lg text-xs text-slate-200 focus:outline-none focus:border-sky-400 transition"></textarea>
+                            class="w-full p-2.5 bg-cinema-900 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-sky-400 transition"></textarea>
                     </div>
 
                     <!-- Micel Rating Section -->
-                    <div id="section-rating-micel" class="p-2.5 rounded-xl bg-cinema-950 border border-pink-400/20 space-y-1.5 transition-all">
+                    <div id="section-rating-micel" class="p-3 rounded-xl bg-cinema-950 border border-pink-400/20 space-y-2 transition-all">
                         <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-1.5">
-                                <img src="assets/pfp_micel.png" alt="Micel" class="w-4 h-4 rounded-full object-cover">
-                                <span class="text-[11px] font-bold text-pink-400">MICEL</span>
+                            <div class="flex items-center gap-2">
+                                <img src="assets/pfp_micel.png" alt="Micel" class="w-5 h-5 rounded-full object-cover">
+                                <span class="text-xs font-bold text-pink-400">MICEL</span>
                             </div>
                             <div class="flex items-center gap-1.5">
-                                <span id="err-hint-dia" class="hidden text-[9px] font-bold text-red-400 animate-pulse">Max 10!</span>
+                                <span id="err-hint-dia" class="hidden text-[10px] font-bold text-red-400 animate-pulse">Max 10!</span>
                                 <input type="number" step="0.1" name="rating_dia" id="form-rating-dia" placeholder="0 - 10" 
                                     oninput="validateRatingInput(this, 'err-hint-dia', 'pink')"
                                     onblur="clampRatingOnBlur(this, 'err-hint-dia', 'pink')"
-                                    class="w-20 px-2 py-0.5 bg-cinema-900 border border-slate-700 rounded-lg text-center text-xs font-bold text-pink-400 placeholder-slate-600 focus:outline-none focus:border-pink-400 transition">
+                                    class="w-24 px-2.5 py-1 bg-cinema-900 border border-slate-700 rounded-xl text-center text-xs font-bold text-pink-400 placeholder-slate-600 focus:outline-none focus:border-pink-400 transition">
                             </div>
                         </div>
                         <textarea name="review_dia" id="form-review-dia" rows="2" placeholder="Ulasan Micel..." 
-                            class="w-full p-2 bg-cinema-900 border border-slate-800 rounded-lg text-xs text-slate-200 focus:outline-none focus:border-pink-400 transition"></textarea>
+                            class="w-full p-2.5 bg-cinema-900 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-pink-400 transition"></textarea>
                     </div>
                 </div>
 
-                <div class="pt-2 flex justify-end gap-2">
-                    <button type="button" onclick="closeAddModal()" class="px-3 py-2 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 tap-scale">Batal</button>
-                    <button type="submit" id="submit-btn" class="px-4 py-2 rounded-xl popcorn-gradient font-bold text-xs text-slate-950 shadow-md tap-scale">
+                <div class="pt-3 flex justify-end gap-2.5">
+                    <button type="button" onclick="closeAddModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 tap-scale">Batal</button>
+                    <button type="submit" id="submit-btn" class="px-5 py-2.5 rounded-xl popcorn-gradient font-bold text-xs text-slate-950 shadow-md tap-scale">
                         <span id="submit-btn-text">Simpan Ulasan</span>
                     </button>
                 </div>
@@ -380,64 +396,70 @@
 
     <!-- Mobile Detail Modal -->
     <div id="detail-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
-        <div id="detail-modal-content" class="bg-cinema-900 border-t sm:border border-slate-800 w-full max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col transform transition-all">
-            <div class="relative h-44 bg-cinema-950 overflow-hidden">
+        <div id="detail-modal-content" class="bg-cinema-900 border-t sm:border border-slate-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col transform transition-all">
+            <div class="relative h-48 bg-cinema-950 overflow-hidden">
                 <img id="detail-banner-img" src="" alt="Banner" class="w-full h-full object-cover opacity-40 blur-sm scale-105">
                 <div class="absolute inset-0 bg-gradient-to-t from-cinema-900 via-cinema-900/60 to-transparent"></div>
-                <button onclick="closeDetailModal()" class="absolute top-3 right-3 z-10 w-7 h-7 rounded-full bg-cinema-900/80 border border-slate-700 text-slate-300 flex items-center justify-center tap-scale">
+                <button onclick="closeDetailModal()" class="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-cinema-900/80 border border-slate-700 text-slate-300 flex items-center justify-center tap-scale">
                     <i class="fa-solid fa-xmark text-xs"></i>
                 </button>
 
                 <div class="absolute bottom-3 left-4 right-4 flex items-end justify-between gap-2">
                     <div>
-                        <div class="flex items-center gap-1.5 mb-0.5">
-                            <span id="detail-year" class="text-[10px] text-slate-400">2026</span>
-                            <span id="detail-watch-month" class="px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 text-[9px] font-medium">Januari 2026</span>
-                            <span id="detail-viewer-badge" class="px-1.5 py-0.5 rounded bg-slate-800 text-sky-300 text-[9px] font-bold">Nonton Bareng</span>
-                            <span id="detail-badge-wrapper" class="hidden px-1.5 py-0.5 rounded gold-gradient text-slate-950 text-[9px] font-extrabold flex items-center gap-1 shadow-md">
-                                <i class="fa-solid fa-award text-[8px]"></i> Certified Fresh
+                        <div class="flex items-center gap-1.5 mb-1 flex-wrap">
+                            <span id="detail-year" class="text-xs text-slate-300 font-semibold">2026</span>
+                            <span id="detail-watch-month" class="px-2 py-0.5 rounded-lg bg-slate-800 text-amber-300 text-[10px] font-semibold">Januari 2026</span>
+                            <span id="detail-viewer-badge" class="px-2 py-0.5 rounded-lg bg-slate-800 text-sky-300 text-[10px] font-bold">Nonton Bareng</span>
+                            <span id="detail-badge-wrapper" class="hidden px-2 py-0.5 rounded-lg gold-gradient text-slate-950 text-[10px] font-extrabold flex items-center gap-1 shadow-md">
+                                <i class="fa-solid fa-award text-[9px]"></i> Certified Fresh
                             </span>
                         </div>
-                        <h2 id="detail-title" class="text-base font-black font-display text-white tracking-tight line-clamp-1">Title</h2>
+                        <h2 id="detail-title" class="text-lg font-black font-display text-white tracking-tight line-clamp-1">Title</h2>
                     </div>
                 </div>
             </div>
 
-            <div class="p-4 overflow-y-auto space-y-3">
-                <div id="detail-scores-container" class="grid grid-cols-2 gap-2 bg-cinema-950 border border-slate-800 p-2.5 rounded-xl">
-                    <div id="detail-box-zald" class="flex items-center gap-2">
-                        <img src="assets/pfp_zald.png" alt="Zald" class="w-7 h-7 rounded-lg object-cover">
+            <div class="p-5 overflow-y-auto space-y-3.5">
+                <div id="detail-scores-container" class="grid grid-cols-2 gap-2.5 bg-cinema-950 border border-slate-800 p-3 rounded-2xl">
+                    <div id="detail-box-zald" class="flex items-center gap-2.5">
+                        <img src="assets/pfp_zald.png" alt="Zald" class="w-8 h-8 rounded-xl object-cover shadow-sm">
                         <div>
-                            <div class="text-[9px] font-semibold text-slate-400">Rating Zald</div>
-                            <div id="detail-zald-score" class="text-xs font-bold text-sky-400">8.0</div>
+                            <div class="text-[10px] font-semibold text-slate-400">Rating Zald</div>
+                            <div id="detail-zald-score" class="text-xs sm:text-sm font-bold text-sky-400">8.0</div>
                         </div>
                     </div>
-                    <div id="detail-box-micel" class="flex items-center gap-2 border-l border-slate-800 pl-2">
-                        <img src="assets/pfp_micel.png" alt="Micel" class="w-7 h-7 rounded-lg object-cover">
+                    <div id="detail-box-micel" class="flex items-center gap-2.5 border-l border-slate-800 pl-3">
+                        <img src="assets/pfp_micel.png" alt="Micel" class="w-8 h-8 rounded-xl object-cover shadow-sm">
                         <div>
-                            <div class="text-[9px] font-semibold text-slate-400">Rating Micel</div>
-                            <div id="detail-micel-score" class="text-xs font-bold text-pink-400">8.5</div>
+                            <div class="text-[10px] font-semibold text-slate-400">Rating Micel</div>
+                            <div id="detail-micel-score" class="text-xs sm:text-sm font-bold text-pink-400">8.5</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="space-y-2">
-                    <div id="detail-review-zald-wrap" class="bg-cinema-950/60 border border-sky-400/20 rounded-xl p-2.5">
-                        <span class="text-[10px] font-bold text-sky-400">Pendapat Zald</span>
-                        <p id="detail-zald-text" class="text-xs text-slate-300 italic whitespace-pre-line mt-0.5">--</p>
+                <div class="space-y-2.5">
+                    <div id="detail-review-zald-wrap" class="bg-cinema-950/60 border border-sky-400/20 rounded-2xl p-3.5 space-y-1">
+                        <div class="flex items-center gap-1.5">
+                            <img src="assets/pfp_zald.png" class="w-4 h-4 rounded-full object-cover">
+                            <span class="text-xs font-bold text-sky-400">Pendapat Zald</span>
+                        </div>
+                        <p id="detail-zald-text" class="text-xs sm:text-sm text-slate-200 italic whitespace-pre-line leading-relaxed">--</p>
                     </div>
-                    <div id="detail-review-micel-wrap" class="bg-cinema-950/60 border border-pink-400/20 rounded-xl p-2.5">
-                        <span class="text-[10px] font-bold text-pink-400">Pendapat Micel</span>
-                        <p id="detail-micel-text" class="text-xs text-slate-300 italic whitespace-pre-line mt-0.5">--</p>
+                    <div id="detail-review-micel-wrap" class="bg-cinema-950/60 border border-pink-400/20 rounded-2xl p-3.5 space-y-1">
+                        <div class="flex items-center gap-1.5">
+                            <img src="assets/pfp_micel.png" class="w-4 h-4 rounded-full object-cover">
+                            <span class="text-xs font-bold text-pink-400">Pendapat Micel</span>
+                        </div>
+                        <p id="detail-micel-text" class="text-xs sm:text-sm text-slate-200 italic whitespace-pre-line leading-relaxed">--</p>
                     </div>
                 </div>
 
-                <div class="pt-2 flex items-center justify-between">
+                <div class="pt-3 flex items-center justify-between border-t border-slate-800/80">
                     <div class="flex items-center gap-2">
-                        <button onclick="editCurrentMovie()" class="px-3 py-1.5 rounded-lg bg-sky-400/10 border border-sky-400/20 text-sky-400 text-xs font-semibold tap-scale">Edit</button>
-                        <button onclick="deleteCurrentMovie()" class="px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold tap-scale">Hapus</button>
+                        <button onclick="editCurrentMovie()" class="px-3.5 py-2 rounded-xl bg-sky-400/10 border border-sky-400/20 text-sky-400 text-xs font-semibold tap-scale shadow-sm">Edit</button>
+                        <button onclick="deleteCurrentMovie()" class="px-3.5 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold tap-scale shadow-sm">Hapus</button>
                     </div>
-                    <button onclick="closeDetailModal()" class="px-3 py-1.5 rounded-lg bg-slate-800 text-xs font-semibold text-slate-200 tap-scale">Tutup</button>
+                    <button onclick="closeDetailModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 tap-scale shadow-sm">Tutup</button>
                 </div>
             </div>
         </div>
@@ -455,6 +477,7 @@
         let moviesData = [];
         let currentDetailMovieId = null;
         let currentViewerFilter = 'all';
+        let isTopRatedActive = false;
 
         function updateDualClocks() {
             const now = new Date();
@@ -476,15 +499,25 @@
             if (icon) icon.classList.add('fa-spin');
             await fetchSupabaseData();
             setTimeout(() => icon && icon.classList.remove('fa-spin'), 600);
-            showToast("Data diperbarui!", "info");
+            showToast("Data diperbarui!", "success");
         }
 
         function setViewerFilter(filterType, btnEl) {
             currentViewerFilter = filterType;
             document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.className = "filter-btn px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition";
+                btn.className = "filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition";
             });
-            btnEl.className = "filter-btn px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-amber-400 text-slate-950 tap-scale flex-shrink-0 transition";
+            btnEl.className = "filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-400 text-slate-950 tap-scale flex-shrink-0 transition shadow-sm";
+            renderMovies();
+        }
+
+        function toggleTopRatedFilter(btnEl) {
+            isTopRatedActive = !isTopRatedActive;
+            if (isTopRatedActive) {
+                btnEl.className = "px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-400 text-slate-950 tap-scale flex-shrink-0 transition flex items-center gap-1 shadow-sm";
+            } else {
+                btnEl.className = "px-3 py-1.5 rounded-xl text-xs font-semibold bg-cinema-900 border border-slate-800 text-amber-400 tap-scale flex-shrink-0 transition flex items-center gap-1";
+            }
             renderMovies();
         }
 
@@ -657,11 +690,11 @@
             const el = document.getElementById('last-watched-text');
             if (!el) return;
             if (moviesData.length === 0) {
-                el.innerHTML = `<i class="fa-solid fa-clock-rotate-left text-[9px]"></i> Belum ada film`;
+                el.innerHTML = `<i class="fa-solid fa-clock-rotate-left text-[10px]"></i> Belum ada film`;
                 return;
             }
             const lastMovie = moviesData[moviesData.length - 1];
-            el.innerHTML = `<i class="fa-solid fa-clock-rotate-left text-[9px]"></i> Terakhir: <span class="text-white font-bold">${lastMovie.judul || 'Film'}</span>`;
+            el.innerHTML = `<i class="fa-solid fa-clock-rotate-left text-[10px]"></i> Terakhir: <span class="text-white font-bold">${lastMovie.judul || 'Film'}</span>`;
         }
 
         function renderMovies() {
@@ -674,6 +707,13 @@
                 const watcher = movie.watched_by || 'both';
                 if (currentViewerFilter !== 'all' && watcher !== currentViewerFilter) {
                     return false;
+                }
+
+                if (isTopRatedActive) {
+                    const rZ = parseRating(movie.rating_aku) || 0;
+                    const rM = parseRating(movie.rating_dia) || 0;
+                    const avg = (watcher === 'zald') ? rZ : (watcher === 'micel' ? rM : ((rZ + rM) / (movie.rating_aku && movie.rating_dia ? 2 : 1)));
+                    if (avg < 9) return false;
                 }
 
                 const judul = (movie.judul || '').toLowerCase();
@@ -722,61 +762,61 @@
                 const card = document.createElement('div');
                 card.style.animationDelay = `${index * 0.04}s`;
                 card.className = (isCertified 
-                    ? "rounded-xl overflow-hidden flex flex-col certified-card animate-goldGlow tap-scale cursor-pointer relative"
-                    : "glass-card rounded-xl overflow-hidden flex flex-col border border-slate-800/80 tap-scale cursor-pointer") + " animate-popIn";
+                    ? "rounded-2xl overflow-hidden flex flex-col certified-card animate-goldGlow tap-scale cursor-pointer relative shadow-lg"
+                    : "glass-card rounded-2xl overflow-hidden flex flex-col border border-slate-800/80 tap-scale cursor-pointer shadow-md hover:border-slate-700") + " animate-popIn";
                 
                 card.onclick = () => openDetailModal(movie.id);
 
                 let watcherBadgeHTML = '';
                 if (watcher === 'zald') {
-                    watcherBadgeHTML = `<span class="absolute top-1.5 left-1.5 bg-sky-950/90 border border-sky-500/40 text-sky-400 px-1.5 py-0.5 rounded text-[8px] font-bold shadow">Zald Picks</span>`;
+                    watcherBadgeHTML = `<span class="absolute top-2 left-2 bg-sky-950/90 border border-sky-500/40 text-sky-400 px-2 py-0.5 rounded-lg text-[10px] font-bold shadow">Zald Picks</span>`;
                 } else if (watcher === 'micel') {
-                    watcherBadgeHTML = `<span class="absolute top-1.5 left-1.5 bg-pink-950/90 border border-pink-500/40 text-pink-400 px-1.5 py-0.5 rounded text-[8px] font-bold shadow">Micel Picks</span>`;
+                    watcherBadgeHTML = `<span class="absolute top-2 left-2 bg-pink-950/90 border border-pink-500/40 text-pink-400 px-2 py-0.5 rounded-lg text-[10px] font-bold shadow">Micel Picks</span>`;
                 } else if (isCertified) {
-                    watcherBadgeHTML = `<span class="absolute top-1.5 left-1.5 gold-gradient px-1.5 py-0.5 rounded text-[8px] font-extrabold text-slate-950 flex items-center gap-1 shadow-lg animate-pulse"><i class="fa-solid fa-award text-[7px]"></i> FRESH</span>`;
+                    watcherBadgeHTML = `<span class="absolute top-2 left-2 gold-gradient px-2 py-0.5 rounded-lg text-[9px] font-extrabold text-slate-950 flex items-center gap-1 shadow-lg animate-pulse"><i class="fa-solid fa-award text-[8px]"></i> FRESH</span>`;
                 }
 
                 let ratingsHTML = '';
                 if (watcher === 'zald') {
                     ratingsHTML = `
-                        <div class="grid grid-cols-1 gap-1 text-[10px]">
-                            <div class="bg-sky-400/10 border border-sky-400/20 rounded-md p-1 text-center flex items-center justify-center gap-1.5">
-                                <img src="assets/pfp_zald.png" class="w-3.5 h-3.5 rounded-full object-cover">
+                        <div class="grid grid-cols-1 gap-1 text-xs">
+                            <div class="bg-sky-400/10 border border-sky-400/20 rounded-xl p-1.5 text-center flex items-center justify-center gap-2">
+                                <img src="assets/pfp_zald.png" class="w-4 h-4 rounded-full object-cover">
                                 <div>
-                                    <span class="block text-[7px] font-bold text-sky-400">ZALD PICKS</span>
-                                    <span class="font-black text-slate-100">${dispZ}</span>
+                                    <span class="block text-[8px] font-bold text-sky-400 uppercase">Zald Picks</span>
+                                    <span class="font-black text-slate-100 text-xs">${dispZ}</span>
                                 </div>
                             </div>
                         </div>
                     `;
                 } else if (watcher === 'micel') {
                     ratingsHTML = `
-                        <div class="grid grid-cols-1 gap-1 text-[10px]">
-                            <div class="bg-pink-400/10 border border-pink-400/20 rounded-md p-1 text-center flex items-center justify-center gap-1.5">
-                                <img src="assets/pfp_micel.png" class="w-3.5 h-3.5 rounded-full object-cover">
+                        <div class="grid grid-cols-1 gap-1 text-xs">
+                            <div class="bg-pink-400/10 border border-pink-400/20 rounded-xl p-1.5 text-center flex items-center justify-center gap-2">
+                                <img src="assets/pfp_micel.png" class="w-4 h-4 rounded-full object-cover">
                                 <div>
-                                    <span class="block text-[7px] font-bold text-pink-400">MICEL PICKS</span>
-                                    <span class="font-black text-slate-100">${dispM}</span>
+                                    <span class="block text-[8px] font-bold text-pink-400 uppercase">Micel Picks</span>
+                                    <span class="font-black text-slate-100 text-xs">${dispM}</span>
                                 </div>
                             </div>
                         </div>
                     `;
                 } else {
                     ratingsHTML = `
-                        <div class="grid grid-cols-2 gap-1 text-[10px]">
-                            <div class="bg-sky-400/10 border border-sky-400/20 rounded-md p-0.5 text-center flex flex-col items-center">
+                        <div class="grid grid-cols-2 gap-1.5 text-xs">
+                            <div class="bg-sky-400/10 border border-sky-400/20 rounded-xl p-1 text-center flex flex-col items-center">
                                 <div class="flex items-center gap-1">
-                                    <img src="assets/pfp_zald.png" class="w-3 h-3 rounded-full object-cover">
-                                    <span class="text-[7px] font-bold text-sky-400">ZALD</span>
+                                    <img src="assets/pfp_zald.png" class="w-3.5 h-3.5 rounded-full object-cover">
+                                    <span class="text-[8px] font-bold text-sky-400">ZALD</span>
                                 </div>
-                                <span class="font-black text-slate-100">${dispZ}</span>
+                                <span class="font-black text-slate-100 text-xs">${dispZ}</span>
                             </div>
-                            <div class="bg-pink-400/10 border border-pink-400/20 rounded-md p-0.5 text-center flex flex-col items-center">
+                            <div class="bg-pink-400/10 border border-pink-400/20 rounded-xl p-1 text-center flex flex-col items-center">
                                 <div class="flex items-center gap-1">
-                                    <img src="assets/pfp_micel.png" class="w-3 h-3 rounded-full object-cover">
-                                    <span class="text-[7px] font-bold text-pink-400">MICEL</span>
+                                    <img src="assets/pfp_micel.png" class="w-3.5 h-3.5 rounded-full object-cover">
+                                    <span class="text-[8px] font-bold text-pink-400">MICEL</span>
                                 </div>
-                                <span class="font-black text-slate-100">${dispM}</span>
+                                <span class="font-black text-slate-100 text-xs">${dispM}</span>
                             </div>
                         </div>
                     `;
@@ -786,18 +826,15 @@
                     <div class="relative aspect-[3/4] w-full overflow-hidden bg-cinema-950">
                         <img src="${posterUrl}" alt="${movie.judul}" class="w-full h-full object-cover transform hover:scale-110 transition duration-500" onerror="this.src='https://via.placeholder.com/300x450/0f172a/cbd5e1?text=No+Poster'">
                         
-                        <span class="absolute top-1.5 right-1.5 bg-cinema-950/80 backdrop-blur px-1.5 py-0.5 rounded text-[9px] font-bold text-slate-300 border border-slate-800">${movie.tahun || ''}</span>
+                        <span class="absolute top-2 right-2 bg-cinema-950/85 backdrop-blur px-2 py-0.5 rounded-lg text-[10px] font-bold text-slate-300 border border-slate-800">${movie.tahun || ''}</span>
                         
                         ${watcherBadgeHTML}
-                        ${isCertified && watcher !== 'both' ? `
-                            <div class="absolute bottom-1.5 left-1.5 gold-gradient px-1.5 py-0.5 rounded text-[7px] font-extrabold text-slate-950 shadow">FRESH</div>
-                        ` : ''}
                     </div>
 
-                    <div class="p-2 flex flex-col justify-between flex-grow space-y-1.5">
+                    <div class="p-2.5 flex flex-col justify-between flex-grow space-y-2">
                         <div>
-                            <h3 class="font-display font-bold text-[11px] ${isCertified ? 'text-amber-200' : 'text-slate-100'} line-clamp-1">${movie.judul || 'Tanpa Judul'}</h3>
-                            <p class="text-[9px] text-slate-400 line-clamp-1">${displayMonthText || '-'}</p>
+                            <h3 class="font-display font-bold text-xs sm:text-sm ${isCertified ? 'text-amber-200' : 'text-slate-100'} line-clamp-1">${movie.judul || 'Tanpa Judul'}</h3>
+                            <p class="text-[10px] text-slate-400 line-clamp-1">${displayMonthText || '-'}</p>
                         </div>
 
                         ${ratingsHTML}
@@ -811,11 +848,18 @@
             document.getElementById('search-input').value = '';
             document.getElementById('sort-select').value = 'newest';
             currentViewerFilter = 'all';
+            isTopRatedActive = false;
+            
+            const topRatedBtn = document.getElementById('top-rated-btn');
+            if (topRatedBtn) {
+                topRatedBtn.className = "px-3 py-1.5 rounded-xl text-xs font-semibold bg-cinema-900 border border-slate-800 text-amber-400 tap-scale flex-shrink-0 transition flex items-center gap-1";
+            }
+
             document.querySelectorAll('.filter-btn').forEach((btn, idx) => {
                 if (idx === 0) {
-                    btn.className = "filter-btn px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-amber-400 text-slate-950 tap-scale flex-shrink-0 transition";
+                    btn.className = "filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-400 text-slate-950 tap-scale flex-shrink-0 transition shadow-sm";
                 } else {
-                    btn.className = "filter-btn px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition";
+                    btn.className = "filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition";
                 }
             });
             renderMovies();
@@ -848,6 +892,12 @@
             const content = document.getElementById('add-modal-content');
             modal.classList.remove('hidden');
             content.classList.add('animate-slideUp');
+
+            // UX Improvement: Auto focus ke input judul film setelah modal terbuka
+            setTimeout(() => {
+                const titleInput = document.getElementById('form-judul');
+                if (titleInput) titleInput.focus();
+            }, 100);
         }
 
         function closeAddModal() {
@@ -874,26 +924,26 @@
 
             if (watcher === 'zald') {
                 viewerBadge.innerText = "Zald Picks";
-                viewerBadge.className = "px-1.5 py-0.5 rounded bg-sky-950 border border-sky-500/40 text-sky-400 text-[9px] font-bold";
+                viewerBadge.className = "px-2 py-0.5 rounded-lg bg-sky-950 border border-sky-500/40 text-sky-400 text-[10px] font-bold";
                 boxZald.style.display = 'flex';
                 boxMicel.style.display = 'none';
-                scoresContainer.className = "grid grid-cols-1 gap-2 bg-cinema-950 border border-slate-800 p-2.5 rounded-xl";
+                scoresContainer.className = "grid grid-cols-1 gap-2.5 bg-cinema-950 border border-slate-800 p-3 rounded-2xl";
                 wrapZald.style.display = 'block';
                 wrapMicel.style.display = 'none';
             } else if (watcher === 'micel') {
                 viewerBadge.innerText = "Micel Picks";
-                viewerBadge.className = "px-1.5 py-0.5 rounded bg-pink-950 border border-pink-500/40 text-pink-400 text-[9px] font-bold";
+                viewerBadge.className = "px-2 py-0.5 rounded-lg bg-pink-950 border border-pink-500/40 text-pink-400 text-[10px] font-bold";
                 boxZald.style.display = 'none';
                 boxMicel.style.display = 'flex';
-                scoresContainer.className = "grid grid-cols-1 gap-2 bg-cinema-950 border border-slate-800 p-2.5 rounded-xl";
+                scoresContainer.className = "grid grid-cols-1 gap-2.5 bg-cinema-950 border border-slate-800 p-3 rounded-2xl";
                 wrapZald.style.display = 'none';
                 wrapMicel.style.display = 'block';
             } else {
                 viewerBadge.innerText = "Nonton Bareng";
-                viewerBadge.className = "px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 text-[9px] font-bold";
+                viewerBadge.className = "px-2 py-0.5 rounded-lg bg-slate-800 text-amber-300 text-[10px] font-bold";
                 boxZald.style.display = 'flex';
                 boxMicel.style.display = 'flex';
-                scoresContainer.className = "grid grid-cols-2 gap-2 bg-cinema-950 border border-slate-800 p-2.5 rounded-xl";
+                scoresContainer.className = "grid grid-cols-2 gap-2.5 bg-cinema-950 border border-slate-800 p-3 rounded-2xl";
                 wrapZald.style.display = 'block';
                 wrapMicel.style.display = 'block';
             }
@@ -1069,7 +1119,7 @@
             const bgColor = type === 'success' ? 'bg-emerald-900 border-emerald-500' : 
                             type === 'warning' ? 'bg-amber-900 border-amber-500' : 'bg-slate-900 border-slate-700';
             
-            toast.className = `px-3 py-1.5 rounded-xl border ${bgColor} text-slate-100 text-xs font-semibold shadow-lg backdrop-blur-md transition-all duration-300 transform -translate-y-4 opacity-0 pointer-events-auto`;
+            toast.className = `px-3.5 py-2 rounded-xl border ${bgColor} text-slate-100 text-xs font-semibold shadow-xl backdrop-blur-md transition-all duration-300 transform -translate-y-4 opacity-0 pointer-events-auto`;
             toast.innerText = message;
 
             container.appendChild(toast);
