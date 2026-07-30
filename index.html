@@ -81,8 +81,6 @@
             box-shadow: 0 0 15px rgba(250, 204, 21, 0.3);
         }
         .popcorn-gradient { background: linear-gradient(135deg, #facc15 0%, #f97316 100%); }
-        .zald-gradient { background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%); }
-        .micel-gradient { background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%); }
         .gold-gradient { background: linear-gradient(135deg, #fef08a 0%, #eab308 50%, #ca8a04 100%); }
         
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -137,8 +135,8 @@
                 <!-- Zald Clock -->
                 <div class="p-2 rounded-xl bg-sky-950/40 border border-sky-500/20 flex flex-col justify-between">
                     <div class="flex items-center gap-1.5 mb-1">
-                        <div class="w-5 h-5 rounded-md zald-gradient flex items-center justify-center font-bold text-slate-950 text-[10px]">Z</div>
-                        <span class="text-[9px] font-bold text-sky-400 uppercase tracking-wider">Zald (WIB)</span>
+                        <img src="assets/pfp_zald.png" alt="Zald" class="w-5 h-5 rounded-md object-cover">
+                        <span class="text-[9px] font-bold text-sky-400 uppercase tracking-wider">Zald</span>
                     </div>
                     <div id="zald-clock" class="text-sm font-black font-display text-sky-200">00:00:00</div>
                     <span id="zald-date" class="text-[9px] text-slate-400">-- --- ----</span>
@@ -147,7 +145,7 @@
                 <!-- Micel Clock -->
                 <div class="p-2 rounded-xl bg-pink-950/40 border border-pink-500/20 flex flex-col justify-between">
                     <div class="flex items-center gap-1.5 mb-1">
-                        <div class="w-5 h-5 rounded-md micel-gradient flex items-center justify-center font-bold text-slate-950 text-[10px]">M</div>
+                        <img src="assets/pfp_micel.png" alt="Micel" class="w-5 h-5 rounded-md object-cover">
                         <span class="text-[9px] font-bold text-pink-400 uppercase tracking-wider">Micel (JST)</span>
                     </div>
                     <div id="micel-clock" class="text-sm font-black font-display text-pink-200">00:00:00</div>
@@ -334,7 +332,10 @@
                     <!-- Zald Rating Section -->
                     <div id="section-rating-zald" class="p-2.5 rounded-xl bg-cinema-950 border border-sky-400/20 space-y-1.5 transition-all">
                         <div class="flex items-center justify-between">
-                            <span class="text-[11px] font-bold text-sky-400">ZALD</span>
+                            <div class="flex items-center gap-1.5">
+                                <img src="assets/pfp_zald.png" alt="Zald" class="w-4 h-4 rounded-full object-cover">
+                                <span class="text-[11px] font-bold text-sky-400">ZALD</span>
+                            </div>
                             <div class="flex items-center gap-1.5">
                                 <span id="err-hint-aku" class="hidden text-[9px] font-bold text-red-400 animate-pulse">Max 10!</span>
                                 <input type="number" step="0.1" name="rating_aku" id="form-rating-aku" placeholder="0 - 10" 
@@ -350,7 +351,10 @@
                     <!-- Micel Rating Section -->
                     <div id="section-rating-micel" class="p-2.5 rounded-xl bg-cinema-950 border border-pink-400/20 space-y-1.5 transition-all">
                         <div class="flex items-center justify-between">
-                            <span class="text-[11px] font-bold text-pink-400">MICEL</span>
+                            <div class="flex items-center gap-1.5">
+                                <img src="assets/pfp_micel.png" alt="Micel" class="w-4 h-4 rounded-full object-cover">
+                                <span class="text-[11px] font-bold text-pink-400">MICEL</span>
+                            </div>
                             <div class="flex items-center gap-1.5">
                                 <span id="err-hint-dia" class="hidden text-[9px] font-bold text-red-400 animate-pulse">Max 10!</span>
                                 <input type="number" step="0.1" name="rating_dia" id="form-rating-dia" placeholder="0 - 10" 
@@ -402,14 +406,14 @@
             <div class="p-4 overflow-y-auto space-y-3">
                 <div id="detail-scores-container" class="grid grid-cols-2 gap-2 bg-cinema-950 border border-slate-800 p-2.5 rounded-xl">
                     <div id="detail-box-zald" class="flex items-center gap-2">
-                        <div class="w-7 h-7 rounded-lg zald-gradient flex items-center justify-center font-bold text-slate-950 text-xs">Z</div>
+                        <img src="assets/pfp_zald.png" alt="Zald" class="w-7 h-7 rounded-lg object-cover">
                         <div>
                             <div class="text-[9px] font-semibold text-slate-400">Rating Zald</div>
                             <div id="detail-zald-score" class="text-xs font-bold text-sky-400">8.0</div>
                         </div>
                     </div>
                     <div id="detail-box-micel" class="flex items-center gap-2 border-l border-slate-800 pl-2">
-                        <div class="w-7 h-7 rounded-lg micel-gradient flex items-center justify-center font-bold text-slate-950 text-xs">M</div>
+                        <img src="assets/pfp_micel.png" alt="Micel" class="w-7 h-7 rounded-lg object-cover">
                         <div>
                             <div class="text-[9px] font-semibold text-slate-400">Rating Micel</div>
                             <div id="detail-micel-score" class="text-xs font-bold text-pink-400">8.5</div>
@@ -736,30 +740,42 @@
                 if (watcher === 'zald') {
                     ratingsHTML = `
                         <div class="grid grid-cols-1 gap-1 text-[10px]">
-                            <div class="bg-sky-400/10 border border-sky-400/20 rounded-md p-1 text-center">
-                                <span class="block text-[7px] font-bold text-sky-400">ZALD PICKS</span>
-                                <span class="font-black text-slate-100">${dispZ}</span>
+                            <div class="bg-sky-400/10 border border-sky-400/20 rounded-md p-1 text-center flex items-center justify-center gap-1.5">
+                                <img src="assets/pfp_zald.png" class="w-3.5 h-3.5 rounded-full object-cover">
+                                <div>
+                                    <span class="block text-[7px] font-bold text-sky-400">ZALD PICKS</span>
+                                    <span class="font-black text-slate-100">${dispZ}</span>
+                                </div>
                             </div>
                         </div>
                     `;
                 } else if (watcher === 'micel') {
                     ratingsHTML = `
                         <div class="grid grid-cols-1 gap-1 text-[10px]">
-                            <div class="bg-pink-400/10 border border-pink-400/20 rounded-md p-1 text-center">
-                                <span class="block text-[7px] font-bold text-pink-400">MICEL PICKS</span>
-                                <span class="font-black text-slate-100">${dispM}</span>
+                            <div class="bg-pink-400/10 border border-pink-400/20 rounded-md p-1 text-center flex items-center justify-center gap-1.5">
+                                <img src="assets/pfp_micel.png" class="w-3.5 h-3.5 rounded-full object-cover">
+                                <div>
+                                    <span class="block text-[7px] font-bold text-pink-400">MICEL PICKS</span>
+                                    <span class="font-black text-slate-100">${dispM}</span>
+                                </div>
                             </div>
                         </div>
                     `;
                 } else {
                     ratingsHTML = `
                         <div class="grid grid-cols-2 gap-1 text-[10px]">
-                            <div class="bg-sky-400/10 border border-sky-400/20 rounded-md p-0.5 text-center">
-                                <span class="block text-[7px] font-bold text-sky-400">ZALD</span>
+                            <div class="bg-sky-400/10 border border-sky-400/20 rounded-md p-0.5 text-center flex flex-col items-center">
+                                <div class="flex items-center gap-1">
+                                    <img src="assets/pfp_zald.png" class="w-3 h-3 rounded-full object-cover">
+                                    <span class="text-[7px] font-bold text-sky-400">ZALD</span>
+                                </div>
                                 <span class="font-black text-slate-100">${dispZ}</span>
                             </div>
-                            <div class="bg-pink-400/10 border border-pink-400/20 rounded-md p-0.5 text-center">
-                                <span class="block text-[7px] font-bold text-pink-400">MICEL</span>
+                            <div class="bg-pink-400/10 border border-pink-400/20 rounded-md p-0.5 text-center flex flex-col items-center">
+                                <div class="flex items-center gap-1">
+                                    <img src="assets/pfp_micel.png" class="w-3 h-3 rounded-full object-cover">
+                                    <span class="text-[7px] font-bold text-pink-400">MICEL</span>
+                                </div>
                                 <span class="font-black text-slate-100">${dispM}</span>
                             </div>
                         </div>
