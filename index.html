@@ -99,17 +99,12 @@
             transform: scale(0.94);
         }
 
-        @media screen and (max-width: 768px) {
-            #add-modal {
-                align-items: flex-end !important;
-                padding-bottom: env(safe-area-inset-bottom);
-            }
-            #add-modal-content {
-                max-height: 80vh !important;
-                border-bottom-left-radius: 0 !important;
-                border-bottom-right-radius: 0 !important;
-                transition: transform 0.2s ease-out, max-height 0.2s ease-out;
-            }
+        /* Mencegah pergeseran latar belakang / bounce di mobile saat modal aktif */
+        .modal-lock {
+            overflow: hidden !important;
+            position: fixed !important;
+            width: 100% !important;
+            height: 100% !important;
         }
     </style>
 </head>
@@ -288,65 +283,68 @@
         </button>
     </div>
 
-    <!-- Mobile Bottom Sheet / Modal Form (Tambah/Edit) -->
+    <!-- Mobile Bottom Sheet / Modal Form (Tambah/Edit) - FIXED STABLE UI/UX -->
     <div id="add-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-end sm:items-center justify-center hidden">
-        <div id="add-modal-content" class="bg-cinema-900 border-t sm:border border-slate-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col transform transition-all">
-            <div class="w-12 h-1.5 bg-slate-700 rounded-full mx-auto my-2.5 sm:hidden"></div>
-            
-            <div class="px-5 py-3.5 border-b border-slate-800 flex items-center justify-between flex-shrink-0">
-                <h3 id="modal-form-title" class="font-bold text-sm text-slate-100 font-display">Tambah Ulasan Baru</h3>
-                <button onclick="closeAddModal()" class="text-slate-400 hover:text-white p-1.5 tap-scale rounded-lg bg-cinema-950 border border-slate-800">
+        <div id="add-modal-content" class="bg-cinema-900 border-t sm:border border-slate-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[85vh] sm:h-auto sm:max-h-[85vh] transform transition-all">
+            <!-- Drag Handle / Header -->
+            <div class="px-5 py-3.5 border-b border-slate-800 flex items-center justify-between flex-shrink-0 bg-cinema-900/90">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></div>
+                    <h3 id="modal-form-title" class="font-bold text-sm text-slate-100 font-display">Tambah Ulasan Baru</h3>
+                </div>
+                <button type="button" onclick="closeAddModal()" class="text-slate-400 hover:text-white p-1.5 tap-scale rounded-xl bg-cinema-950 border border-slate-800 flex items-center justify-center w-8 h-8">
                     <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
             </div>
 
-            <form id="add-movie-form" onsubmit="handleFormSubmit(event)" class="p-5 overflow-y-auto space-y-3.5 flex-grow">
+            <!-- Form Body with Expanded Review Areas -->
+            <form id="add-movie-form" onsubmit="handleFormSubmit(event)" class="p-5 overflow-y-auto space-y-4 flex-grow no-scrollbar">
                 <input type="hidden" name="editing_id" id="editing_id" value="">
                 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Judul Film *</label>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1.5">Judul Film *</label>
                     <input type="text" name="judul" id="form-judul" required placeholder="Judul film..." 
-                        class="w-full px-3.5 py-2.5 bg-cinema-950 border border-slate-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-slate-200 transition">
+                        class="w-full px-3.5 py-3 bg-cinema-950 border border-slate-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-slate-200 transition shadow-inner">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">URL Poster Gambar (Opsional)</label>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1.5">URL Poster Gambar (Opsional)</label>
                     <input type="url" name="poster" id="form-poster" placeholder="https://..." 
-                        class="w-full px-3.5 py-2.5 bg-cinema-950 border border-slate-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-slate-200 transition">
+                        class="w-full px-3.5 py-3 bg-cinema-950 border border-slate-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-slate-200 transition shadow-inner">
                 </div>
 
-                <div class="grid grid-cols-2 gap-2.5">
+                <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Tahun Rilis *</label>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5">Tahun Rilis *</label>
                         <input type="number" name="tahun" id="form-tahun" required min="1900" max="2030" value="2026" 
-                            class="w-full px-3.5 py-2.5 bg-cinema-950 border border-slate-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-slate-200 transition">
+                            class="w-full px-3.5 py-3 bg-cinema-950 border border-slate-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-slate-200 transition shadow-inner">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Bulan Nonton *</label>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5">Bulan Nonton *</label>
                         <input type="month" name="bulan" id="form-bulan" required 
-                            class="w-full px-3.5 py-2.5 bg-cinema-950 border border-slate-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-slate-200 transition">
+                            class="w-full px-3.5 py-3 bg-cinema-950 border border-slate-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-slate-200 transition shadow-inner">
                     </div>
                 </div>
 
                 <!-- PILIHAN SIAPA YANG NONTON -->
                 <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Siapa yang Nonton? *</label>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1.5">Siapa yang Nonton? *</label>
                     <div class="grid grid-cols-3 gap-2">
                         <label class="cursor-pointer">
                             <input type="radio" name="watched_by" value="both" checked onchange="handleViewerChange()" class="peer sr-only">
-                            <div class="p-2.5 rounded-xl bg-cinema-950 border border-slate-800 text-center text-xs font-semibold text-slate-400 peer-checked:bg-amber-500/10 peer-checked:border-amber-500 peer-checked:text-amber-400 transition shadow-sm">
+                            <div class="p-3 rounded-xl bg-cinema-950 border border-slate-800 text-center text-xs font-semibold text-slate-400 peer-checked:bg-amber-500/10 peer-checked:border-amber-500 peer-checked:text-amber-400 transition shadow-sm">
                                 Bareng
                             </div>
                         </label>
                         <label class="cursor-pointer">
                             <input type="radio" name="watched_by" value="zald" onchange="handleViewerChange()" class="peer sr-only">
-                            <div class="p-2.5 rounded-xl bg-cinema-950 border border-slate-800 text-center text-xs font-semibold text-slate-400 peer-checked:bg-sky-500/10 peer-checked:border-sky-500 peer-checked:text-sky-400 transition shadow-sm">
+                            <div class="p-3 rounded-xl bg-cinema-950 border border-slate-800 text-center text-xs font-semibold text-slate-400 peer-checked:bg-sky-500/10 peer-checked:border-sky-500 peer-checked:text-sky-400 transition shadow-sm">
                                 Zald
                             </div>
                         </label>
                         <label class="cursor-pointer">
                             <input type="radio" name="watched_by" value="micel" onchange="handleViewerChange()" class="peer sr-only">
-                            <div class="p-2.5 rounded-xl bg-cinema-950 border border-slate-800 text-center text-xs font-semibold text-slate-400 peer-checked:bg-pink-500/10 peer-checked:border-pink-500 peer-checked:text-pink-400 transition shadow-sm">
+                            <div class="p-3 rounded-xl bg-cinema-950 border border-slate-800 text-center text-xs font-semibold text-slate-400 peer-checked:bg-pink-500/10 peer-checked:border-pink-500 peer-checked:text-pink-400 transition shadow-sm">
                                 Micel
                             </div>
                         </label>
@@ -354,8 +352,8 @@
                 </div>
 
                 <!-- Toggle Certified Fresh -->
-                <div class="p-3 rounded-xl bg-amber-950/20 border border-amber-500/30 flex items-center justify-between">
-                    <div class="flex items-center gap-2.5">
+                <div class="p-3.5 rounded-xl bg-amber-950/20 border border-amber-500/30 flex items-center justify-between shadow-inner">
+                    <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-xl gold-gradient flex items-center justify-center text-slate-950 text-xs shadow-md">
                             <i class="fa-solid fa-award"></i>
                         </div>
@@ -370,49 +368,51 @@
                     </label>
                 </div>
 
-                <div class="grid grid-cols-1 gap-2.5 pt-1 border-t border-slate-800">
+                <!-- KOLOM REVIEW DIPERLEBAR & NYAMAN DIKETIK -->
+                <div class="space-y-3 pt-1 border-t border-slate-800">
                     <!-- Zald Rating Section -->
-                    <div id="section-rating-zald" class="p-3 rounded-xl bg-cinema-950 border border-sky-400/20 space-y-2 transition-all">
+                    <div id="section-rating-zald" class="p-3.5 rounded-2xl bg-cinema-950 border border-sky-400/30 space-y-2.5 shadow-md">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2">
-                                <img src="assets/pfp_zald.png" alt="Zald" class="w-5 h-5 rounded-full object-cover">
-                                <span class="text-xs font-bold text-sky-400">ZALD</span>
+                                <img src="assets/pfp_zald.png" alt="Zald" class="w-6 h-6 rounded-full object-cover shadow">
+                                <span class="text-xs font-bold text-sky-400 tracking-wide">ZALD REVIEW</span>
                             </div>
                             <div class="flex items-center gap-1.5">
                                 <span id="err-hint-aku" class="hidden text-[10px] font-bold text-red-400 animate-pulse">Max 10!</span>
                                 <input type="number" step="0.1" name="rating_aku" id="form-rating-aku" placeholder="0 - 10" 
                                     oninput="validateRatingInput(this, 'err-hint-aku', 'sky')"
                                     onblur="clampRatingOnBlur(this, 'err-hint-aku', 'sky')"
-                                    class="w-24 px-2.5 py-1 bg-cinema-900 border border-slate-700 rounded-xl text-center text-xs font-bold text-sky-400 placeholder-slate-600 focus:outline-none focus:border-sky-400 transition">
+                                    class="w-24 px-3 py-1.5 bg-cinema-900 border border-slate-700 rounded-xl text-center text-xs font-bold text-sky-400 placeholder-slate-600 focus:outline-none focus:border-sky-400 transition shadow-inner">
                             </div>
                         </div>
-                        <textarea name="review_aku" id="form-review-aku" rows="2" placeholder="Ulasan Zald..." 
-                            class="w-full p-2.5 bg-cinema-900 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-sky-400 transition"></textarea>
+                        <textarea name="review_aku" id="form-review-aku" rows="5" placeholder="Tulis ulasan mendalam dari Zald di sini..." 
+                            class="w-full p-3 bg-cinema-900 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-sky-400 transition shadow-inner leading-relaxed"></textarea>
                     </div>
 
                     <!-- Micel Rating Section -->
-                    <div id="section-rating-micel" class="p-3 rounded-xl bg-cinema-950 border border-pink-400/20 space-y-2 transition-all">
+                    <div id="section-rating-micel" class="p-3.5 rounded-2xl bg-cinema-950 border border-pink-400/30 space-y-2.5 shadow-md">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2">
-                                <img src="assets/pfp_micel.png" alt="Micel" class="w-5 h-5 rounded-full object-cover">
-                                <span class="text-xs font-bold text-pink-400">MICEL</span>
+                                <img src="assets/pfp_micel.png" alt="Micel" class="w-6 h-6 rounded-full object-cover shadow">
+                                <span class="text-xs font-bold text-pink-400 tracking-wide">MICEL REVIEW</span>
                             </div>
                             <div class="flex items-center gap-1.5">
                                 <span id="err-hint-dia" class="hidden text-[10px] font-bold text-red-400 animate-pulse">Max 10!</span>
                                 <input type="number" step="0.1" name="rating_dia" id="form-rating-dia" placeholder="0 - 10" 
                                     oninput="validateRatingInput(this, 'err-hint-dia', 'pink')"
                                     onblur="clampRatingOnBlur(this, 'err-hint-dia', 'pink')"
-                                    class="w-24 px-2.5 py-1 bg-cinema-900 border border-slate-700 rounded-xl text-center text-xs font-bold text-pink-400 placeholder-slate-600 focus:outline-none focus:border-pink-400 transition">
+                                    class="w-24 px-3 py-1.5 bg-cinema-900 border border-slate-700 rounded-xl text-center text-xs font-bold text-pink-400 placeholder-slate-600 focus:outline-none focus:border-pink-400 transition shadow-inner">
                             </div>
                         </div>
-                        <textarea name="review_dia" id="form-review-dia" rows="2" placeholder="Ulasan Micel..." 
-                            class="w-full p-2.5 bg-cinema-900 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-pink-400 transition"></textarea>
+                        <textarea name="review_dia" id="form-review-dia" rows="5" placeholder="Tulis ulasan mendalam dari Micel di sini..." 
+                            class="w-full p-3 bg-cinema-900 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-pink-400 transition shadow-inner leading-relaxed"></textarea>
                     </div>
                 </div>
 
-                <div class="pt-3 flex justify-end gap-2.5 pb-4">
-                    <button type="button" onclick="closeAddModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 tap-scale">Batal</button>
-                    <button type="submit" id="submit-btn" class="px-5 py-2.5 rounded-xl popcorn-gradient font-bold text-xs text-slate-950 shadow-md tap-scale">
+                <!-- Action Buttons Bottom Sheet -->
+                <div class="pt-4 pb-6 flex items-center justify-end gap-3 border-t border-slate-800">
+                    <button type="button" onclick="closeAddModal()" class="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 tap-scale transition">Batal</button>
+                    <button type="submit" id="submit-btn" class="px-6 py-3 rounded-xl popcorn-gradient font-bold text-xs text-slate-950 shadow-lg tap-scale transition">
                         <span id="submit-btn-text">Simpan Ulasan</span>
                     </button>
                 </div>
@@ -445,7 +445,7 @@
                 </div>
             </div>
 
-            <div class="p-5 overflow-y-auto space-y-3.5 flex-grow">
+            <div class="p-5 overflow-y-auto space-y-3.5 flex-grow no-scrollbar">
                 <div id="detail-scores-container" class="grid grid-cols-2 gap-2.5 bg-cinema-950 border border-slate-800 p-3 rounded-2xl">
                     <div id="detail-box-zald" class="flex items-center gap-2.5">
                         <img src="assets/pfp_zald.png" alt="Zald" class="w-8 h-8 rounded-xl object-cover shadow-sm">
@@ -504,23 +504,6 @@
         let currentDetailMovieId = null;
         let currentViewerFilter = 'all';
         let isTopRatedActive = false;
-
-        if (window.visualViewport) {
-            window.visualViewport.addEventListener('resize', () => {
-                const modalContent = document.getElementById('add-modal-content');
-                const modal = document.getElementById('add-modal');
-                if (!modal.classList.contains('hidden')) {
-                    const keyboardHeight = window.innerHeight - window.visualViewport.height;
-                    if (keyboardHeight > 50) {
-                        modalContent.style.maxHeight = `${window.visualViewport.height - 40}px`;
-                        modal.style.paddingBottom = `${keyboardHeight + 10}px`;
-                    } else {
-                        modalContent.style.maxHeight = '80vh';
-                        modal.style.paddingBottom = '0px';
-                    }
-                }
-            });
-        }
 
         function updateDualClocks() {
             const now = new Date();
@@ -913,6 +896,7 @@
             const modal = document.getElementById('add-modal');
             const content = document.getElementById('add-modal-content');
             modal.classList.remove('hidden');
+            document.body.classList.add('modal-lock');
             content.classList.add('animate-slideUp');
 
             setTimeout(() => {
@@ -924,8 +908,7 @@
         function closeAddModal() {
             const modal = document.getElementById('add-modal');
             modal.classList.add('hidden');
-            document.getElementById('add-modal-content').style.maxHeight = '80vh';
-            modal.style.paddingBottom = '0px';
+            document.body.classList.remove('modal-lock');
         }
 
         function openDetailModal(id) {
@@ -993,12 +976,14 @@
             const modal = document.getElementById('detail-modal');
             const content = document.getElementById('detail-modal-content');
             modal.classList.remove('hidden');
+            document.body.classList.add('modal-lock');
             content.classList.add('animate-slideUp');
         }
 
         function closeDetailModal() {
             const modal = document.getElementById('detail-modal');
             modal.classList.add('hidden');
+            document.body.classList.remove('modal-lock');
         }
 
         async function handleFormSubmit(event) {
@@ -1109,6 +1094,7 @@
             const modal = document.getElementById('add-modal');
             const content = document.getElementById('add-modal-content');
             modal.classList.remove('hidden');
+            document.body.classList.add('modal-lock');
             content.classList.add('animate-slideUp');
         }
 
