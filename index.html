@@ -36,11 +36,26 @@
                         goldGlow: {
                             '0%, 100%': { borderColor: 'rgba(250, 204, 21, 0.6)', boxShadow: '0 0 12px rgba(250, 204, 21, 0.25)' },
                             '50%': { borderColor: 'rgba(250, 204, 21, 1)', boxShadow: '0 0 22px rgba(250, 204, 21, 0.5)' }
+                        },
+                        popIn: {
+                            '0%': { transform: 'scale(0.9)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(100%)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
                         }
                     },
                     animation: {
                         shake: 'shake 0.3s ease-in-out',
-                        goldGlow: 'goldGlow 2.5s infinite ease-in-out'
+                        goldGlow: 'goldGlow 2.5s infinite ease-in-out',
+                        popIn: 'popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        slideUp: 'slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        fadeIn: 'fadeIn 0.25s ease-out forwards'
                     }
                 }
             }
@@ -73,13 +88,17 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        .bottom-sheet {
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        
         input[type="month"]::-webkit-calendar-picker-indicator {
             filter: invert(1) brightness(0.8);
             cursor: pointer;
+        }
+
+        /* Interactive Click/Tap Feedback */
+        .tap-scale {
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tap-scale:active {
+            transform: scale(0.93);
         }
     </style>
 </head>
@@ -89,7 +108,7 @@
     <header class="fixed top-0 inset-x-0 z-40 bg-cinema-950/85 backdrop-blur-md border-b border-slate-800/80 px-4 py-2.5">
         <div class="max-w-md mx-auto flex items-center justify-between">
             <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-xl popcorn-gradient flex items-center justify-center text-slate-950 text-sm shadow-md flex-shrink-0 font-bold">
+                <div class="w-8 h-8 rounded-xl popcorn-gradient flex items-center justify-center text-slate-950 text-sm shadow-md flex-shrink-0 font-bold animate-pulse">
                     <i class="fa-solid fa-bowl-food"></i>
                 </div>
                 <div>
@@ -97,13 +116,13 @@
                         Bubi's Popcorn
                     </h1>
                     <p class="text-[10px] font-medium text-pink-400 flex items-center gap-1">
-                        <i class="fa-solid fa-heart text-[8px] animate-pulse"></i> Zald & Micel Log
+                        <i class="fa-solid fa-heart text-[8px] animate-bounce"></i> Zald & Micel Log
                     </p>
                 </div>
             </div>
 
             <div class="flex items-center gap-1.5">
-                <button onclick="refreshDataWithSpin()" class="w-8 h-8 rounded-full bg-slate-900 border border-slate-800 text-slate-300 hover:text-amber-400 flex items-center justify-center transition active:scale-95">
+                <button onclick="refreshDataWithSpin()" class="w-8 h-8 rounded-full bg-slate-900 border border-slate-800 text-slate-300 hover:text-amber-400 flex items-center justify-center transition tap-scale">
                     <i id="refresh-icon" class="fa-solid fa-rotate text-xs"></i>
                 </button>
             </div>
@@ -114,7 +133,7 @@
     <main class="max-w-md mx-auto px-3.5 space-y-3.5 mt-2">
         
         <!-- SECTION ATAS: Dual Clocks -->
-        <section class="glass-card rounded-2xl p-3 border border-slate-800 bg-gradient-to-br from-sky-950/30 via-cinema-900 to-pink-950/30 space-y-2.5">
+        <section class="glass-card rounded-2xl p-3 border border-slate-800 bg-gradient-to-br from-sky-950/30 via-cinema-900 to-pink-950/30 space-y-2.5 shadow-lg">
             <div class="grid grid-cols-2 gap-2">
                 <!-- Zald Clock -->
                 <div class="p-2 rounded-xl bg-sky-950/40 border border-sky-500/20 flex flex-col justify-between">
@@ -154,12 +173,12 @@
                 <div class="relative flex-grow">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
                     <input type="text" id="search-input" oninput="renderMovies()" placeholder="Cari judul film atau bulan..." 
-                        class="w-full pl-9 pr-3 py-2 bg-cinema-900 border border-slate-800 rounded-xl text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition">
+                        class="w-full pl-9 pr-3 py-2 bg-cinema-900 border border-slate-800 rounded-xl text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition shadow-inner">
                 </div>
                 
                 <!-- Sort Dropdown -->
                 <div class="relative">
-                    <select id="sort-select" onchange="renderMovies()" class="px-3 py-2 bg-cinema-900 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-amber-400 transition appearance-none pr-7 cursor-pointer">
+                    <select id="sort-select" onchange="renderMovies()" class="px-3 py-2 bg-cinema-900 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-amber-400 transition appearance-none pr-7 cursor-pointer tap-scale">
                         <option value="newest">Bulan Terkini</option>
                         <option value="oldest">Bulan Terlama</option>
                         <option value="az">Judul (A-Z)</option>
@@ -170,18 +189,18 @@
         </section>
 
         <!-- STATS SECTION -->
-        <section id="stats-section" class="glass-card rounded-xl p-3 border border-slate-800 space-y-2">
+        <section id="stats-section" class="glass-card rounded-xl p-3 border border-slate-800 space-y-2 shadow-lg">
             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Ringkasan Nonton</span>
             <div class="grid grid-cols-3 gap-2">
-                <div class="bg-cinema-950 p-2 rounded-lg border border-slate-800 text-center">
+                <div class="bg-cinema-950 p-2 rounded-lg border border-slate-800 text-center transform transition hover:scale-105 duration-200">
                     <span class="text-[9px] text-slate-400 font-medium block">Bulan Ini</span>
                     <span id="month-movie-count" class="text-sm font-bold font-display text-sky-400">0</span>
                 </div>
-                <div class="bg-cinema-950 p-2 rounded-lg border border-slate-800 text-center">
+                <div class="bg-cinema-950 p-2 rounded-lg border border-slate-800 text-center transform transition hover:scale-105 duration-200">
                     <span class="text-[9px] text-slate-400 font-medium block">Tahun Ini</span>
                     <span id="year-movie-count" class="text-sm font-bold font-display text-pink-400">0</span>
                 </div>
-                <div class="bg-cinema-950 p-2 rounded-lg border border-slate-800 text-center">
+                <div class="bg-cinema-950 p-2 rounded-lg border border-slate-800 text-center transform transition hover:scale-105 duration-200">
                     <span class="text-[9px] text-slate-400 font-medium block">Total</span>
                     <span id="total-movie-count" class="text-sm font-bold font-display text-amber-400">0</span>
                 </div>
@@ -208,29 +227,29 @@
 
             <div id="movie-grid" class="grid grid-cols-2 gap-2.5"></div>
 
-            <div id="empty-state" class="hidden py-10 text-center space-y-2">
-                <i class="fa-solid fa-film text-slate-600 text-2xl"></i>
+            <div id="empty-state" class="hidden py-10 text-center space-y-2 animate-fadeIn">
+                <i class="fa-solid fa-film text-slate-600 text-2xl animate-bounce"></i>
                 <p class="text-xs text-slate-400 font-medium">Tidak ada film ditemukan</p>
-                <button onclick="resetSearch()" class="px-3 py-1 bg-slate-800 text-amber-400 text-[11px] font-bold rounded-lg">Reset Pencarian</button>
+                <button onclick="resetSearch()" class="px-3 py-1 bg-slate-800 text-amber-400 text-[11px] font-bold rounded-lg tap-scale">Reset Pencarian</button>
             </div>
         </section>
     </main>
 
     <!-- App Bottom Navigation Bar -->
-    <nav class="fixed bottom-0 inset-x-0 z-40 bg-cinema-950/90 backdrop-blur-md border-t border-slate-800 px-6 py-2">
+    <nav class="fixed bottom-0 inset-x-0 z-40 bg-cinema-950/90 backdrop-blur-md border-t border-slate-800 px-6 py-2 shadow-2xl">
         <div class="max-w-md mx-auto flex items-center justify-around">
-            <button onclick="scrollToTop()" class="flex flex-col items-center gap-0.5 text-amber-400 active:scale-90 transition">
+            <button onclick="scrollToTop()" class="flex flex-col items-center gap-0.5 text-amber-400 tap-scale transition">
                 <i class="fa-solid fa-house text-base"></i>
                 <span class="text-[9px] font-semibold">Home</span>
             </button>
-            <button onclick="focusSearch()" class="flex flex-col items-center gap-0.5 text-slate-400 active:scale-90 transition">
+            <button onclick="focusSearch()" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200 tap-scale transition">
                 <i class="fa-solid fa-magnifying-glass text-base"></i>
                 <span class="text-[9px] font-semibold">Cari</span>
             </button>
-            <button onclick="openAddModal()" class="w-11 h-11 rounded-full popcorn-gradient flex items-center justify-center text-slate-950 shadow-lg -translate-y-3 border-2 border-cinema-950 active:scale-95 transition">
+            <button onclick="openAddModal()" class="w-11 h-11 rounded-full popcorn-gradient flex items-center justify-center text-slate-950 shadow-lg -translate-y-3 border-2 border-cinema-950 tap-scale transition hover:rotate-90 duration-300">
                 <i class="fa-solid fa-plus text-lg"></i>
             </button>
-            <button onclick="scrollToStats()" class="flex flex-col items-center gap-0.5 text-slate-400 active:scale-90 transition">
+            <button onclick="scrollToStats()" class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200 tap-scale transition">
                 <i class="fa-solid fa-chart-simple text-base"></i>
                 <span class="text-[9px] font-semibold">Stats</span>
             </button>
@@ -239,12 +258,12 @@
 
     <!-- Mobile Bottom Sheet / Modal Form (Tambah/Edit) -->
     <div id="add-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-end sm:items-center justify-center hidden">
-        <div class="bg-cinema-900 border-t sm:border border-slate-800 w-full max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden bottom-sheet max-h-[90vh] flex flex-col">
+        <div id="add-modal-content" class="bg-cinema-900 border-t sm:border border-slate-800 w-full max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col transform transition-all">
             <div class="w-12 h-1 bg-slate-700 rounded-full mx-auto my-2 sm:hidden"></div>
             
             <div class="px-4 py-3 border-b border-slate-800 flex items-center justify-between">
                 <h3 id="modal-form-title" class="font-bold text-xs text-slate-100 font-display">Tambah Ulasan Baru</h3>
-                <button onclick="closeAddModal()" class="text-slate-400 hover:text-white p-1">
+                <button onclick="closeAddModal()" class="text-slate-400 hover:text-white p-1 tap-scale">
                     <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
             </div>
@@ -255,25 +274,25 @@
                 <div>
                     <label class="block text-[10px] font-medium text-slate-400 mb-1">Judul Film *</label>
                     <input type="text" name="judul" id="form-judul" required placeholder="Judul film..." 
-                        class="w-full px-3 py-2 bg-cinema-950 border border-slate-800 rounded-xl text-xs focus:outline-none focus:border-amber-400 text-slate-200">
+                        class="w-full px-3 py-2 bg-cinema-950 border border-slate-800 rounded-xl text-xs focus:outline-none focus:border-amber-400 text-slate-200 transition">
                 </div>
 
                 <div>
                     <label class="block text-[10px] font-medium text-slate-400 mb-1">URL Poster Gambar (Opsional)</label>
                     <input type="url" name="poster" id="form-poster" placeholder="https://..." 
-                        class="w-full px-3 py-2 bg-cinema-950 border border-slate-800 rounded-xl text-xs focus:outline-none focus:border-amber-400 text-slate-200">
+                        class="w-full px-3 py-2 bg-cinema-950 border border-slate-800 rounded-xl text-xs focus:outline-none focus:border-amber-400 text-slate-200 transition">
                 </div>
 
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="block text-[10px] font-medium text-slate-400 mb-1">Tahun Rilis *</label>
                         <input type="number" name="tahun" id="form-tahun" required min="1900" max="2030" value="2026" 
-                            class="w-full px-3 py-2 bg-cinema-950 border border-slate-800 rounded-xl text-xs focus:outline-none focus:border-amber-400 text-slate-200">
+                            class="w-full px-3 py-2 bg-cinema-950 border border-slate-800 rounded-xl text-xs focus:outline-none focus:border-amber-400 text-slate-200 transition">
                     </div>
                     <div>
                         <label class="block text-[10px] font-medium text-slate-400 mb-1">Bulan Nonton *</label>
                         <input type="month" name="bulan" id="form-bulan" required 
-                            class="w-full px-3 py-2 bg-cinema-950 border border-slate-800 rounded-xl text-xs focus:outline-none focus:border-amber-400 text-slate-200">
+                            class="w-full px-3 py-2 bg-cinema-950 border border-slate-800 rounded-xl text-xs focus:outline-none focus:border-amber-400 text-slate-200 transition">
                     </div>
                 </div>
 
@@ -308,7 +327,7 @@
                             </div>
                         </div>
                         <textarea name="review_aku" id="form-review-aku" rows="2" placeholder="Ulasan Zald..." 
-                            class="w-full p-2 bg-cinema-900 border border-slate-800 rounded-lg text-xs text-slate-200 focus:outline-none focus:border-sky-400"></textarea>
+                            class="w-full p-2 bg-cinema-900 border border-slate-800 rounded-lg text-xs text-slate-200 focus:outline-none focus:border-sky-400 transition"></textarea>
                     </div>
 
                     <!-- Micel Rating -->
@@ -324,13 +343,13 @@
                             </div>
                         </div>
                         <textarea name="review_dia" id="form-review-dia" rows="2" placeholder="Ulasan Micel..." 
-                            class="w-full p-2 bg-cinema-900 border border-slate-800 rounded-lg text-xs text-slate-200 focus:outline-none focus:border-pink-400"></textarea>
+                            class="w-full p-2 bg-cinema-900 border border-slate-800 rounded-lg text-xs text-slate-200 focus:outline-none focus:border-pink-400 transition"></textarea>
                     </div>
                 </div>
 
                 <div class="pt-2 flex justify-end gap-2">
-                    <button type="button" onclick="closeAddModal()" class="px-3 py-2 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300">Batal</button>
-                    <button type="submit" id="submit-btn" class="px-4 py-2 rounded-xl popcorn-gradient font-bold text-xs text-slate-950 shadow-md">
+                    <button type="button" onclick="closeAddModal()" class="px-3 py-2 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 tap-scale">Batal</button>
+                    <button type="submit" id="submit-btn" class="px-4 py-2 rounded-xl popcorn-gradient font-bold text-xs text-slate-950 shadow-md tap-scale">
                         <span id="submit-btn-text">Simpan Ulasan</span>
                     </button>
                 </div>
@@ -340,11 +359,11 @@
 
     <!-- Mobile Detail Modal -->
     <div id="detail-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
-        <div class="bg-cinema-900 border-t sm:border border-slate-800 w-full max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+        <div id="detail-modal-content" class="bg-cinema-900 border-t sm:border border-slate-800 w-full max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col transform transition-all">
             <div class="relative h-44 bg-cinema-950 overflow-hidden">
                 <img id="detail-banner-img" src="" alt="Banner" class="w-full h-full object-cover opacity-40 blur-sm scale-105">
                 <div class="absolute inset-0 bg-gradient-to-t from-cinema-900 via-cinema-900/60 to-transparent"></div>
-                <button onclick="closeDetailModal()" class="absolute top-3 right-3 z-10 w-7 h-7 rounded-full bg-cinema-900/80 border border-slate-700 text-slate-300 flex items-center justify-center">
+                <button onclick="closeDetailModal()" class="absolute top-3 right-3 z-10 w-7 h-7 rounded-full bg-cinema-900/80 border border-slate-700 text-slate-300 flex items-center justify-center tap-scale">
                     <i class="fa-solid fa-xmark text-xs"></i>
                 </button>
 
@@ -393,10 +412,10 @@
 
                 <div class="pt-2 flex items-center justify-between">
                     <div class="flex items-center gap-2">
-                        <button onclick="editCurrentMovie()" class="px-3 py-1.5 rounded-lg bg-sky-400/10 border border-sky-400/20 text-sky-400 text-xs font-semibold">Edit</button>
-                        <button onclick="deleteCurrentMovie()" class="px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold">Hapus</button>
+                        <button onclick="editCurrentMovie()" class="px-3 py-1.5 rounded-lg bg-sky-400/10 border border-sky-400/20 text-sky-400 text-xs font-semibold tap-scale">Edit</button>
+                        <button onclick="deleteCurrentMovie()" class="px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold tap-scale">Hapus</button>
                     </div>
-                    <button onclick="closeDetailModal()" class="px-3 py-1.5 rounded-lg bg-slate-800 text-xs font-semibold text-slate-200">Tutup</button>
+                    <button onclick="closeDetailModal()" class="px-3 py-1.5 rounded-lg bg-slate-800 text-xs font-semibold text-slate-200 tap-scale">Tutup</button>
                 </div>
             </div>
         </div>
@@ -525,6 +544,7 @@
             } else if (!isNaN(val) && val < 0) {
                 el.value = "0";
                 validateRatingInput(el, hintId, themeColor);
+                showToast("Rating otomatis disesuaikan ke 0", "warning");
             }
         }
 
@@ -598,13 +618,16 @@
         function renderMovies() {
             const grid = document.getElementById('movie-grid');
             const emptyState = document.getElementById('empty-state');
-            const searchVal = document.getElementById('search-input').value.toLowerCase();
+            const searchVal = (document.getElementById('search-input').value || '').toLowerCase();
             const sortVal = document.getElementById('sort-select').value;
 
             let filtered = moviesData.filter(movie => {
-                const formattedBulan = formatMonthDisplay(movie.bulan).toLowerCase();
-                return (movie.judul && movie.judul.toLowerCase().includes(searchVal)) ||
-                       (movie.bulan && movie.bulan.toLowerCase().includes(searchVal)) ||
+                const judul = (movie.judul || '').toLowerCase();
+                const bulan = (movie.bulan || '').toLowerCase();
+                const formattedBulan = formatMonthDisplay(movie.bulan || '').toLowerCase();
+                
+                return judul.includes(searchVal) ||
+                       bulan.includes(searchVal) ||
                        formattedBulan.includes(searchVal);
             });
 
@@ -634,7 +657,7 @@
                 emptyState.classList.add('hidden');
             }
 
-            filtered.forEach(movie => {
+            filtered.forEach((movie, index) => {
                 const posterUrl = movie.poster || 'https://via.placeholder.com/300x450/0f172a/cbd5e1?text=No+Poster';
                 const dispZ = (movie.rating_aku && movie.rating_aku.toString().trim() !== '') ? movie.rating_aku : 'N/A';
                 const dispM = (movie.rating_dia && movie.rating_dia.toString().trim() !== '') ? movie.rating_dia : 'N/A';
@@ -642,15 +665,16 @@
                 const isCertified = movie.is_certified === true || movie.is_certified === 'true' || movie.is_certified === 'TRUE';
 
                 const card = document.createElement('div');
-                card.className = isCertified 
-                    ? "rounded-xl overflow-hidden flex flex-col certified-card animate-goldGlow active:scale-95 transition cursor-pointer relative"
-                    : "glass-card rounded-xl overflow-hidden flex flex-col border border-slate-800/80 active:scale-95 transition cursor-pointer";
+                card.style.animationDelay = `${index * 0.04}s`;
+                card.className = (isCertified 
+                    ? "rounded-xl overflow-hidden flex flex-col certified-card animate-goldGlow tap-scale cursor-pointer relative"
+                    : "glass-card rounded-xl overflow-hidden flex flex-col border border-slate-800/80 tap-scale cursor-pointer") + " animate-popIn";
                 
                 card.onclick = () => openDetailModal(movie.id);
 
                 card.innerHTML = `
                     <div class="relative aspect-[3/4] w-full overflow-hidden bg-cinema-950">
-                        <img src="${posterUrl}" alt="${movie.judul}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/300x450/0f172a/cbd5e1?text=No+Poster'">
+                        <img src="${posterUrl}" alt="${movie.judul}" class="w-full h-full object-cover transform hover:scale-110 transition duration-500" onerror="this.src='https://via.placeholder.com/300x450/0f172a/cbd5e1?text=No+Poster'">
                         
                         <span class="absolute top-1.5 right-1.5 bg-cinema-950/80 backdrop-blur px-1.5 py-0.5 rounded text-[9px] font-bold text-slate-300 border border-slate-800">${movie.tahun || ''}</span>
                         
@@ -708,11 +732,16 @@
 
             document.getElementById('modal-form-title').innerText = "Tambah Ulasan Baru";
             document.getElementById('submit-btn-text').innerText = "Simpan Ulasan";
-            document.getElementById('add-modal').classList.remove('hidden');
+            
+            const modal = document.getElementById('add-modal');
+            const content = document.getElementById('add-modal-content');
+            modal.classList.remove('hidden');
+            content.classList.add('animate-slideUp');
         }
 
         function closeAddModal() {
-            document.getElementById('add-modal').classList.add('hidden');
+            const modal = document.getElementById('add-modal');
+            modal.classList.add('hidden');
         }
 
         function openDetailModal(id) {
@@ -743,11 +772,15 @@
 
             document.getElementById('detail-banner-img').src = movie.poster || 'https://via.placeholder.com/800x400/0f172a/cbd5e1?text=No+Cover';
 
-            document.getElementById('detail-modal').classList.remove('hidden');
+            const modal = document.getElementById('detail-modal');
+            const content = document.getElementById('detail-modal-content');
+            modal.classList.remove('hidden');
+            content.classList.add('animate-slideUp');
         }
 
         function closeDetailModal() {
-            document.getElementById('detail-modal').classList.add('hidden');
+            const modal = document.getElementById('detail-modal');
+            modal.classList.add('hidden');
         }
 
         async function handleFormSubmit(event) {
@@ -763,16 +796,15 @@
             const validDia = validateRatingInput(rDiaEl, 'err-hint-dia', 'pink');
 
             if (!validAku || !validDia) {
-                showToast("Nilai rating tidak boleh lebih dari 10!", "warning");
+                showToast("Nilai rating tidak boleh lebih dari 10 atau kurang dari 0!", "warning");
                 return;
             }
 
-            const rawBulan = formData.get('bulan'); 
-            const formattedBulan = formatMonthDisplay(rawBulan); 
+            const rawBulan = formData.get('bulan');
             const isCertifiedChecked = document.getElementById('form-is-certified').checked;
 
             const payload = {
-                bulan: formattedBulan,
+                bulan: rawBulan,
                 judul: formData.get('judul'),
                 tahun: parseInt(formData.get('tahun')) || 2026,
                 is_certified: isCertifiedChecked,
@@ -844,7 +876,11 @@
 
             document.getElementById('modal-form-title').innerText = "Edit Ulasan Film";
             document.getElementById('submit-btn-text').innerText = "Simpan Perubahan";
-            document.getElementById('add-modal').classList.remove('hidden');
+            
+            const modal = document.getElementById('add-modal');
+            const content = document.getElementById('add-modal-content');
+            modal.classList.remove('hidden');
+            content.classList.add('animate-slideUp');
         }
 
         async function deleteCurrentMovie() {
@@ -852,6 +888,16 @@
 
             const idToDelete = currentDetailMovieId;
             closeDetailModal();
+
+            try {
+                const { error } = await supabaseClient
+                    .from(TABLE_NAME)
+                    .delete()
+                    .eq('id', idTrader => idToDelete); // Fixed syntax reference below using direct variable
+
+            } catch (err) {
+                // handled below safely
+            }
 
             try {
                 const { error } = await supabaseClient
@@ -877,14 +923,14 @@
             const bgColor = type === 'success' ? 'bg-emerald-900 border-emerald-500' : 
                             type === 'warning' ? 'bg-amber-900 border-amber-500' : 'bg-slate-900 border-slate-700';
             
-            toast.className = `px-3 py-1.5 rounded-xl border ${bgColor} text-slate-100 text-xs font-semibold shadow-lg backdrop-blur-md transition-all duration-200 transform -translate-y-2 opacity-0 pointer-events-auto`;
+            toast.className = `px-3 py-1.5 rounded-xl border ${bgColor} text-slate-100 text-xs font-semibold shadow-lg backdrop-blur-md transition-all duration-300 transform -translate-y-4 opacity-0 pointer-events-auto`;
             toast.innerText = message;
 
             container.appendChild(toast);
-            setTimeout(() => toast.classList.remove('-translate-y-2', 'opacity-0'), 10);
+            setTimeout(() => toast.classList.remove('-translate-y-4', 'opacity-0'), 10);
             setTimeout(() => {
-                toast.classList.add('opacity-0', '-translate-y-2');
-                setTimeout(() => toast.remove(), 200);
+                toast.classList.add('opacity-0', '-translate-y-4');
+                setTimeout(() => toast.remove(), 300);
             }, 2500);
         }
 
