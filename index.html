@@ -189,8 +189,8 @@
             <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
                 <button onclick="setViewerFilter('all', this)" class="filter-btn px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-amber-400 text-slate-950 tap-scale flex-shrink-0 transition">Semua</button>
                 <button onclick="setViewerFilter('both', this)" class="filter-btn px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition">Nonton Bareng</button>
-                <button onclick="setViewerFilter('zald', this)" class="filter-btn px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition">Zald Saja</button>
-                <button onclick="setViewerFilter('micel', this)" class="filter-btn px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition">Micel Saja</button>
+                <button onclick="setViewerFilter('zald', this)" class="filter-btn px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition">Zald Picks</button>
+                <button onclick="setViewerFilter('micel', this)" class="filter-btn px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition">Micel Picks</button>
             </div>
         </section>
 
@@ -315,13 +315,13 @@
                         <label class="cursor-pointer">
                             <input type="radio" name="watched_by" value="zald" onchange="handleViewerChange()" class="peer sr-only">
                             <div class="p-2 rounded-xl bg-cinema-950 border border-slate-800 text-center text-[11px] font-semibold text-slate-400 peer-checked:bg-sky-500/10 peer-checked:border-sky-500 peer-checked:text-sky-400 transition">
-                                Zald Saja
+                                Zald Picks
                             </div>
                         </label>
                         <label class="cursor-pointer">
                             <input type="radio" name="watched_by" value="micel" onchange="handleViewerChange()" class="peer sr-only">
                             <div class="p-2 rounded-xl bg-cinema-950 border border-slate-800 text-center text-[11px] font-semibold text-slate-400 peer-checked:bg-pink-500/10 peer-checked:border-pink-500 peer-checked:text-pink-400 transition">
-                                Micel Saja
+                                Micel Picks
                             </div>
                         </label>
                     </div>
@@ -414,7 +414,7 @@
             </div>
 
             <div class="p-4 overflow-y-auto space-y-3">
-                <div class="grid grid-cols-2 gap-2 bg-cinema-950 border border-slate-800 p-2.5 rounded-xl">
+                <div id="detail-scores-container" class="grid grid-cols-2 gap-2 bg-cinema-950 border border-slate-800 p-2.5 rounded-xl">
                     <div id="detail-box-zald" class="flex items-center gap-2">
                         <div class="w-7 h-7 rounded-lg zald-gradient flex items-center justify-center font-bold text-slate-950 text-xs">Z</div>
                         <div>
@@ -508,20 +508,14 @@
             const micelSection = document.getElementById('section-rating-micel');
 
             if (selected === 'zald') {
-                zaldSection.style.opacity = '1';
-                zaldSection.style.pointerEvents = 'auto';
-                micelSection.style.opacity = '0.3';
-                micelSection.style.pointerEvents = 'none';
+                zaldSection.style.display = 'block';
+                micelSection.style.display = 'none';
             } else if (selected === 'micel') {
-                zaldSection.style.opacity = '0.3';
-                zaldSection.style.pointerEvents = 'none';
-                micelSection.style.opacity = '1';
-                micelSection.style.pointerEvents = 'auto';
+                zaldSection.style.display = 'none';
+                micelSection.style.display = 'block';
             } else {
-                zaldSection.style.opacity = '1';
-                zaldSection.style.pointerEvents = 'auto';
-                micelSection.style.opacity = '1';
-                micelSection.style.pointerEvents = 'auto';
+                zaldSection.style.display = 'block';
+                micelSection.style.display = 'block';
             }
         }
 
@@ -749,11 +743,45 @@
 
                 let watcherBadgeHTML = '';
                 if (watcher === 'zald') {
-                    watcherBadgeHTML = `<span class="absolute top-1.5 left-1.5 bg-sky-950/90 border border-sky-500/40 text-sky-400 px-1.5 py-0.5 rounded text-[8px] font-bold shadow">Zald Saja</span>`;
+                    watcherBadgeHTML = `<span class="absolute top-1.5 left-1.5 bg-sky-950/90 border border-sky-500/40 text-sky-400 px-1.5 py-0.5 rounded text-[8px] font-bold shadow">Zald Picks</span>`;
                 } else if (watcher === 'micel') {
-                    watcherBadgeHTML = `<span class="absolute top-1.5 left-1.5 bg-pink-950/90 border border-pink-500/40 text-pink-400 px-1.5 py-0.5 rounded text-[8px] font-bold shadow">Micel Saja</span>`;
+                    watcherBadgeHTML = `<span class="absolute top-1.5 left-1.5 bg-pink-950/90 border border-pink-500/40 text-pink-400 px-1.5 py-0.5 rounded text-[8px] font-bold shadow">Micel Picks</span>`;
                 } else if (isCertified) {
                     watcherBadgeHTML = `<span class="absolute top-1.5 left-1.5 gold-gradient px-1.5 py-0.5 rounded text-[8px] font-extrabold text-slate-950 flex items-center gap-1 shadow-lg animate-pulse"><i class="fa-solid fa-award text-[7px]"></i> FRESH</span>`;
+                }
+
+                let ratingsHTML = '';
+                if (watcher === 'zald') {
+                    ratingsHTML = `
+                        <div class="grid grid-cols-1 gap-1 text-[10px]">
+                            <div class="bg-sky-400/10 border border-sky-400/20 rounded-md p-1 text-center">
+                                <span class="block text-[7px] font-bold text-sky-400">ZALD PICKS</span>
+                                <span class="font-black text-slate-100">${dispZ}</span>
+                            </div>
+                        </div>
+                    `;
+                } else if (watcher === 'micel') {
+                    ratingsHTML = `
+                        <div class="grid grid-cols-1 gap-1 text-[10px]">
+                            <div class="bg-pink-400/10 border border-pink-400/20 rounded-md p-1 text-center">
+                                <span class="block text-[7px] font-bold text-pink-400">MICEL PICKS</span>
+                                <span class="font-black text-slate-100">${dispM}</span>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    ratingsHTML = `
+                        <div class="grid grid-cols-2 gap-1 text-[10px]">
+                            <div class="bg-sky-400/10 border border-sky-400/20 rounded-md p-0.5 text-center">
+                                <span class="block text-[7px] font-bold text-sky-400">ZALD</span>
+                                <span class="font-black text-slate-100">${dispZ}</span>
+                            </div>
+                            <div class="bg-pink-400/10 border border-pink-400/20 rounded-md p-0.5 text-center">
+                                <span class="block text-[7px] font-bold text-pink-400">MICEL</span>
+                                <span class="font-black text-slate-100">${dispM}</span>
+                            </div>
+                        </div>
+                    `;
                 }
 
                 card.innerHTML = `
@@ -774,16 +802,7 @@
                             <p class="text-[9px] text-slate-400 line-clamp-1">${displayMonthText || '-'}</p>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-1 text-[10px]">
-                            <div class="bg-sky-400/10 border border-sky-400/20 rounded-md p-0.5 text-center ${watcher === 'micel' ? 'opacity-30' : ''}">
-                                <span class="block text-[7px] font-bold text-sky-400">ZALD</span>
-                                <span class="font-black text-slate-100">${watcher === 'micel' ? '-' : dispZ}</span>
-                            </div>
-                            <div class="bg-pink-400/10 border border-pink-400/20 rounded-md p-0.5 text-center ${watcher === 'zald' ? 'opacity-30' : ''}">
-                                <span class="block text-[7px] font-bold text-pink-400">MICEL</span>
-                                <span class="font-black text-slate-100">${watcher === 'zald' ? '-' : dispM}</span>
-                            </div>
-                        </div>
+                        ${ratingsHTML}
                     </div>
                 `;
                 grid.appendChild(card);
@@ -853,19 +872,22 @@
             const boxMicel = document.getElementById('detail-box-micel');
             const wrapZald = document.getElementById('detail-review-zald-wrap');
             const wrapMicel = document.getElementById('detail-review-micel-wrap');
+            const scoresContainer = document.getElementById('detail-scores-container');
 
             if (watcher === 'zald') {
-                viewerBadge.innerText = "Zald Saja";
+                viewerBadge.innerText = "Zald Picks";
                 viewerBadge.className = "px-1.5 py-0.5 rounded bg-sky-950 border border-sky-500/40 text-sky-400 text-[9px] font-bold";
                 boxZald.style.display = 'flex';
                 boxMicel.style.display = 'none';
+                scoresContainer.className = "grid grid-cols-1 gap-2 bg-cinema-950 border border-slate-800 p-2.5 rounded-xl";
                 wrapZald.style.display = 'block';
                 wrapMicel.style.display = 'none';
             } else if (watcher === 'micel') {
-                viewerBadge.innerText = "Micel Saja";
+                viewerBadge.innerText = "Micel Picks";
                 viewerBadge.className = "px-1.5 py-0.5 rounded bg-pink-950 border border-pink-500/40 text-pink-400 text-[9px] font-bold";
                 boxZald.style.display = 'none';
                 boxMicel.style.display = 'flex';
+                scoresContainer.className = "grid grid-cols-1 gap-2 bg-cinema-950 border border-slate-800 p-2.5 rounded-xl";
                 wrapZald.style.display = 'none';
                 wrapMicel.style.display = 'block';
             } else {
@@ -873,6 +895,7 @@
                 viewerBadge.className = "px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 text-[9px] font-bold";
                 boxZald.style.display = 'flex';
                 boxMicel.style.display = 'flex';
+                scoresContainer.className = "grid grid-cols-2 gap-2 bg-cinema-950 border border-slate-800 p-2.5 rounded-xl";
                 wrapZald.style.display = 'block';
                 wrapMicel.style.display = 'block';
             }
