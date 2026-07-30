@@ -93,7 +93,6 @@
             cursor: pointer;
         }
 
-        /* Interactive Click/Tap Feedback */
         .tap-scale {
             transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -156,7 +155,6 @@
                 </div>
             </div>
 
-            <!-- Connection Status -->
             <div class="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-800/80">
                 <span id="last-watched-text" class="text-amber-400 font-medium truncate max-w-[200px]">
                     <i class="fa-solid fa-clock-rotate-left text-[9px]"></i> Memuat...
@@ -167,7 +165,7 @@
             </div>
         </section>
 
-        <!-- SECTION SEARCH & SORT -->
+        <!-- SECTION SEARCH & SORT & VIEWER FILTER -->
         <section id="search-section" class="space-y-2">
             <div class="flex items-center gap-2">
                 <div class="relative flex-grow">
@@ -185,6 +183,14 @@
                     </select>
                     <i class="fa-solid fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 text-[10px] pointer-events-none"></i>
                 </div>
+            </div>
+
+            <!-- Filter Siapa yang Nonton -->
+            <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                <button onclick="setViewerFilter('all', this)" class="filter-btn px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-amber-400 text-slate-950 tap-scale flex-shrink-0 transition">Semua</button>
+                <button onclick="setViewerFilter('both', this)" class="filter-btn px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition">Nonton Bareng</button>
+                <button onclick="setViewerFilter('zald', this)" class="filter-btn px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition">Zald Saja</button>
+                <button onclick="setViewerFilter('micel', this)" class="filter-btn px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition">Micel Saja</button>
             </div>
         </section>
 
@@ -296,6 +302,31 @@
                     </div>
                 </div>
 
+                <!-- PILIHAN SIAPA YANG NONTON (Default Nonton Bareng) -->
+                <div>
+                    <label class="block text-[10px] font-medium text-slate-400 mb-1">Siapa yang Nonton? *</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="watched_by" value="both" checked onchange="handleViewerChange()" class="peer sr-only">
+                            <div class="p-2 rounded-xl bg-cinema-950 border border-slate-800 text-center text-[11px] font-semibold text-slate-400 peer-checked:bg-amber-500/10 peer-checked:border-amber-500 peer-checked:text-amber-400 transition">
+                                Nonton Bareng
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="watched_by" value="zald" onchange="handleViewerChange()" class="peer sr-only">
+                            <div class="p-2 rounded-xl bg-cinema-950 border border-slate-800 text-center text-[11px] font-semibold text-slate-400 peer-checked:bg-sky-500/10 peer-checked:border-sky-500 peer-checked:text-sky-400 transition">
+                                Zald Saja
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="watched_by" value="micel" onchange="handleViewerChange()" class="peer sr-only">
+                            <div class="p-2 rounded-xl bg-cinema-950 border border-slate-800 text-center text-[11px] font-semibold text-slate-400 peer-checked:bg-pink-500/10 peer-checked:border-pink-500 peer-checked:text-pink-400 transition">
+                                Micel Saja
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
                 <!-- Toggle Certified Fresh -->
                 <div class="p-2.5 rounded-xl bg-amber-950/20 border border-amber-500/30 flex items-center justify-between">
                     <div class="flex items-center gap-2">
@@ -314,8 +345,8 @@
                 </div>
 
                 <div class="grid grid-cols-1 gap-2 pt-1 border-t border-slate-800">
-                    <!-- Zald Rating -->
-                    <div class="p-2.5 rounded-xl bg-cinema-950 border border-sky-400/20 space-y-1.5">
+                    <!-- Zald Rating Section -->
+                    <div id="section-rating-zald" class="p-2.5 rounded-xl bg-cinema-950 border border-sky-400/20 space-y-1.5 transition-all">
                         <div class="flex items-center justify-between">
                             <span class="text-[11px] font-bold text-sky-400">ZALD</span>
                             <div class="flex items-center gap-1.5">
@@ -330,8 +361,8 @@
                             class="w-full p-2 bg-cinema-900 border border-slate-800 rounded-lg text-xs text-slate-200 focus:outline-none focus:border-sky-400 transition"></textarea>
                     </div>
 
-                    <!-- Micel Rating -->
-                    <div class="p-2.5 rounded-xl bg-cinema-950 border border-pink-400/20 space-y-1.5">
+                    <!-- Micel Rating Section -->
+                    <div id="section-rating-micel" class="p-2.5 rounded-xl bg-cinema-950 border border-pink-400/20 space-y-1.5 transition-all">
                         <div class="flex items-center justify-between">
                             <span class="text-[11px] font-bold text-pink-400">MICEL</span>
                             <div class="flex items-center gap-1.5">
@@ -372,6 +403,7 @@
                         <div class="flex items-center gap-1.5 mb-0.5">
                             <span id="detail-year" class="text-[10px] text-slate-400">2026</span>
                             <span id="detail-watch-month" class="px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 text-[9px] font-medium">Januari 2026</span>
+                            <span id="detail-viewer-badge" class="px-1.5 py-0.5 rounded bg-slate-800 text-sky-300 text-[9px] font-bold">Nonton Bareng</span>
                             <span id="detail-badge-wrapper" class="hidden px-1.5 py-0.5 rounded gold-gradient text-slate-950 text-[9px] font-extrabold flex items-center gap-1 shadow-md">
                                 <i class="fa-solid fa-award text-[8px]"></i> Certified Fresh
                             </span>
@@ -383,14 +415,14 @@
 
             <div class="p-4 overflow-y-auto space-y-3">
                 <div class="grid grid-cols-2 gap-2 bg-cinema-950 border border-slate-800 p-2.5 rounded-xl">
-                    <div class="flex items-center gap-2">
+                    <div id="detail-box-zald" class="flex items-center gap-2">
                         <div class="w-7 h-7 rounded-lg zald-gradient flex items-center justify-center font-bold text-slate-950 text-xs">Z</div>
                         <div>
                             <div class="text-[9px] font-semibold text-slate-400">Rating Zald</div>
                             <div id="detail-zald-score" class="text-xs font-bold text-sky-400">8.0</div>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2 border-l border-slate-800 pl-2">
+                    <div id="detail-box-micel" class="flex items-center gap-2 border-l border-slate-800 pl-2">
                         <div class="w-7 h-7 rounded-lg micel-gradient flex items-center justify-center font-bold text-slate-950 text-xs">M</div>
                         <div>
                             <div class="text-[9px] font-semibold text-slate-400">Rating Micel</div>
@@ -400,11 +432,11 @@
                 </div>
 
                 <div class="space-y-2">
-                    <div class="bg-cinema-950/60 border border-sky-400/20 rounded-xl p-2.5">
+                    <div id="detail-review-zald-wrap" class="bg-cinema-950/60 border border-sky-400/20 rounded-xl p-2.5">
                         <span class="text-[10px] font-bold text-sky-400">Pendapat Zald</span>
                         <p id="detail-zald-text" class="text-xs text-slate-300 italic whitespace-pre-line mt-0.5">--</p>
                     </div>
-                    <div class="bg-cinema-950/60 border border-pink-400/20 rounded-xl p-2.5">
+                    <div id="detail-review-micel-wrap" class="bg-cinema-950/60 border border-pink-400/20 rounded-xl p-2.5">
                         <span class="text-[10px] font-bold text-pink-400">Pendapat Micel</span>
                         <p id="detail-micel-text" class="text-xs text-slate-300 italic whitespace-pre-line mt-0.5">--</p>
                     </div>
@@ -425,7 +457,6 @@
     <div id="toast-container" class="fixed top-16 inset-x-0 z-50 flex flex-col items-center gap-2 pointer-events-none px-4"></div>
 
     <script>
-        // Konfigurasi Supabase
         const SUPABASE_URL = 'https://fhpyvnbsreoaiaeqfkvk.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_aSPwcLUMW2y7r3nk6cpBpg_3DJH5sky';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -433,6 +464,7 @@
         
         let moviesData = [];
         let currentDetailMovieId = null;
+        let currentViewerFilter = 'all';
 
         function updateDualClocks() {
             const now = new Date();
@@ -459,6 +491,38 @@
             await fetchSupabaseData();
             setTimeout(() => icon && icon.classList.remove('fa-spin'), 600);
             showToast("Data diperbarui!", "info");
+        }
+
+        function setViewerFilter(filterType, btnEl) {
+            currentViewerFilter = filterType;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.className = "filter-btn px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition";
+            });
+            btnEl.className = "filter-btn px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-amber-400 text-slate-950 tap-scale flex-shrink-0 transition";
+            renderMovies();
+        }
+
+        function handleViewerChange() {
+            const selected = document.querySelector('input[name="watched_by"]:checked').value;
+            const zaldSection = document.getElementById('section-rating-zald');
+            const micelSection = document.getElementById('section-rating-micel');
+
+            if (selected === 'zald') {
+                zaldSection.style.opacity = '1';
+                zaldSection.style.pointerEvents = 'auto';
+                micelSection.style.opacity = '0.3';
+                micelSection.style.pointerEvents = 'none';
+            } else if (selected === 'micel') {
+                zaldSection.style.opacity = '0.3';
+                zaldSection.style.pointerEvents = 'none';
+                micelSection.style.opacity = '1';
+                micelSection.style.pointerEvents = 'auto';
+            } else {
+                zaldSection.style.opacity = '1';
+                zaldSection.style.pointerEvents = 'auto';
+                micelSection.style.opacity = '1';
+                micelSection.style.pointerEvents = 'auto';
+            }
         }
 
         function parseRating(val) {
@@ -593,11 +657,16 @@
             let zSum = 0, zCount = 0, mSum = 0, mCount = 0;
 
             moviesData.forEach(m => {
+                const watcher = m.watched_by || 'both';
                 const rZ = parseRating(m.rating_aku);
                 const rM = parseRating(m.rating_dia);
 
-                if (rZ !== null) { zSum += rZ; zCount++; }
-                if (rM !== null) { mSum += rM; mCount++; }
+                if (watcher === 'both' || watcher === 'zald') {
+                    if (rZ !== null) { zSum += rZ; zCount++; }
+                }
+                if (watcher === 'both' || watcher === 'micel') {
+                    if (rM !== null) { mSum += rM; mCount++; }
+                }
             });
 
             document.getElementById('avg-zald-score').innerText = zCount ? (zSum / zCount).toFixed(1) : '0.0';
@@ -622,6 +691,11 @@
             const sortVal = document.getElementById('sort-select').value;
 
             let filtered = moviesData.filter(movie => {
+                const watcher = movie.watched_by || 'both';
+                if (currentViewerFilter !== 'all' && watcher !== currentViewerFilter) {
+                    return false;
+                }
+
                 const judul = (movie.judul || '').toLowerCase();
                 const bulan = (movie.bulan || '').toLowerCase();
                 const formattedBulan = formatMonthDisplay(movie.bulan || '').toLowerCase();
@@ -659,6 +733,7 @@
 
             filtered.forEach((movie, index) => {
                 const posterUrl = movie.poster || 'https://via.placeholder.com/300x450/0f172a/cbd5e1?text=No+Poster';
+                const watcher = movie.watched_by || 'both';
                 const dispZ = (movie.rating_aku && movie.rating_aku.toString().trim() !== '') ? movie.rating_aku : 'N/A';
                 const dispM = (movie.rating_dia && movie.rating_dia.toString().trim() !== '') ? movie.rating_dia : 'N/A';
                 const displayMonthText = formatMonthDisplay(movie.bulan);
@@ -672,16 +747,24 @@
                 
                 card.onclick = () => openDetailModal(movie.id);
 
+                let watcherBadgeHTML = '';
+                if (watcher === 'zald') {
+                    watcherBadgeHTML = `<span class="absolute top-1.5 left-1.5 bg-sky-950/90 border border-sky-500/40 text-sky-400 px-1.5 py-0.5 rounded text-[8px] font-bold shadow">Zald Saja</span>`;
+                } else if (watcher === 'micel') {
+                    watcherBadgeHTML = `<span class="absolute top-1.5 left-1.5 bg-pink-950/90 border border-pink-500/40 text-pink-400 px-1.5 py-0.5 rounded text-[8px] font-bold shadow">Micel Saja</span>`;
+                } else if (isCertified) {
+                    watcherBadgeHTML = `<span class="absolute top-1.5 left-1.5 gold-gradient px-1.5 py-0.5 rounded text-[8px] font-extrabold text-slate-950 flex items-center gap-1 shadow-lg animate-pulse"><i class="fa-solid fa-award text-[7px]"></i> FRESH</span>`;
+                }
+
                 card.innerHTML = `
                     <div class="relative aspect-[3/4] w-full overflow-hidden bg-cinema-950">
                         <img src="${posterUrl}" alt="${movie.judul}" class="w-full h-full object-cover transform hover:scale-110 transition duration-500" onerror="this.src='https://via.placeholder.com/300x450/0f172a/cbd5e1?text=No+Poster'">
                         
                         <span class="absolute top-1.5 right-1.5 bg-cinema-950/80 backdrop-blur px-1.5 py-0.5 rounded text-[9px] font-bold text-slate-300 border border-slate-800">${movie.tahun || ''}</span>
                         
-                        ${isCertified ? `
-                            <div class="absolute top-1.5 left-1.5 gold-gradient px-1.5 py-0.5 rounded text-[8px] font-extrabold text-slate-950 flex items-center gap-1 shadow-lg animate-pulse">
-                                <i class="fa-solid fa-award">*</i> FRESH
-                            </div>
+                        ${watcherBadgeHTML}
+                        ${isCertified && watcher !== 'both' ? `
+                            <div class="absolute bottom-1.5 left-1.5 gold-gradient px-1.5 py-0.5 rounded text-[7px] font-extrabold text-slate-950 shadow">FRESH</div>
                         ` : ''}
                     </div>
 
@@ -692,13 +775,13 @@
                         </div>
 
                         <div class="grid grid-cols-2 gap-1 text-[10px]">
-                            <div class="bg-sky-400/10 border border-sky-400/20 rounded-md p-0.5 text-center">
+                            <div class="bg-sky-400/10 border border-sky-400/20 rounded-md p-0.5 text-center ${watcher === 'micel' ? 'opacity-30' : ''}">
                                 <span class="block text-[7px] font-bold text-sky-400">ZALD</span>
-                                <span class="font-black text-slate-100">${dispZ}</span>
+                                <span class="font-black text-slate-100">${watcher === 'micel' ? '-' : dispZ}</span>
                             </div>
-                            <div class="bg-pink-400/10 border border-pink-400/20 rounded-md p-0.5 text-center">
+                            <div class="bg-pink-400/10 border border-pink-400/20 rounded-md p-0.5 text-center ${watcher === 'zald' ? 'opacity-30' : ''}">
                                 <span class="block text-[7px] font-bold text-pink-400">MICEL</span>
-                                <span class="font-black text-slate-100">${dispM}</span>
+                                <span class="font-black text-slate-100">${watcher === 'zald' ? '-' : dispM}</span>
                             </div>
                         </div>
                     </div>
@@ -710,6 +793,14 @@
         function resetSearch() {
             document.getElementById('search-input').value = '';
             document.getElementById('sort-select').value = 'newest';
+            currentViewerFilter = 'all';
+            document.querySelectorAll('.filter-btn').forEach((btn, idx) => {
+                if (idx === 0) {
+                    btn.className = "filter-btn px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-amber-400 text-slate-950 tap-scale flex-shrink-0 transition";
+                } else {
+                    btn.className = "filter-btn px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition";
+                }
+            });
             renderMovies();
         }
 
@@ -722,6 +813,9 @@
             const month = String(now.getMonth() + 1).padStart(2, '0');
             document.getElementById('form-bulan').value = `${year}-${month}`;
             document.getElementById('form-is-certified').checked = false;
+
+            document.querySelector('input[name="watched_by"][value="both"]').checked = true;
+            handleViewerChange();
 
             const rAku = document.getElementById('form-rating-aku');
             const rDia = document.getElementById('form-rating-dia');
@@ -752,6 +846,36 @@
             document.getElementById('detail-title').innerText = movie.judul || 'Tanpa Judul';
             document.getElementById('detail-year').innerText = movie.tahun || '';
             document.getElementById('detail-watch-month').innerText = formatMonthDisplay(movie.bulan) || '-';
+
+            const watcher = movie.watched_by || 'both';
+            const viewerBadge = document.getElementById('detail-viewer-badge');
+            const boxZald = document.getElementById('detail-box-zald');
+            const boxMicel = document.getElementById('detail-box-micel');
+            const wrapZald = document.getElementById('detail-review-zald-wrap');
+            const wrapMicel = document.getElementById('detail-review-micel-wrap');
+
+            if (watcher === 'zald') {
+                viewerBadge.innerText = "Zald Saja";
+                viewerBadge.className = "px-1.5 py-0.5 rounded bg-sky-950 border border-sky-500/40 text-sky-400 text-[9px] font-bold";
+                boxZald.style.display = 'flex';
+                boxMicel.style.display = 'none';
+                wrapZald.style.display = 'block';
+                wrapMicel.style.display = 'none';
+            } else if (watcher === 'micel') {
+                viewerBadge.innerText = "Micel Saja";
+                viewerBadge.className = "px-1.5 py-0.5 rounded bg-pink-950 border border-pink-500/40 text-pink-400 text-[9px] font-bold";
+                boxZald.style.display = 'none';
+                boxMicel.style.display = 'flex';
+                wrapZald.style.display = 'none';
+                wrapMicel.style.display = 'block';
+            } else {
+                viewerBadge.innerText = "Nonton Bareng";
+                viewerBadge.className = "px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 text-[9px] font-bold";
+                boxZald.style.display = 'flex';
+                boxMicel.style.display = 'flex';
+                wrapZald.style.display = 'block';
+                wrapMicel.style.display = 'block';
+            }
 
             const isCertified = movie.is_certified === true || movie.is_certified === 'true' || movie.is_certified === 'TRUE';
             const badgeWrapper = document.getElementById('detail-badge-wrapper');
@@ -788,12 +912,18 @@
             const form = event.target;
             const formData = new FormData(form);
             const editingId = formData.get('editing_id');
+            const watcher = formData.get('watched_by');
 
             const rAkuEl = document.getElementById('form-rating-aku');
             const rDiaEl = document.getElementById('form-rating-dia');
 
-            const validAku = validateRatingInput(rAkuEl, 'err-hint-aku', 'sky');
-            const validDia = validateRatingInput(rDiaEl, 'err-hint-dia', 'pink');
+            let validAku = true, validDia = true;
+            if (watcher === 'both' || watcher === 'zald') {
+                validAku = validateRatingInput(rAkuEl, 'err-hint-aku', 'sky');
+            }
+            if (watcher === 'both' || watcher === 'micel') {
+                validDia = validateRatingInput(rDiaEl, 'err-hint-dia', 'pink');
+            }
 
             if (!validAku || !validDia) {
                 showToast("Nilai rating tidak boleh lebih dari 10 atau kurang dari 0!", "warning");
@@ -807,11 +937,12 @@
                 bulan: rawBulan,
                 judul: formData.get('judul'),
                 tahun: parseInt(formData.get('tahun')) || 2026,
+                watched_by: watcher,
                 is_certified: isCertifiedChecked,
-                review_aku: formData.get('review_aku'),
-                rating_aku: formData.get('rating_aku').trim() !== '' ? formData.get('rating_aku').trim() : null,
-                review_dia: formData.get('review_dia'),
-                rating_dia: formData.get('rating_dia').trim() !== '' ? formData.get('rating_dia').trim() : null,
+                review_aku: (watcher === 'both' || watcher === 'zald') ? formData.get('review_aku') : null,
+                rating_aku: (watcher === 'both' || watcher === 'zald') && formData.get('rating_aku').trim() !== '' ? formData.get('rating_aku').trim() : null,
+                review_dia: (watcher === 'both' || watcher === 'micel') ? formData.get('review_dia') : null,
+                rating_dia: (watcher === 'both' || watcher === 'micel') && formData.get('rating_dia').trim() !== '' ? formData.get('rating_dia').trim() : null,
                 poster: formData.get('poster')
             };
 
@@ -859,6 +990,10 @@
             form.tahun.value = movie.tahun || '2026';
             form.bulan.value = parseMonthToInputValue(movie.bulan || '');
             
+            const watcher = movie.watched_by || 'both';
+            document.querySelector(`input[name="watched_by"][value="${watcher}"]`).checked = true;
+            handleViewerChange();
+
             const isCertified = movie.is_certified === true || movie.is_certified === 'true' || movie.is_certified === 'TRUE';
             document.getElementById('form-is-certified').checked = isCertified;
 
@@ -888,16 +1023,6 @@
 
             const idToDelete = currentDetailMovieId;
             closeDetailModal();
-
-            try {
-                const { error } = await supabaseClient
-                    .from(TABLE_NAME)
-                    .delete()
-                    .eq('id', idTrader => idToDelete); // Fixed syntax reference below using direct variable
-
-            } catch (err) {
-                // handled below safely
-            }
 
             try {
                 const { error } = await supabaseClient
