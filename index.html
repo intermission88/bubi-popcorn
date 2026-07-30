@@ -199,7 +199,7 @@
             </div>
         </section>
 
-        <!-- SECTION SEARCH & SORT & VIEWER FILTER (Kolom Cari di atas, disusul kategori Semua & Nonton Bareng) -->
+        <!-- SECTION SEARCH & SORT & VIEWER FILTER -->
         <section id="search-section" class="space-y-2.5">
             <div class="flex items-center gap-2">
                 <div class="relative flex-grow">
@@ -219,7 +219,7 @@
                 </div>
             </div>
 
-            <!-- Filter Kategori: Semua & Nonton Bareng (di depan) -->
+            <!-- Filter Kategori: Semua & Nonton Bareng -->
             <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
                 <button onclick="setViewerFilter('all', this)" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-400 text-slate-950 tap-scale flex-shrink-0 transition shadow-sm">Semua</button>
                 <button onclick="setViewerFilter('both', this)" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition">Nonton Bareng</button>
@@ -252,6 +252,33 @@
                 <button onclick="resetSearch()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-amber-400 text-xs font-bold rounded-xl tap-scale shadow-md transition">Reset Pencarian</button>
             </div>
         </section>
+
+        <!-- Footer Section -->
+        <footer class="mt-8 pt-6 pb-2 border-t border-slate-800/80 text-center space-y-3">
+            <div class="flex items-center justify-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl popcorn-gradient flex items-center justify-center text-slate-950 text-sm shadow-md flex-shrink-0 font-bold">
+                    <i class="fa-solid fa-bowl-food"></i>
+                </div>
+                <div>
+                    <h2 class="font-display font-black text-sm text-slate-100 leading-tight text-left">
+                        Bubi's Popcorn
+                    </h2>
+                    <p class="text-[11px] font-medium text-pink-400 flex items-center gap-1">
+                        <i class="fa-solid fa-heart text-[9px] animate-bounce"></i> Zald & Micel Log
+                    </p>
+                </div>
+            </div>
+            
+            <p class="text-xs text-slate-400 max-w-xs mx-auto leading-relaxed">
+                Bubi's Popcorn adalah platform yang dibuat untuk mengarsip history nonton bareng aku dan bubi
+            </p>
+
+            <div class="text-[11px] text-slate-500 flex items-center justify-center gap-1 pt-1">
+                <span>&copy; 2026</span>
+                <span>•</span>
+                <span>made with <i class="fa-solid fa-heart text-pink-500 text-[10px] mx-0.5"></i> @zaldnielsen</span>
+            </div>
+        </footer>
     </main>
 
     <!-- Floating Action Button -->
