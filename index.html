@@ -99,7 +99,6 @@
             transform: scale(0.94);
         }
 
-        /* Mencegah pergeseran latar belakang / bounce di mobile saat modal aktif */
         .modal-lock {
             overflow: hidden !important;
             position: fixed !important;
@@ -199,7 +198,7 @@
             <div class="flex items-center gap-2">
                 <div class="relative flex-grow">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
-                    <input type="text" id="search-input" oninput="renderMovies()" placeholder="Cari judul film atau bulan..." 
+                    <input type="text" id="search-input" oninput="onSearchInput()" placeholder="Cari judul film atau bulan..." 
                         class="w-full pl-9 pr-3 py-2.5 bg-cinema-900 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition shadow-inner">
                 </div>
                 
@@ -227,7 +226,7 @@
             </div>
         </section>
 
-        <!-- Movies Grid List -->
+        <!-- Movies Grid List with Infinite Scroll Pagination -->
         <section class="space-y-2.5">
             <div class="flex items-center justify-between px-1">
                 <h2 class="text-xs font-bold text-slate-300 font-display uppercase tracking-wider">Koleksi Film</h2>
@@ -235,6 +234,13 @@
             </div>
 
             <div id="movie-grid" class="grid grid-cols-2 gap-3"></div>
+
+            <!-- Loading indicator for infinite scroll -->
+            <div id="load-more-indicator" class="hidden py-6 text-center">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-cinema-900 border border-slate-800 text-xs text-amber-400 shadow-md">
+                    <i class="fa-solid fa-spinner fa-spin text-sm"></i> Memuat lebih banyak film...
+                </div>
+            </div>
 
             <div id="empty-state" class="hidden py-12 text-center space-y-3 animate-fadeIn">
                 <div class="w-14 h-14 rounded-2xl bg-cinema-900 border border-slate-800 flex items-center justify-center mx-auto text-slate-500 text-xl shadow-lg">
@@ -283,7 +289,7 @@
         </button>
     </div>
 
-    <!-- Mobile Bottom Sheet / Modal Form (Tambah/Edit) - FIXED STABLE UI/UX -->
+    <!-- Mobile Bottom Sheet / Modal Form (Tambah/Edit) -->
     <div id="add-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-end sm:items-center justify-center hidden">
         <div id="add-modal-content" class="bg-cinema-900 border-t sm:border border-slate-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[85vh] sm:h-auto sm:max-h-[85vh] transform transition-all">
             <!-- Drag Handle / Header -->
@@ -297,7 +303,7 @@
                 </button>
             </div>
 
-            <!-- Form Body with Expanded Review Areas -->
+            <!-- Form Body with Center-Aligned Padding for Year & Month Inputs -->
             <form id="add-movie-form" onsubmit="handleFormSubmit(event)" class="p-5 overflow-y-auto space-y-4 flex-grow no-scrollbar">
                 <input type="hidden" name="editing_id" id="editing_id" value="">
                 
@@ -317,12 +323,12 @@
                     <div>
                         <label class="block text-xs font-semibold text-slate-400 mb-1.5">Tahun Rilis *</label>
                         <input type="number" name="tahun" id="form-tahun" required min="1900" max="2030" value="2026" 
-                            class="w-full px-3.5 py-3 bg-cinema-950 border border-slate-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-slate-200 transition shadow-inner">
+                            class="w-full px-3.5 py-3 bg-cinema-950 border border-slate-800 rounded-xl text-xs sm:text-sm text-center focus:outline-none focus:border-amber-400 text-slate-200 transition shadow-inner">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-400 mb-1.5">Bulan Nonton *</label>
                         <input type="month" name="bulan" id="form-bulan" required 
-                            class="w-full px-3.5 py-3 bg-cinema-950 border border-slate-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-slate-200 transition shadow-inner">
+                            class="w-full px-3.5 py-3 bg-cinema-950 border border-slate-800 rounded-xl text-xs sm:text-sm text-center focus:outline-none focus:border-amber-400 text-slate-200 transition shadow-inner">
                     </div>
                 </div>
 
@@ -368,7 +374,7 @@
                     </label>
                 </div>
 
-                <!-- KOLOM REVIEW DIPERLEBAR & NYAMAN DIKETIK -->
+                <!-- KOLOM REVIEW DIPERLEBAR -->
                 <div class="space-y-3 pt-1 border-t border-slate-800">
                     <!-- Zald Rating Section -->
                     <div id="section-rating-zald" class="p-3.5 rounded-2xl bg-cinema-950 border border-sky-400/30 space-y-2.5 shadow-md">
@@ -501,9 +507,14 @@
         const TABLE_NAME = 'bubi_popcorn';
         
         let moviesData = [];
+        let filteredMoviesCache = [];
+        let displayedItemCount = 0;
+        const PAGE_SIZE = 10; // Jumlah item yang dimuat per halaman (lazy load / infinite scroll)
+        
         let currentDetailMovieId = null;
         let currentViewerFilter = 'all';
         let isTopRatedActive = false;
+        let searchDebounceTimer = null;
 
         function updateDualClocks() {
             const now = new Date();
@@ -534,7 +545,7 @@
                 btn.className = "filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition";
             });
             btnEl.className = "filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-400 text-slate-950 tap-scale flex-shrink-0 transition shadow-sm";
-            renderMovies();
+            processFilterAndRender(true);
         }
 
         function toggleTopRatedFilter(btnEl) {
@@ -544,7 +555,14 @@
             } else {
                 btnEl.className = "px-3 py-1.5 rounded-xl text-xs font-semibold bg-cinema-900 border border-slate-800 text-amber-400 tap-scale flex-shrink-0 transition flex items-center gap-1";
             }
-            renderMovies();
+            processFilterAndRender(true);
+        }
+
+        function onSearchInput() {
+            clearTimeout(searchDebounceTimer);
+            searchDebounceTimer = setTimeout(() => {
+                processFilterAndRender(true);
+            }, 250);
         }
 
         function handleViewerChange() {
@@ -664,7 +682,7 @@
             } finally {
                 calculateStats();
                 updateLastWatchedStatus();
-                renderMovies();
+                processFilterAndRender(true);
             }
         }
 
@@ -702,9 +720,7 @@
             el.innerHTML = `<i class="fa-solid fa-clock-rotate-left text-[10px]"></i> Terakhir: <span class="text-white font-bold">${lastMovie.judul || 'Film'}</span>`;
         }
 
-        function renderMovies() {
-            const grid = document.getElementById('movie-grid');
-            const emptyState = document.getElementById('empty-state');
+        function processFilterAndRender(resetPagination = false) {
             const searchVal = (document.getElementById('search-input').value || '').toLowerCase();
             const sortVal = document.getElementById('sort-select').value;
 
@@ -746,17 +762,34 @@
                 return 0;
             });
 
-            document.getElementById('movie-count-badge').innerText = `${filtered.length} Film`;
+            filteredMoviesCache = filtered;
+            document.getElementById('movie-count-badge').innerText = `${filteredMoviesCache.length} Film`;
+
+            if (resetPagination) {
+                displayedItemCount = Math.min(PAGE_SIZE, filteredMoviesCache.length);
+            }
+
+            renderGridChunk();
+        }
+
+        function renderGridChunk() {
+            const grid = document.getElementById('movie-grid');
+            const emptyState = document.getElementById('empty-state');
+            const loadMoreIndicator = document.getElementById('load-more-indicator');
 
             grid.innerHTML = '';
-            if (filtered.length === 0) {
+
+            if (filteredMoviesCache.length === 0) {
                 emptyState.classList.remove('hidden');
+                loadMoreIndicator.classList.add('hidden');
                 return;
             } else {
                 emptyState.classList.add('hidden');
             }
 
-            filtered.forEach((movie, index) => {
+            const chunkToRender = filteredMoviesCache.slice(0, displayedItemCount);
+
+            chunkToRender.forEach((movie, index) => {
                 const posterUrl = movie.poster || 'https://via.placeholder.com/300x450/0f172a/cbd5e1?text=No+Poster';
                 const watcher = movie.watched_by || 'both';
                 const dispZ = (movie.rating_aku && movie.rating_aku.toString().trim() !== '') ? movie.rating_aku : 'N/A';
@@ -765,7 +798,7 @@
                 const isCertified = movie.is_certified === true || movie.is_certified === 'true' || movie.is_certified === 'TRUE';
 
                 const card = document.createElement('div');
-                card.style.animationDelay = `${index * 0.04}s`;
+                card.style.animationDelay = `${(index % PAGE_SIZE) * 0.04}s`;
                 card.className = (isCertified 
                     ? "rounded-2xl overflow-hidden flex flex-col certified-card animate-goldGlow tap-scale cursor-pointer relative shadow-lg"
                     : "glass-card rounded-2xl overflow-hidden flex flex-col border border-slate-800/80 tap-scale cursor-pointer shadow-md hover:border-slate-700") + " animate-popIn";
@@ -847,6 +880,26 @@
                 `;
                 grid.appendChild(card);
             });
+
+            if (displayedItemCount < filteredMoviesCache.length) {
+                loadMoreIndicator.classList.remove('hidden');
+            } else {
+                loadMoreIndicator.classList.add('hidden');
+            }
+        }
+
+        // Listener Infinite Scroll ringan berbasis window scroll
+        window.addEventListener('scroll', () => {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 300) {
+                if (displayedItemCount < filteredMoviesCache.length) {
+                    displayedItemCount += PAGE_SIZE;
+                    renderGridChunk();
+                }
+            }
+        });
+
+        function renderMovies() {
+            processFilterAndRender(false);
         }
 
         function resetSearch() {
@@ -867,7 +920,7 @@
                     btn.className = "filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition";
                 }
             });
-            renderMovies();
+            processFilterAndRender(true);
         }
 
         function openAddModal() {
