@@ -150,8 +150,31 @@
     <!-- Main Container -->
     <main class="max-w-md mx-auto px-4 space-y-4 mt-2">
         
-        <!-- SECTION ATAS: Dual Clocks -->
+        <!-- SECTION ATAS: Live Counter & Dual Clocks -->
         <section class="glass-card rounded-2xl p-3.5 border border-slate-800 bg-gradient-to-br from-sky-950/30 via-cinema-900 to-pink-950/30 space-y-3 shadow-xl">
+            
+            <!-- LIVE COUNTING DAYS -->
+            <div class="text-center pb-2.5 border-b border-slate-800/80 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 w-16 h-16 bg-pink-500/10 rounded-full blur-xl pointer-events-none"></div>
+                <div class="absolute -left-4 -bottom-4 w-16 h-16 bg-amber-500/10 rounded-full blur-xl pointer-events-none"></div>
+                
+                <p class="text-[11px] font-medium text-slate-400 uppercase tracking-widest flex items-center justify-center gap-1.5 mb-1">
+                    <i class="fa-solid fa-heart text-pink-500 text-[10px] animate-bounce"></i> 
+                    Together Since 5 April 2025
+                    <i class="fa-solid fa-heart text-pink-500 text-[10px] animate-bounce"></i>
+                </p>
+                
+                <div class="flex items-baseline justify-center gap-1.5">
+                    <span id="relationship-days" class="text-2xl sm:text-3xl font-black font-display bg-gradient-to-r from-pink-400 via-amber-300 to-pink-500 bg-clip-text text-transparent animate-pulse">
+                        0
+                    </span>
+                    <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Hari Bersama</span>
+                </div>
+                <p id="relationship-detail-time" class="text-[10px] text-slate-400 mt-0.5 font-medium">
+                    Memuat waktu bersama...
+                </p>
+            </div>
+
             <div class="grid grid-cols-2 gap-2.5">
                 <!-- Zald Clock -->
                 <div class="p-2.5 rounded-xl bg-sky-950/50 border border-sky-500/20 flex flex-col justify-between">
@@ -670,6 +693,46 @@
             }
         }
         // ----------------------------------------
+
+        function updateRelationshipCounter() {
+            // Tanggal jadian: 5 April 2025
+            const startDate = new Date('2025-04-05T00:00:00');
+            const now = new Date();
+            
+            const diffTime = now - startDate;
+            if (diffTime < 0) {
+                document.getElementById('relationship-days').innerText = "0";
+                document.getElementById('relationship-detail-time').innerText = "Menuju 5 April 2025";
+                return;
+            }
+
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            let years = now.getFullYear() - startDate.getFullYear();
+            let months = now.getMonth() - startDate.getMonth();
+            let days = now.getDate() - startDate.getDate();
+
+            if (days < 0) {
+                months--;
+                const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+                days += prevMonth.getDate();
+            }
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+
+            document.getElementById('relationship-days').innerText = diffDays.toLocaleString('id-ID');
+            
+            let detailText = "";
+            if (years > 0) detailText += `${years} Tahun `;
+            if (months > 0) detailText += `${months} Bulan `;
+            detailText += `${days} Hari penuh cinta ✨`;
+            
+            document.getElementById('relationship-detail-time').innerText = detailText;
+        }
+        setInterval(updateRelationshipCounter, 1000);
+        updateRelationshipCounter();
 
         function updateDualClocks() {
             const now = new Date();
