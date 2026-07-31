@@ -104,11 +104,9 @@
             transform: scale(0.94);
         }
 
+        /* Diubah agar tidak menggunakan position: fixed yang mereset scroll browser */
         .modal-lock {
             overflow: hidden !important;
-            position: fixed !important;
-            width: 100% !important;
-            height: 100% !important;
         }
 
         .marquee-container:hover .marquee-track {
@@ -626,6 +624,7 @@
         let currentViewerFilter = 'all';
         let isTopRatedActive = false;
         let searchDebounceTimer = null;
+        let lastScrollPosition = 0; // Variabel penyimpan posisi scroll
 
         // --- MANAJEMEN PASSWORD & KUNCI AKSES ---
         const ADMIN_PASSWORD = "bubi123"; 
@@ -1170,6 +1169,9 @@
                 return;
             }
 
+            // Simpan posisi scroll saat ini sebelum modal form dibuka
+            lastScrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+
             document.getElementById('editing_id').value = '';
             document.getElementById('add-movie-form').reset();
             
@@ -1208,9 +1210,18 @@
             const modal = document.getElementById('add-modal');
             modal.classList.add('hidden');
             document.body.classList.remove('modal-lock');
+            
+            // Kembalikan ke posisi scroll semula secara instan
+            window.scrollTo({
+                top: lastScrollPosition,
+                behavior: 'instant'
+            });
         }
 
         function openDetailModal(id) {
+            // Simpan posisi scroll saat film di-tap
+            lastScrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+
             const movie = moviesData.find(m => m.id == id);
             if (!movie) return;
 
@@ -1283,6 +1294,12 @@
             const modal = document.getElementById('detail-modal');
             modal.classList.add('hidden');
             document.body.classList.remove('modal-lock');
+            
+            // Kembalikan ke posisi scroll semula secara instan agar tidak melompat ke atas
+            window.scrollTo({
+                top: lastScrollPosition,
+                behavior: 'instant'
+            });
         }
 
         async function handleFormSubmit(event) {
