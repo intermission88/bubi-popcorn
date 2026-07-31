@@ -135,11 +135,14 @@
                 </div>
             </div>
 
-            <!-- Bagian Kanan Atas: Refresh & Tombol Gembok -->
+            <!-- Bagian Kanan Atas: Ping Indicator & Tombol Gembok -->
             <div class="flex items-center gap-2">
-                <button onclick="refreshDataWithSpin()" class="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 text-slate-300 hover:text-amber-400 flex items-center justify-center transition tap-scale shadow-sm" title="Refresh Data">
-                    <i id="refresh-icon" class="fa-solid fa-rotate text-xs"></i>
-                </button>
+                <!-- Ping Indicator -->
+                <div id="ping-indicator" onclick="checkPing()" class="px-2.5 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-[11px] text-slate-300 flex items-center gap-1.5 cursor-pointer tap-scale shadow-sm transition" title="Cek Koneksi Ping">
+                    <span id="ping-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span id="ping-text" class="font-mono font-medium">-- ms</span>
+                </div>
+                <!-- Tombol Gembok -->
                 <button onclick="handleLockClick()" id="lock-btn" class="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 text-slate-400 hover:text-amber-400 flex items-center justify-center transition tap-scale shadow-sm" title="Akses Admin">
                     <i id="lock-icon" class="fa-solid fa-lock text-xs"></i>
                 </button>
@@ -694,6 +697,42 @@
         }
         // ----------------------------------------
 
+        // --- PING CHECKER FUNCTION ---
+        async function checkPing() {
+            const pingText = document.getElementById('ping-text');
+            const pingDot = document.getElementById('ping-dot');
+            if (!pingText || !pingDot) return;
+
+            pingText.innerText = "ping...";
+            pingDot.className = "w-2 h-2 rounded-full bg-amber-400 animate-ping";
+
+            const startTime = performance.now();
+            try {
+                // Menguji latensi ke server Supabase
+                await fetch(`${SUPABASE_URL}/rest/v1/`, { 
+                    method: 'HEAD',
+                    headers: { 'apikey': SUPABASE_KEY }
+                });
+                const endTime = performance.now();
+                const duration = Math.round(endTime - startTime);
+
+                pingText.innerText = `${duration} ms`;
+                if (duration < 300) {
+                    pingDot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
+                } else if (duration < 800) {
+                    pingDot.className = "w-2 h-2 rounded-full bg-amber-400 animate-pulse";
+                } else {
+                    pingDot.className = "w-2 h-2 rounded-full bg-red-400 animate-pulse";
+                }
+            } catch (err) {
+                pingText.innerText = "Error";
+                pingDot.className = "w-2 h-2 rounded-full bg-red-500";
+            }
+        }
+        // Jalankan cek ping otomatis saat pertama kali dimuat & setiap 30 detik
+        setInterval(checkPing, 30000);
+        // -----------------------------
+
         function updateRelationshipCounter() {
             // Tanggal jadian: 5 April 2025
             const startDate = new Date('2025-04-05T00:00:00');
@@ -748,14 +787,6 @@
         }
         setInterval(updateDualClocks, 1000);
         updateDualClocks();
-
-        async function refreshDataWithSpin() {
-            const icon = document.getElementById('refresh-icon');
-            if (icon) icon.classList.add('fa-spin');
-            await fetchSupabaseData();
-            setTimeout(() => icon && icon.classList.remove('fa-spin'), 600);
-            showToast("Data diperbarui!", "success");
-        }
 
         function setViewerFilter(filterType, btnEl) {
             currentViewerFilter = filterType;
@@ -901,6 +932,7 @@
                 calculateStats();
                 updateLastWatchedStatus();
                 processFilterAndRender(true);
+                checkPing();
             }
         }
 
