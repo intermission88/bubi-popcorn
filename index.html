@@ -111,7 +111,6 @@
             height: 100% !important;
         }
 
-        /* Marquee Pause on Hover/Touch */
         .marquee-container:hover .marquee-track {
             animation-play-state: paused;
         }
@@ -136,9 +135,13 @@
                 </div>
             </div>
 
+            <!-- Bagian Kanan Atas: Refresh & Tombol Gembok -->
             <div class="flex items-center gap-2">
-                <button onclick="refreshDataWithSpin()" class="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 text-slate-300 hover:text-amber-400 flex items-center justify-center transition tap-scale shadow-sm">
+                <button onclick="refreshDataWithSpin()" class="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 text-slate-300 hover:text-amber-400 flex items-center justify-center transition tap-scale shadow-sm" title="Refresh Data">
                     <i id="refresh-icon" class="fa-solid fa-rotate text-xs"></i>
+                </button>
+                <button onclick="handleLockClick()" id="lock-btn" class="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 text-slate-400 hover:text-amber-400 flex items-center justify-center transition tap-scale shadow-sm" title="Akses Admin">
+                    <i id="lock-icon" class="fa-solid fa-lock text-xs"></i>
                 </button>
             </div>
         </div>
@@ -173,13 +176,11 @@
 
             <!-- INFINITE MARQUEE LDR QUOTES & DISTANCE -->
             <div class="pt-2 border-t border-slate-800/80 overflow-hidden relative marquee-container">
-                <!-- Gradient Fade Mask for Left & Right Edges -->
                 <div class="absolute left-0 inset-y-0 w-6 bg-gradient-to-r from-slate-900 to-transparent z-10 pointer-events-none"></div>
                 <div class="absolute right-0 inset-y-0 w-6 bg-gradient-to-l from-slate-900 to-transparent z-10 pointer-events-none"></div>
 
                 <div class="flex whitespace-nowrap overflow-hidden">
                     <div class="flex items-center gap-6 marquee-track animate-marquee py-0.5">
-                        <!-- Content Item Set 1 -->
                         <span class="inline-flex items-center gap-1.5 text-xs text-pink-400 font-semibold flex-shrink-0">
                             <i class="fa-solid fa-earth-asia"></i> ~4,800 km apart
                         </span>
@@ -205,7 +206,6 @@
                         </span>
                         <span class="text-slate-600 text-[10px]">•</span>
 
-                        <!-- Content Item Set 2 (Exact Duplicate for Infinite Seamless Loop) -->
                         <span class="inline-flex items-center gap-1.5 text-xs text-pink-400 font-semibold flex-shrink-0">
                             <i class="fa-solid fa-earth-asia"></i> ~4,800 km apart
                         </span>
@@ -269,7 +269,6 @@
                         class="w-full pl-9 pr-3 py-2.5 bg-cinema-900 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition shadow-inner">
                 </div>
                 
-                <!-- Sort Dropdown -->
                 <div class="relative">
                     <select id="sort-select" onchange="renderMovies()" class="px-3 py-2.5 bg-cinema-900 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-300 focus:outline-none focus:border-amber-400 transition appearance-none pr-8 cursor-pointer tap-scale">
                         <option value="newest">Bulan Terkini</option>
@@ -280,7 +279,6 @@
                 </div>
             </div>
 
-            <!-- Filter Kategori: Semua & Nonton Bareng -->
             <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
                 <button onclick="setViewerFilter('all', this)" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-400 text-slate-950 tap-scale flex-shrink-0 transition shadow-sm">Semua</button>
                 <button onclick="setViewerFilter('both', this)" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-cinema-900 border border-slate-800 text-slate-300 tap-scale flex-shrink-0 transition">Nonton Bareng</button>
@@ -293,7 +291,7 @@
             </div>
         </section>
 
-        <!-- Movies Grid List with Infinite Scroll Pagination -->
+        <!-- Movies Grid List -->
         <section class="space-y-2.5">
             <div class="flex items-center justify-between px-1">
                 <h2 class="text-xs font-bold text-slate-300 font-display uppercase tracking-wider">Koleksi Film</h2>
@@ -302,7 +300,6 @@
 
             <div id="movie-grid" class="grid grid-cols-2 gap-3"></div>
 
-            <!-- Loading indicator for infinite scroll -->
             <div id="load-more-indicator" class="hidden py-6 text-center">
                 <div class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-cinema-900 border border-slate-800 text-xs text-amber-400 shadow-md">
                     <i class="fa-solid fa-spinner fa-spin text-sm"></i> Memuat lebih banyak film...
@@ -349,17 +346,40 @@
         </footer>
     </main>
 
-    <!-- Floating Action Button -->
-    <div class="fixed bottom-6 right-6 z-40">
+    <!-- Floating Action Button (Hanya tampil jika sudah unlocked) -->
+    <div id="fab-container" class="fixed bottom-6 right-6 z-40 hidden">
         <button onclick="openAddModal()" class="w-14 h-14 rounded-full popcorn-gradient flex items-center justify-center text-slate-950 shadow-2xl border-2 border-cinema-950 tap-scale transition hover:rotate-90 duration-300">
             <i class="fa-solid fa-plus text-xl"></i>
         </button>
     </div>
 
+    <!-- Modal Masukkan Password -->
+    <div id="password-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center hidden">
+        <div class="bg-cinema-900 border border-slate-800 w-11/12 max-w-xs rounded-2xl shadow-2xl overflow-hidden p-5 space-y-4 animate-popIn">
+            <div class="text-center space-y-1">
+                <div class="w-12 h-12 rounded-2xl bg-amber-400/10 border border-amber-400/20 text-amber-400 flex items-center justify-center mx-auto text-lg mb-2">
+                    <i class="fa-solid fa-lock" id="modal-lock-icon"></i>
+                </div>
+                <h3 class="font-bold text-sm text-slate-100 font-display">Akses Admin Terkunci</h3>
+                <p class="text-[11px] text-slate-400">Masukkan password untuk mengizinkan tambah/edit film.</p>
+            </div>
+
+            <form onsubmit="handlePasswordSubmit(event)" class="space-y-3">
+                <div>
+                    <input type="password" id="admin-password-input" required placeholder="Masukkan password..." 
+                        class="w-full px-3.5 py-2.5 bg-cinema-950 border border-slate-800 rounded-xl text-xs text-center text-slate-200 focus:outline-none focus:border-amber-400 transition shadow-inner">
+                </div>
+                <div class="flex items-center gap-2 pt-1">
+                    <button type="button" onclick="closePasswordModal()" class="w-1/2 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 tap-scale transition">Batal</button>
+                    <button type="submit" class="w-1/2 py-2.5 rounded-xl popcorn-gradient font-bold text-xs text-slate-950 shadow-md tap-scale transition">Buka Kunci</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Mobile Bottom Sheet / Modal Form (Tambah/Edit) -->
     <div id="add-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-end sm:items-center justify-center hidden">
         <div id="add-modal-content" class="bg-cinema-900 border-t sm:border border-slate-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[85vh] sm:h-auto sm:max-h-[85vh] transform transition-all">
-            <!-- Drag Handle / Header -->
             <div class="px-5 py-3.5 border-b border-slate-800 flex items-center justify-between flex-shrink-0 bg-cinema-900/90">
                 <div class="flex items-center gap-2">
                     <div class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></div>
@@ -370,7 +390,6 @@
                 </button>
             </div>
 
-            <!-- Form Body with Center-Aligned Padding for Year & Month Inputs -->
             <form id="add-movie-form" onsubmit="handleFormSubmit(event)" class="p-5 overflow-y-auto space-y-4 flex-grow no-scrollbar">
                 <input type="hidden" name="editing_id" id="editing_id" value="">
                 
@@ -399,7 +418,6 @@
                     </div>
                 </div>
 
-                <!-- PILIHAN SIAPA YANG NONTON -->
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 mb-1.5">Siapa yang Nonton? *</label>
                     <div class="grid grid-cols-3 gap-2">
@@ -424,7 +442,6 @@
                     </div>
                 </div>
 
-                <!-- Toggle Certified Fresh -->
                 <div class="p-3.5 rounded-xl bg-amber-950/20 border border-amber-500/30 flex items-center justify-between shadow-inner">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-xl gold-gradient flex items-center justify-center text-slate-950 text-xs shadow-md">
@@ -441,9 +458,7 @@
                     </label>
                 </div>
 
-                <!-- KOLOM REVIEW DIPERLEBAR -->
                 <div class="space-y-3 pt-1 border-t border-slate-800">
-                    <!-- Zald Rating Section -->
                     <div id="section-rating-zald" class="p-3.5 rounded-2xl bg-cinema-950 border border-sky-400/30 space-y-2.5 shadow-md">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2">
@@ -462,7 +477,6 @@
                             class="w-full p-3 bg-cinema-900 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-sky-400 transition shadow-inner leading-relaxed"></textarea>
                     </div>
 
-                    <!-- Micel Rating Section -->
                     <div id="section-rating-micel" class="p-3.5 rounded-2xl bg-cinema-950 border border-pink-400/30 space-y-2.5 shadow-md">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2">
@@ -482,7 +496,6 @@
                     </div>
                 </div>
 
-                <!-- Action Buttons Bottom Sheet -->
                 <div class="pt-4 pb-6 flex items-center justify-end gap-3 border-t border-slate-800">
                     <button type="button" onclick="closeAddModal()" class="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 tap-scale transition">Batal</button>
                     <button type="submit" id="submit-btn" class="px-6 py-3 rounded-xl popcorn-gradient font-bold text-xs text-slate-950 shadow-lg tap-scale transition">
@@ -553,11 +566,16 @@
                     </div>
                 </div>
 
-                <div class="pt-3 flex items-center justify-between border-t border-slate-800/80">
+                <!-- Tombol Edit & Hapus (Hanya muncul jika sudah unlocked) -->
+                <div id="detail-admin-actions" class="pt-3 flex items-center justify-between border-t border-slate-800/80 hidden">
                     <div class="flex items-center gap-2">
                         <button onclick="editCurrentMovie()" class="px-3.5 py-2 rounded-xl bg-sky-400/10 border border-sky-400/20 text-sky-400 text-xs font-semibold tap-scale shadow-sm">Edit</button>
                         <button onclick="deleteCurrentMovie()" class="px-3.5 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold tap-scale shadow-sm">Hapus</button>
                     </div>
+                    <button onclick="closeDetailModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 tap-scale shadow-sm">Tutup</button>
+                </div>
+                <!-- Tombol Tutup Saja Jika Terkunci -->
+                <div id="detail-public-actions" class="pt-3 flex items-center justify-end border-t border-slate-800/80">
                     <button onclick="closeDetailModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 tap-scale shadow-sm">Tutup</button>
                 </div>
             </div>
@@ -576,12 +594,82 @@
         let moviesData = [];
         let filteredMoviesCache = [];
         let displayedItemCount = 0;
-        const PAGE_SIZE = 10; // Jumlah item yang dimuat per halaman (lazy load / infinite scroll)
+        const PAGE_SIZE = 10;
         
         let currentDetailMovieId = null;
         let currentViewerFilter = 'all';
         let isTopRatedActive = false;
         let searchDebounceTimer = null;
+
+        // --- MANAJEMEN PASSWORD & KUNCI AKSES ---
+        const ADMIN_PASSWORD = "bubi123"; // Ganti password sesuai keinginanmu di sini!
+        let isAdminUnlocked = localStorage.getItem('bubi_admin_unlocked') === 'true';
+
+        function updateLockUI() {
+            const lockIcon = document.getElementById('lock-icon');
+            const lockBtn = document.getElementById('lock-btn');
+            const fabContainer = document.getElementById('fab-container');
+            const adminActions = document.getElementById('detail-admin-actions');
+            const publicActions = document.getElementById('detail-public-actions');
+
+            if (isAdminUnlocked) {
+                if (lockIcon) lockIcon.className = "fa-solid fa-lock-open text-xs text-amber-400";
+                if (lockBtn) lockBtn.className = "w-9 h-9 rounded-full bg-amber-400/10 border border-amber-500/40 text-amber-400 flex items-center justify-center transition tap-scale shadow-sm";
+                if (fabContainer) fabContainer.classList.remove('hidden');
+                if (adminActions) adminActions.classList.remove('hidden');
+                if (publicActions) publicActions.classList.add('hidden');
+            } else {
+                if (lockIcon) lockIcon.className = "fa-solid fa-lock text-xs text-slate-400";
+                if (lockBtn) lockBtn.className = "w-9 h-9 rounded-full bg-slate-900 border border-slate-800 text-slate-400 hover:text-amber-400 flex items-center justify-center transition tap-scale shadow-sm";
+                if (fabContainer) fabContainer.classList.add('hidden');
+                if (adminActions) adminActions.classList.add('hidden');
+                if (publicActions) publicActions.classList.remove('hidden');
+            }
+        }
+
+        function handleLockClick() {
+            if (isAdminUnlocked) {
+                if (confirm("Kunci kembali akses admin? Publik tidak akan bisa menambah/edit film.")) {
+                    isAdminUnlocked = false;
+                    localStorage.removeItem('bubi_admin_unlocked');
+                    updateLockUI();
+                    showToast("Akses dikunci kembali.", "warning");
+                }
+            } else {
+                openPasswordModal();
+            }
+        }
+
+        function openPasswordModal() {
+            const modal = document.getElementById('password-modal');
+            const passInput = document.getElementById('admin-password-input');
+            passInput.value = '';
+            modal.classList.remove('hidden');
+            setTimeout(() => passInput.focus(), 100);
+        }
+
+        function closePasswordModal() {
+            document.getElementById('password-modal').classList.add('hidden');
+        }
+
+        function handlePasswordSubmit(event) {
+            event.preventDefault();
+            const passInput = document.getElementById('admin-password-input').value;
+
+            if (passInput === ADMIN_PASSWORD) {
+                isAdminUnlocked = true;
+                localStorage.setItem('bubi_admin_unlocked', 'true');
+                updateLockUI();
+                closePasswordModal();
+                showToast("Akses Terbuka! Mode Admin Aktif.", "success");
+            } else {
+                showToast("Password salah!", "warning");
+                const passInputEl = document.getElementById('admin-password-input');
+                passInputEl.classList.add('border-red-500', 'animate-shake');
+                setTimeout(() => passInputEl.classList.remove('border-red-500', 'animate-shake'), 400);
+            }
+        }
+        // ----------------------------------------
 
         function updateDualClocks() {
             const now = new Date();
@@ -930,18 +1018,14 @@
                 card.innerHTML = `
                     <div class="relative aspect-[3/4] w-full overflow-hidden bg-cinema-950">
                         <img src="${posterUrl}" alt="${movie.judul}" class="w-full h-full object-cover transform hover:scale-110 transition duration-500" onerror="this.src='https://via.placeholder.com/300x450/0f172a/cbd5e1?text=No+Poster'">
-                        
                         <span class="absolute top-2 right-2 bg-cinema-950/85 backdrop-blur px-2 py-0.5 rounded-lg text-[10px] font-bold text-slate-300 border border-slate-800">${movie.tahun || ''}</span>
-                        
                         ${watcherBadgeHTML}
                     </div>
-
                     <div class="p-2.5 flex flex-col justify-between flex-grow space-y-2">
                         <div>
                             <h3 class="font-display font-bold text-xs sm:text-sm ${isCertified ? 'text-amber-200' : 'text-slate-100'} line-clamp-1">${movie.judul || 'Tanpa Judul'}</h3>
                             <p class="text-[10px] text-slate-400 line-clamp-1">${displayMonthText || '-'}</p>
                         </div>
-
                         ${ratingsHTML}
                     </div>
                 `;
@@ -955,7 +1039,6 @@
             }
         }
 
-        // Listener Infinite Scroll ringan berbasis window scroll
         window.addEventListener('scroll', () => {
             if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 300) {
                 if (displayedItemCount < filteredMoviesCache.length) {
@@ -991,6 +1074,12 @@
         }
 
         function openAddModal() {
+            if (!isAdminUnlocked) {
+                showToast("Akses dikunci! Masukkan password via ikon gembok.", "warning");
+                openPasswordModal();
+                return;
+            }
+
             document.getElementById('editing_id').value = '';
             document.getElementById('add-movie-form').reset();
             
@@ -1108,6 +1197,11 @@
 
         async function handleFormSubmit(event) {
             event.preventDefault();
+            if (!isAdminUnlocked) {
+                showToast("Akses ditolak! Masukkan password admin terlebih dahulu.", "warning");
+                return;
+            }
+
             const form = event.target;
             const formData = new FormData(form);
             const editingId = formData.get('editing_id');
@@ -1177,6 +1271,11 @@
         }
 
         function editCurrentMovie() {
+            if (!isAdminUnlocked) {
+                showToast("Akses ditolak!", "warning");
+                return;
+            }
+
             const movie = moviesData.find(m => m.id == currentDetailMovieId);
             if (!movie) return;
 
@@ -1219,6 +1318,11 @@
         }
 
         async function deleteCurrentMovie() {
+            if (!isAdminUnlocked) {
+                showToast("Akses ditolak!", "warning");
+                return;
+            }
+
             if (!currentDetailMovieId || !confirm("Hapus ulasan film ini?")) return;
 
             const idToDelete = currentDetailMovieId;
@@ -1259,7 +1363,10 @@
             }, 2500);
         }
 
-        document.addEventListener('DOMContentLoaded', fetchSupabaseData);
+        document.addEventListener('DOMContentLoaded', () => {
+            updateLockUI();
+            fetchSupabaseData();
+        });
     </script>
 </body>
 </html>
