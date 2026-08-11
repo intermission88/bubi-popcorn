@@ -104,7 +104,6 @@
             transform: scale(0.94);
         }
 
-        /* Diubah agar tidak menggunakan position: fixed yang mereset scroll browser */
         .modal-lock {
             overflow: hidden !important;
         }
@@ -255,31 +254,6 @@
                         </span>
                         <span class="text-slate-600 text-[10px]">•</span>
                     </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- SECTION GABUNGAN: Ringkasan Nonton & Terakhir Nonton -->
-        <section id="stats-section" class="glass-card rounded-2xl p-4 border border-slate-800/80 space-y-3 shadow-xl">
-            <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider font-display">Ringkasan & Terakhir Nonton</span>
-                <span id="last-watched-text" class="text-amber-400 font-medium text-xs truncate max-w-[210px] bg-amber-400/10 px-2.5 py-1 rounded-lg border border-amber-400/20">
-                    <i class="fa-solid fa-clock-rotate-left text-[10px]"></i> Memuat...
-                </span>
-            </div>
-            
-            <div class="grid grid-cols-3 gap-2.5">
-                <div class="bg-cinema-950/80 p-3 rounded-xl border border-slate-800/80 text-center transition hover:border-slate-700 shadow-inner">
-                    <span class="text-[10px] text-slate-400 font-medium block mb-1">Bulan Ini</span>
-                    <span id="month-movie-count" class="text-lg font-bold font-display text-sky-400">0</span>
-                </div>
-                <div class="bg-cinema-950/80 p-3 rounded-xl border border-slate-800/80 text-center transition hover:border-slate-700 shadow-inner">
-                    <span class="text-[10px] text-slate-400 font-medium block mb-1">Tahun Ini</span>
-                    <span id="year-movie-count" class="text-lg font-bold font-display text-pink-400">0</span>
-                </div>
-                <div class="bg-cinema-950/80 p-3 rounded-xl border border-slate-800/80 text-center transition hover:border-slate-700 shadow-inner">
-                    <span class="text-[10px] text-slate-400 font-medium block mb-1">Total</span>
-                    <span id="total-movie-count" class="text-lg font-bold font-display text-amber-400">0</span>
                 </div>
             </div>
         </section>
@@ -624,7 +598,7 @@
         let currentViewerFilter = 'all';
         let isTopRatedActive = false;
         let searchDebounceTimer = null;
-        let lastScrollPosition = 0; // Variabel penyimpan posisi scroll
+        let lastScrollPosition = 0;
 
         // --- MANAJEMEN PASSWORD & KUNCI AKSES ---
         const ADMIN_PASSWORD = "bubi123"; 
@@ -923,45 +897,9 @@
             } catch (err) {
                 console.warn("Supabase Fetch Failed:", err);
             } finally {
-                calculateStats();
-                updateLastWatchedStatus();
                 processFilterAndRender(true);
                 checkPing();
             }
-        }
-
-        function calculateStats() {
-            const now = new Date();
-            const currYear = now.getFullYear().toString();
-            const monthNames = ["januari", "februari", "maret", "april", "mei", "juni", "juli", "agustus", "september", "oktober", "november", "desember"];
-            const currMonth = monthNames[now.getMonth()];
-
-            let monthCount = 0, yearCount = 0;
-
-            moviesData.forEach(m => {
-                const bulanStr = (m.bulan || '').toLowerCase();
-                const tahunStr = (m.tahun || '').toString();
-
-                if (tahunStr === currYear || bulanStr.includes(currYear)) {
-                    yearCount++;
-                    if (bulanStr.includes(currMonth)) monthCount++;
-                }
-            });
-
-            document.getElementById('month-movie-count').innerText = monthCount;
-            document.getElementById('year-movie-count').innerText = yearCount;
-            document.getElementById('total-movie-count').innerText = moviesData.length;
-        }
-
-        function updateLastWatchedStatus() {
-            const el = document.getElementById('last-watched-text');
-            if (!el) return;
-            if (moviesData.length === 0) {
-                el.innerHTML = `<i class="fa-solid fa-clock-rotate-left text-[10px]"></i> Belum ada film`;
-                return;
-            }
-            const lastMovie = moviesData[moviesData.length - 1];
-            el.innerHTML = `<i class="fa-solid fa-clock-rotate-left text-[10px]"></i> Terakhir: <span class="text-white font-bold">${lastMovie.judul || 'Film'}</span>`;
         }
 
         function processFilterAndRender(resetPagination = false) {
@@ -1169,7 +1107,6 @@
                 return;
             }
 
-            // Simpan posisi scroll saat ini sebelum modal form dibuka
             lastScrollPosition = window.pageYOffset || document.documentElement.scrollTop;
 
             document.getElementById('editing_id').value = '';
@@ -1211,7 +1148,6 @@
             modal.classList.add('hidden');
             document.body.classList.remove('modal-lock');
             
-            // Kembalikan ke posisi scroll semula secara instan
             window.scrollTo({
                 top: lastScrollPosition,
                 behavior: 'instant'
@@ -1219,7 +1155,6 @@
         }
 
         function openDetailModal(id) {
-            // Simpan posisi scroll saat film di-tap
             lastScrollPosition = window.pageYOffset || document.documentElement.scrollTop;
 
             const movie = moviesData.find(m => m.id == id);
@@ -1295,7 +1230,6 @@
             modal.classList.add('hidden');
             document.body.classList.remove('modal-lock');
             
-            // Kembalikan ke posisi scroll semula secara instan agar tidak melompat ke atas
             window.scrollTo({
                 top: lastScrollPosition,
                 behavior: 'instant'
