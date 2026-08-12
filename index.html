@@ -155,120 +155,125 @@
     <!-- Main Container -->
     <main class="max-w-md mx-auto px-4 space-y-4 mt-3">
         
-        <!-- SECTION ATAS: Live Counter & Dual Clocks -->
-        <section class="glass-card rounded-2xl p-4 border border-neutral-800 bg-gradient-to-br from-black via-neutral-950 to-black space-y-3.5 shadow-2xl">
-            
-            <!-- LIVE COUNTING DAYS -->
-            <div class="text-center pb-3 border-b border-neutral-900 relative overflow-hidden">
-                <div class="absolute -right-6 -top-6 w-20 h-20 bg-pink-500/10 rounded-full blur-2xl pointer-events-none"></div>
-                <div class="absolute -left-6 -bottom-6 w-20 h-20 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
-                
-                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-900 border border-neutral-800 text-[11px] font-medium text-slate-300 mb-2 shadow-inner">
-                    <i class="fa-solid fa-heart text-pink-500 text-[10px] animate-bounce"></i> 
-                    <span>Sejak 5 April 2025</span>
-                    <i class="fa-solid fa-heart text-pink-500 text-[10px] animate-bounce"></i>
-                </div>
-                
-                <div class="flex items-baseline justify-center gap-1.5">
-                    <span id="relationship-days" class="text-3xl font-black font-display bg-gradient-to-r from-pink-400 via-amber-300 to-pink-500 bg-clip-text text-transparent">
-                        0
-                    </span>
-                    <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Hari Bersama</span>
-                </div>
-                <p id="relationship-detail-time" class="text-[11px] text-slate-400 mt-1 font-medium">
-                    Memuat waktu bersama...
-                </p>
-            </div>
+        <!-- SECTION ATAS: Revamped Compact Layout (Visual Hierarchy & iPhone 15 Pro Optimized) -->
+        <section class="glass-card rounded-2xl p-3.5 border border-neutral-800 bg-gradient-to-br from-black via-neutral-950 to-black space-y-3 shadow-2xl relative overflow-hidden">
+            <div class="absolute -right-10 -top-10 w-24 h-24 bg-pink-500/10 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="absolute -left-10 -bottom-10 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
-            <div class="grid grid-cols-2 gap-3">
-                <div class="grid grid-cols-2 gap-3">
-                <!-- Zald Clock -->
-                <div class="p-3 rounded-xl bg-sky-950/30 border border-sky-500/20 flex flex-col justify-between shadow-inner">
-                    <div class="flex flex-col gap-1.5 mb-2">
-                        <div class="flex items-center gap-2">
-                            <img src="assets/pfp_zald.png" alt="Zald" class="w-6 h-6 rounded-lg object-cover shadow-sm">
-                            <span class="text-[11px] font-bold text-sky-400 uppercase tracking-wider">Zald</span>
+            <!-- Header Relationship Badge & Days (Compact Single Row / Stacked Clean) -->
+            <div class="flex items-center justify-between bg-neutral-900/60 border border-neutral-800/80 rounded-xl px-3 py-2.5 shadow-inner">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-pink-500/15 border border-pink-500/30 flex items-center justify-center text-pink-400 text-xs flex-shrink-0">
+                        <i class="fa-solid fa-heart animate-bounce"></i>
+                    </div>
+                    <div>
+                        <div class="text-[10px] text-slate-400 font-medium flex items-center gap-1">
+                            <span>Sejak 5 April 2025</span>
                         </div>
-                        <div>
-                            <span class="text-[10px] font-semibold text-sky-300/80 bg-sky-900/40 px-2 py-0.5 rounded inline-block">GMT +5:30</span>
+                        <div id="relationship-detail-time" class="text-[10px] font-semibold text-slate-300">
+                            Memuat waktu...
                         </div>
                     </div>
-                    <div id="zald-clock" class="text-base font-black font-display text-sky-200 tracking-tight">00:00:00</div>
-                    <span id="zald-date" class="text-[10px] text-slate-400 mt-0.5">-- --- ----</span>
+                </div>
+                <div class="text-right">
+                    <div class="flex items-baseline justify-end gap-1">
+                        <span id="relationship-days" class="text-xl font-black font-display bg-gradient-to-r from-pink-400 via-amber-300 to-pink-500 bg-clip-text text-transparent">
+                            0
+                        </span>
+                        <span class="text-[10px] font-bold text-slate-300 uppercase tracking-wider">Hari</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dual Clocks Grid (Lebih Compact & Sejajar) -->
+            <div class="grid grid-cols-2 gap-2.5">
+                <!-- Zald Clock -->
+                <div class="p-2.5 rounded-xl bg-sky-950/25 border border-sky-500/20 flex flex-col justify-between shadow-inner">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <div class="flex items-center gap-1.5">
+                            <img src="assets/pfp_zald.png" alt="Zald" class="w-5 h-5 rounded-md object-cover shadow-sm">
+                            <span class="text-[10px] font-bold text-sky-400 uppercase tracking-wider">Zald</span>
+                        </div>
+                        <span class="text-[9px] font-semibold text-sky-300/80 bg-sky-900/40 px-1 py-0.5 rounded">GMT+5:30</span>
+                    </div>
+                    <div class="flex items-baseline justify-between">
+                        <div id="zald-clock" class="text-sm font-black font-display text-sky-200 tracking-tight">00:00:00</div>
+                        <span id="zald-date" class="text-[9px] text-slate-400">-- ---</span>
+                    </div>
                 </div>
 
                 <!-- Micel Clock -->
-                <div class="p-3 rounded-xl bg-pink-950/30 border border-pink-500/20 flex flex-col justify-between shadow-inner">
-                    <div class="flex flex-col gap-1.5 mb-2">
-                        <div class="flex items-center gap-2">
-                            <img src="assets/pfp_micel.png" alt="Micel" class="w-6 h-6 rounded-lg object-cover shadow-sm">
-                            <span class="text-[11px] font-bold text-pink-400 uppercase tracking-wider">Micel</span>
+                <div class="p-2.5 rounded-xl bg-pink-950/25 border border-pink-500/20 flex flex-col justify-between shadow-inner">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <div class="flex items-center gap-1.5">
+                            <img src="assets/pfp_micel.png" alt="Micel" class="w-5 h-5 rounded-md object-cover shadow-sm">
+                            <span class="text-[10px] font-bold text-pink-400 uppercase tracking-wider">Micel</span>
                         </div>
-                        <div>
-                            <span class="text-[10px] font-semibold text-pink-300/80 bg-pink-900/40 px-2 py-0.5 rounded inline-block">GMT +9:00</span>
-                        </div>
+                        <span class="text-[9px] font-semibold text-pink-300/80 bg-pink-900/40 px-1 py-0.5 rounded">GMT+9:00</span>
                     </div>
-                    <div id="micel-clock" class="text-base font-black font-display text-pink-200 tracking-tight">00:00:00</div>
-                    <span id="micel-date" class="text-[10px] text-slate-400 mt-0.5">-- --- ----</span>
+                    <div class="flex items-baseline justify-between">
+                        <div id="micel-clock" class="text-sm font-black font-display text-pink-200 tracking-tight">00:00:00</div>
+                        <span id="micel-date" class="text-[9px] text-slate-400">-- ---</span>
+                    </div>
                 </div>
             </div>
 
             <!-- INFINITE MARQUEE LDR QUOTES & DISTANCE -->
-            <div class="pt-2 border-t border-neutral-900 overflow-hidden relative marquee-container">
+            <div class="pt-1.5 border-t border-neutral-900 overflow-hidden relative marquee-container">
                 <div class="absolute left-0 inset-y-0 w-8 bg-gradient-to-r from-neutral-950 to-transparent z-10 pointer-events-none"></div>
                 <div class="absolute right-0 inset-y-0 w-8 bg-gradient-to-l from-neutral-950 to-transparent z-10 pointer-events-none"></div>
 
                 <div class="flex whitespace-nowrap overflow-hidden">
                     <div class="flex items-center gap-6 marquee-track animate-marquee py-1">
-                        <span class="inline-flex items-center gap-1.5 text-xs text-pink-400 font-semibold flex-shrink-0">
+                        <span class="inline-flex items-center gap-1.5 text-[11px] text-pink-400 font-semibold flex-shrink-0">
                             <i class="fa-solid fa-earth-asia"></i> ~4,800 km apart
                         </span>
-                        <span class="text-slate-700 text-[10px]">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-xs text-slate-300 italic flex-shrink-0">
+                        <span class="text-slate-700 text-[9px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 italic flex-shrink-0">
                             "Distance is just a test of how far love can travel."
                         </span>
-                        <span class="text-slate-700 text-[10px]">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-xs text-pink-400 font-semibold flex-shrink-0">
-                            <i class="fa-solid fa-heart text-[10px]"></i> Two hearts, different time zones
+                        <span class="text-slate-700 text-[9px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-[11px] text-pink-400 font-semibold flex-shrink-0">
+                            <i class="fa-solid fa-heart text-[9px]"></i> Two hearts, different time zones
                         </span>
-                        <span class="text-slate-700 text-[10px]">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-xs text-slate-300 italic flex-shrink-0">
+                        <span class="text-slate-700 text-[9px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 italic flex-shrink-0">
                             "In true love the smallest distance is too great, and the greatest distance can be bridged."
                         </span>
-                        <span class="text-slate-700 text-[10px]">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-xs text-amber-400 font-semibold flex-shrink-0">
-                            <i class="fa-solid fa-plane text-[10px]"></i> Counting down the days to meet
+                        <span class="text-slate-700 text-[9px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-[11px] text-amber-400 font-semibold flex-shrink-0">
+                            <i class="fa-solid fa-plane text-[9px]"></i> Counting down the days to meet
                         </span>
-                        <span class="text-slate-700 text-[10px]">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-xs text-slate-300 italic flex-shrink-0">
+                        <span class="text-slate-700 text-[9px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 italic flex-shrink-0">
                             "Miles apart, but close at heart."
                         </span>
-                        <span class="text-slate-700 text-[10px]">•</span>
+                        <span class="text-slate-700 text-[9px]">•</span>
 
-                        <span class="inline-flex items-center gap-1.5 text-xs text-pink-400 font-semibold flex-shrink-0">
+                        <span class="inline-flex items-center gap-1.5 text-[11px] text-pink-400 font-semibold flex-shrink-0">
                             <i class="fa-solid fa-earth-asia"></i> ~4,800 km apart
                         </span>
-                        <span class="text-slate-700 text-[10px]">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-xs text-slate-300 italic flex-shrink-0">
+                        <span class="text-slate-700 text-[9px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 italic flex-shrink-0">
                             "Distance is just a test of how far love can travel."
                         </span>
-                        <span class="text-slate-700 text-[10px]">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-xs text-pink-400 font-semibold flex-shrink-0">
-                            <i class="fa-solid fa-heart text-[10px]"></i> Two hearts, different time zones
+                        <span class="text-slate-700 text-[9px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-[11px] text-pink-400 font-semibold flex-shrink-0">
+                            <i class="fa-solid fa-heart text-[9px]"></i> Two hearts, different time zones
                         </span>
-                        <span class="text-slate-700 text-[10px]">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-xs text-slate-300 italic flex-shrink-0">
+                        <span class="text-slate-700 text-[9px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 italic flex-shrink-0">
                             "In true love the smallest distance is too great, and the greatest distance can be bridged."
                         </span>
-                        <span class="text-slate-700 text-[10px]">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-xs text-amber-400 font-semibold flex-shrink-0">
-                            <i class="fa-solid fa-plane text-[10px]"></i> Counting down the days to meet
+                        <span class="text-slate-700 text-[9px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-[11px] text-amber-400 font-semibold flex-shrink-0">
+                            <i class="fa-solid fa-plane text-[9px]"></i> Counting down the days to meet
                         </span>
-                        <span class="text-slate-700 text-[10px]">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-xs text-slate-300 italic flex-shrink-0">
+                        <span class="text-slate-700 text-[9px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 italic flex-shrink-0">
                             "Miles apart, but close at heart."
                         </span>
-                        <span class="text-slate-700 text-[10px]">•</span>
+                        <span class="text-slate-700 text-[9px]">•</span>
                     </div>
                 </div>
             </div>
@@ -829,9 +834,9 @@
             document.getElementById('relationship-days').innerText = diffDays.toLocaleString('id-ID');
             
             let detailText = "";
-            if (years > 0) detailText += `${years} Tahun `;
-            if (months > 0) detailText += `${months} Bulan `;
-            detailText += `${days} Hari penuh cinta ✨`;
+            if (years > 0) detailText += `${years} Thn `;
+            if (months > 0) detailText += `${months} Bln `;
+            detailText += `${days} Hari`;
             
             document.getElementById('relationship-detail-time').innerText = detailText;
         }
@@ -879,9 +884,9 @@
         function updateDualClocks() {
             const now = new Date();
             const zaldTime = now.toLocaleTimeString('id-ID', { timeZone: 'Asia/Colombo', hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            const zaldDate = now.toLocaleDateString('id-ID', { timeZone: 'Asia/Colombo', weekday: 'short', day: 'numeric', month: 'short' });
+            const zaldDate = now.toLocaleDateString('id-ID', { timeZone: 'Asia/Colombo', day: 'numeric', month: 'short' });
             const micelTime = now.toLocaleTimeString('id-ID', { timeZone: 'Asia/Tokyo', hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            const micelDate = now.toLocaleDateString('id-ID', { timeZone: 'Asia/Tokyo', weekday: 'short', day: 'numeric', month: 'short' });
+            const micelDate = now.toLocaleDateString('id-ID', { timeZone: 'Asia/Tokyo', day: 'numeric', month: 'short' });
 
             document.getElementById('zald-clock').innerText = zaldTime;
             document.getElementById('zald-date').innerText = zaldDate;
@@ -1128,7 +1133,6 @@
             const chunkToRender = filteredMoviesCache.slice(0, displayedItemCount);
 
             chunkToRender.forEach((movie, index) => {
-                // Perbaikan Estetik: Fallback custom poster bergaya bioskop yang sleek jika URL kosong
                 const posterUrl = (movie.poster && movie.poster.trim() !== '') ? movie.poster : 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=600&auto=format&fit=crop';
                 const watcher = movie.watched_by || 'both';
                 const dispZ = (movie.rating_aku && movie.rating_aku.toString().trim() !== '') ? movie.rating_aku : 'N/A';
@@ -1304,7 +1308,6 @@
             }, 100);
         }
 
-        // QoL: Konfirmasi Cegah Kehilangan Input saat Menutup Form Tidak Sengaja
         function requestCloseAddModal() {
             const titleVal = document.getElementById('form-judul').value.trim();
             const reviewAkuVal = document.getElementById('form-review-aku').value.trim();
@@ -1329,7 +1332,7 @@
 
         function openDetailModal(id) {
             lastScrollPosition = window.pageYOffset || document.documentElement.scrollTop;
-            lastClickedMovieId = id; // Simpan memori card terakhir
+            lastClickedMovieId = id;
 
             const movie = moviesData.find(m => m.id == id);
             if (!movie) return;
@@ -1404,7 +1407,6 @@
             modal.classList.add('hidden');
             document.body.classList.remove('modal-lock');
             
-            // QoL: Auto-scroll kembali halus ke card film yang terakhir diklik
             if (lastClickedMovieId) {
                 setTimeout(() => {
                     const targetCard = document.getElementById(`movie-card-${lastClickedMovieId}`);
@@ -1419,7 +1421,6 @@
             }
         }
 
-        // QoL: Quick Copy Movie Summary untuk Dibagikan ke Chat
         function copyMovieDetailSummary() {
             const movie = moviesData.find(m => m.id == currentDetailMovieId);
             if (!movie) return;
