@@ -155,12 +155,12 @@
     <!-- Main Container -->
     <main class="max-w-md mx-auto px-4 space-y-4 mt-3">
         
-        <!-- SECTION ATAS: Revamped Compact Layout (Visual Hierarchy & iPhone 15 Pro Optimized) -->
+        <!-- SECTION ATAS: Revamped Compact Layout -->
         <section class="glass-card rounded-2xl p-3.5 border border-neutral-800 bg-gradient-to-br from-black via-neutral-950 to-black space-y-3 shadow-2xl relative overflow-hidden">
             <div class="absolute -right-10 -top-10 w-24 h-24 bg-pink-500/10 rounded-full blur-2xl pointer-events-none"></div>
             <div class="absolute -left-10 -bottom-10 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
-            <!-- Header Relationship Badge & Days (Compact Single Row / Stacked Clean) -->
+            <!-- Header Relationship Badge & Days -->
             <div class="flex items-center justify-between bg-neutral-900/60 border border-neutral-800/80 rounded-xl px-3 py-2.5 shadow-inner">
                 <div class="flex items-center gap-2">
                     <div class="w-7 h-7 rounded-lg bg-pink-500/15 border border-pink-500/30 flex items-center justify-center text-pink-400 text-xs flex-shrink-0">
@@ -185,7 +185,7 @@
                 </div>
             </div>
 
-            <!-- Dual Clocks Grid (Lebih Compact & Sejajar) -->
+            <!-- Dual Clocks Grid -->
             <div class="grid grid-cols-2 gap-2.5">
                 <!-- Zald Clock -->
                 <div class="p-2.5 rounded-xl bg-sky-950/25 border border-sky-500/20 flex flex-col justify-between shadow-inner">
@@ -249,43 +249,22 @@
                             "Miles apart, but close at heart."
                         </span>
                         <span class="text-slate-700 text-[9px]">•</span>
-
-                        <span class="inline-flex items-center gap-1.5 text-[11px] text-pink-400 font-semibold flex-shrink-0">
-                            <i class="fa-solid fa-earth-asia"></i> ~4,800 km apart
-                        </span>
-                        <span class="text-slate-700 text-[9px]">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 italic flex-shrink-0">
-                            "Distance is just a test of how far love can travel."
-                        </span>
-                        <span class="text-slate-700 text-[9px]">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-[11px] text-pink-400 font-semibold flex-shrink-0">
-                            <i class="fa-solid fa-heart text-[9px]"></i> Two hearts, different time zones
-                        </span>
-                        <span class="text-slate-700 text-[9px]">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 italic flex-shrink-0">
-                            "In true love the smallest distance is too great, and the greatest distance can be bridged."
-                        </span>
-                        <span class="text-slate-700 text-[9px]">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-[11px] text-amber-400 font-semibold flex-shrink-0">
-                            <i class="fa-solid fa-plane text-[9px]"></i> Counting down the days to meet
-                        </span>
-                        <span class="text-slate-700 text-[9px]">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 italic flex-shrink-0">
-                            "Miles apart, but close at heart."
-                        </span>
-                        <span class="text-slate-700 text-[9px]">•</span>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- SECTION SEARCH & SORT & VIEWER FILTER -->
+        <!-- SECTION SEARCH & SORT & VIEWER FILTER (QoL: Clear Search Button Added) -->
         <section id="search-section" class="space-y-3">
             <div class="flex items-center gap-2.5">
                 <div class="relative flex-grow">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
-                    <input type="text" id="search-input" oninput="onSearchInput()" placeholder="Cari judul film atau bulan..." 
-                        class="w-full pl-9 pr-3.5 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-xs sm:text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition shadow-inner">
+                    <input type="text" id="search-input" oninput="onSearchInput(); toggleClearSearchBtn()" placeholder="Cari judul film atau bulan..." 
+                        class="w-full pl-9 pr-8 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-xs sm:text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition shadow-inner">
+                    <!-- Tombol Clear Search (QoL) -->
+                    <button id="clear-search-btn" onclick="clearSearchInput()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white text-xs hidden">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
                 </div>
                 
                 <div class="relative flex-shrink-0">
@@ -428,10 +407,17 @@
         </footer>
     </main>
 
-    <!-- Floating Action Button (Disesuaikan posisinya dengan aman terhadap gesture bar bawah) -->
+    <!-- Floating Action Button (FAB Tambah Film) -->
     <div id="fab-container" class="fixed bottom-8 right-6 z-40 hidden pb-[env(safe-area-inset-bottom)]">
         <button onclick="triggerHaptic(); openAddModal()" class="w-14 h-14 rounded-full popcorn-gradient flex items-center justify-center text-black shadow-2xl border-2 border-black tap-scale transition hover:rotate-90 duration-300">
             <i class="fa-solid fa-plus text-xl"></i>
+        </button>
+    </div>
+
+    <!-- QoL: Floating Action Button (Scroll to Top) -->
+    <div id="scroll-top-btn" class="fixed bottom-8 left-6 z-40 hidden pb-[env(safe-area-inset-bottom)] transition-all duration-300">
+        <button onclick="triggerHaptic(); scrollToTop()" class="w-11 h-11 rounded-full bg-neutral-900 border border-neutral-700 text-amber-400 flex items-center justify-center shadow-2xl tap-scale transition hover:bg-neutral-800" title="Kembali ke Atas">
+            <i class="fa-solid fa-arrow-up text-sm"></i>
         </button>
     </div>
 
@@ -459,7 +445,7 @@
         </div>
     </div>
 
-    <!-- Mobile Bottom Sheet / Modal Form (Tambah/Edit dengan proteksi konfirmasi keluar) -->
+    <!-- Mobile Bottom Sheet / Modal Form -->
     <div id="add-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
         <div id="add-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[85vh] sm:h-auto sm:max-h-[85vh] transform transition-all pb-[env(safe-area-inset-bottom)]">
             <div class="px-5 py-3.5 border-b border-neutral-900 flex items-center justify-between flex-shrink-0 bg-neutral-950">
@@ -556,6 +542,14 @@
                                     class="w-24 px-3 py-1.5 bg-neutral-950 border border-neutral-800 rounded-xl text-center text-xs font-bold text-sky-400 placeholder-slate-600 focus:outline-none focus:border-sky-400 transition shadow-inner">
                             </div>
                         </div>
+                        <!-- QoL: Quick Rating Shortcuts -->
+                        <div class="flex items-center gap-1.5 pt-1">
+                            <span class="text-[10px] text-slate-500">Quick:</span>
+                            <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 7)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-sky-400 font-bold tap-scale">7</button>
+                            <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 8)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-sky-400 font-bold tap-scale">8</button>
+                            <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 8.5)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-sky-400 font-bold tap-scale">8.5</button>
+                            <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 9)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-sky-400 font-bold tap-scale">9</button>
+                        </div>
                         <textarea name="review_aku" id="form-review-aku" rows="4" placeholder="Tulis ulasan mendalam dari Zald di sini..." 
                             class="w-full p-3 bg-neutral-950 border border-neutral-800 rounded-xl text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-sky-400 transition shadow-inner leading-relaxed"></textarea>
                     </div>
@@ -574,6 +568,14 @@
                                     onblur="clampRatingOnBlur(this, 'err-hint-dia', 'pink')"
                                     class="w-24 px-3 py-1.5 bg-neutral-950 border border-neutral-800 rounded-xl text-center text-xs font-bold text-pink-400 placeholder-slate-600 focus:outline-none focus:border-pink-400 transition shadow-inner">
                             </div>
+                        </div>
+                        <!-- QoL: Quick Rating Shortcuts -->
+                        <div class="flex items-center gap-1.5 pt-1">
+                            <span class="text-[10px] text-slate-500">Quick:</span>
+                            <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 7)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-pink-400 font-bold tap-scale">7</button>
+                            <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 8)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-pink-400 font-bold tap-scale">8</button>
+                            <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 8.5)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-pink-400 font-bold tap-scale">8.5</button>
+                            <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 9)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-pink-400 font-bold tap-scale">9</button>
                         </div>
                         <textarea name="review_dia" id="form-review-dia" rows="4" placeholder="Tulis ulasan mendalam dari Micel di sini..." 
                             class="w-full p-3 bg-neutral-950 border border-neutral-800 rounded-xl text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-pink-400 transition shadow-inner leading-relaxed"></textarea>
@@ -690,13 +692,52 @@
         let isTopRatedActive = false;
         let searchDebounceTimer = null;
         let lastScrollPosition = 0;
-        let lastClickedMovieId = null; // Menyimpan ID card terakhir untuk memori scroll QoL
+        let lastClickedMovieId = null; 
 
         // --- HAPTIC FEEDBACK UTILITY ---
         function triggerHaptic() {
             if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
-                navigator.vibrate(12); // Getar halus 12ms
+                navigator.vibrate(12);
             }
+        }
+
+        // --- QoL: SCROLL TO TOP UTILITY ---
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.addEventListener('scroll', () => {
+            const scrollTopBtn = document.getElementById('scroll-top-btn');
+            if (window.scrollY > 400) {
+                scrollTopBtn.classList.remove('hidden');
+            } else {
+                scrollTopBtn.classList.add('hidden');
+            }
+        });
+
+        // --- QoL: CLEAR SEARCH INPUT ---
+        function toggleClearSearchBtn() {
+            const val = document.getElementById('search-input').value;
+            const clearBtn = document.getElementById('clear-search-btn');
+            if (val.trim() !== '') {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+        }
+
+        function clearSearchInput() {
+            document.getElementById('search-input').value = '';
+            toggleClearSearchBtn();
+            processFilterAndRender(true);
+        }
+
+        // --- QoL: QUICK RATING SETTER ---
+        function setQuickRating(inputId, hintId, themeColor, value) {
+            const inputEl = document.getElementById(inputId);
+            inputEl.value = value;
+            validateRatingInput(inputEl, hintId, themeColor);
+            triggerHaptic();
         }
 
         // --- MANAJEMEN PASSWORD & KUNCI AKSES ---
@@ -843,7 +884,6 @@
         setInterval(updateRelationshipCounter, 1000);
         updateRelationshipCounter();
 
-        // --- REAL-TIME AGE & COUNTDOWN BIRTHDAY LOGIC ---
         function calculateAgeAndCountdown(birthDateStr, ageElementId, countdownElementId) {
             const birthDate = new Date(birthDateStr);
             const now = new Date();
@@ -1026,7 +1066,6 @@
             }
         }
 
-        // --- SKELETON LOADER QoL ---
         function renderSkeletonGrid() {
             const grid = document.getElementById('movie-grid');
             if (!grid) return;
@@ -1246,6 +1285,7 @@
 
         function resetSearch() {
             document.getElementById('search-input').value = '';
+            toggleClearSearchBtn();
             document.getElementById('sort-select').value = 'newest';
             currentViewerFilter = 'all';
             isTopRatedActive = false;
