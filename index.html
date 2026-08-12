@@ -181,14 +181,17 @@
             </div>
 
             <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-3">
                 <!-- Zald Clock -->
                 <div class="p-3 rounded-xl bg-sky-950/30 border border-sky-500/20 flex flex-col justify-between shadow-inner">
-                    <div class="flex items-center justify-between mb-2">
+                    <div class="flex flex-col gap-1.5 mb-2">
                         <div class="flex items-center gap-2">
                             <img src="assets/pfp_zald.png" alt="Zald" class="w-6 h-6 rounded-lg object-cover shadow-sm">
                             <span class="text-[11px] font-bold text-sky-400 uppercase tracking-wider">Zald</span>
                         </div>
-                        <span class="text-[10px] font-semibold text-sky-300/80 bg-sky-900/40 px-1.5 py-0.5 rounded">GMT +5:30</span>
+                        <div>
+                            <span class="text-[10px] font-semibold text-sky-300/80 bg-sky-900/40 px-2 py-0.5 rounded inline-block">GMT +5:30</span>
+                        </div>
                     </div>
                     <div id="zald-clock" class="text-base font-black font-display text-sky-200 tracking-tight">00:00:00</div>
                     <span id="zald-date" class="text-[10px] text-slate-400 mt-0.5">-- --- ----</span>
@@ -196,12 +199,14 @@
 
                 <!-- Micel Clock -->
                 <div class="p-3 rounded-xl bg-pink-950/30 border border-pink-500/20 flex flex-col justify-between shadow-inner">
-                    <div class="flex items-center justify-between mb-2">
+                    <div class="flex flex-col gap-1.5 mb-2">
                         <div class="flex items-center gap-2">
                             <img src="assets/pfp_micel.png" alt="Micel" class="w-6 h-6 rounded-lg object-cover shadow-sm">
                             <span class="text-[11px] font-bold text-pink-400 uppercase tracking-wider">Micel</span>
                         </div>
-                        <span class="text-[10px] font-semibold text-pink-300/80 bg-pink-900/40 px-1.5 py-0.5 rounded">GMT +9:00</span>
+                        <div>
+                            <span class="text-[10px] font-semibold text-pink-300/80 bg-pink-900/40 px-2 py-0.5 rounded inline-block">GMT +9:00</span>
+                        </div>
                     </div>
                     <div id="micel-clock" class="text-base font-black font-display text-pink-200 tracking-tight">00:00:00</div>
                     <span id="micel-date" class="text-[10px] text-slate-400 mt-0.5">-- --- ----</span>
