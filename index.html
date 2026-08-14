@@ -154,6 +154,41 @@
 
     <!-- Main Container -->
     <main class="max-w-md mx-auto px-4 space-y-4 mt-3">
+
+        <!-- SECTION: AUTO SLIDE INFINITE (1000x324 Aspect Ratio) -->
+        <section class="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-neutral-800 bg-neutral-950 group">
+            <div id="hero-slider" class="flex transition-transform duration-700 ease-in-out w-full" style="aspect-ratio: 1000 / 324;">
+                <!-- Slide 1 -->
+                <div class="w-full flex-shrink-0 relative">
+                    <img src="assets/Slider_1.webp" alt="Slider 1" class="w-full h-full object-cover">
+                </div>
+                <!-- Slide 2 -->
+                <div class="w-full flex-shrink-0 relative">
+                    <img src="assets/Slider_2.webp" alt="Slider 2" class="w-full h-full object-cover">
+                </div>
+                <!-- Slide 3 -->
+                <div class="w-full flex-shrink-0 relative">
+                    <img src="assets/Slider_3.webp" alt="Slider 3" class="w-full h-full object-cover">
+                </div>
+                <!-- Slide 4 -->
+                <div class="w-full flex-shrink-0 relative">
+                    <img src="assets/Slider_4.webp" alt="Slider 4" class="w-full h-full object-cover">
+                </div>
+                <!-- Slide 5 -->
+                <div class="w-full flex-shrink-0 relative">
+                    <img src="assets/Slider_5.webp" alt="Slider 5" class="w-full h-full object-cover">
+                </div>
+            </div>
+
+            <!-- Indikator Dots -->
+            <div class="absolute bottom-2.5 inset-x-0 flex justify-center items-center gap-1.5 z-10">
+                <span class="slider-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300 cursor-pointer" onclick="currentSlide(0)"></span>
+                <span class="slider-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300 cursor-pointer" onclick="currentSlide(1)"></span>
+                <span class="slider-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300 cursor-pointer" onclick="currentSlide(2)"></span>
+                <span class="slider-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300 cursor-pointer" onclick="currentSlide(3)"></span>
+                <span class="slider-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300 cursor-pointer" onclick="currentSlide(4)"></span>
+            </div>
+        </section>
         
         <!-- SECTION ATAS: Revamped Compact Layout -->
         <section class="glass-card rounded-2xl p-3.5 border border-neutral-800 bg-gradient-to-br from-black via-neutral-950 to-black space-y-3 shadow-2xl relative overflow-hidden">
@@ -168,7 +203,7 @@
                     </div>
                     <div>
                         <div class="text-[10px] text-slate-400 font-medium flex items-center gap-1">
-                            <span>Sejak 5 April 2025</span>
+                            <span>Sejak 5 April 2025[cite: 1]</span>
                         </div>
                         <div id="relationship-detail-time" class="text-[10px] font-semibold text-slate-300">
                             Memuat waktu...
@@ -194,7 +229,7 @@
                             <img src="assets/pfp_zald.png" alt="Zald" class="w-5 h-5 rounded-md object-cover shadow-sm">
                             <span class="text-[10px] font-bold text-sky-400 uppercase tracking-wider">Zald</span>
                         </div>
-                        <span class="text-[9px] font-semibold text-sky-300/80 bg-sky-900/40 px-1 py-0.5 rounded">GMT+5:30</span>
+                        <span class="text-[9px] font-semibold text-sky-300/80 bg-sky-900/40 px-1 py-0.5 rounded">GMT+5:30[cite: 1]</span>
                     </div>
                     <div class="flex items-baseline justify-between">
                         <div id="zald-clock" class="text-sm font-black font-display text-sky-200 tracking-tight">00:00:00</div>
@@ -209,7 +244,7 @@
                             <img src="assets/pfp_micel.png" alt="Micel" class="w-5 h-5 rounded-md object-cover shadow-sm">
                             <span class="text-[10px] font-bold text-pink-400 uppercase tracking-wider">Micel</span>
                         </div>
-                        <span class="text-[9px] font-semibold text-pink-300/80 bg-pink-900/40 px-1 py-0.5 rounded">GMT+9:00</span>
+                        <span class="text-[9px] font-semibold text-pink-300/80 bg-pink-900/40 px-1 py-0.5 rounded">GMT+9:00[cite: 1]</span>
                     </div>
                     <div class="flex items-baseline justify-between">
                         <div id="micel-clock" class="text-sm font-black font-display text-pink-200 tracking-tight">00:00:00</div>
@@ -226,7 +261,7 @@
                 <div class="flex whitespace-nowrap overflow-hidden">
                     <div class="flex items-center gap-6 marquee-track animate-marquee py-1">
                         <span class="inline-flex items-center gap-1.5 text-[11px] text-pink-400 font-semibold flex-shrink-0">
-                            <i class="fa-solid fa-earth-asia"></i> ~4,800 km apart
+                            <i class="fa-solid fa-earth-asia"></i> ~4,800 km apart[cite: 1]
                         </span>
                         <span class="text-slate-700 text-[9px]">•</span>
                         <span class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 italic flex-shrink-0">
@@ -254,14 +289,13 @@
             </div>
         </section>
 
-        <!-- SECTION SEARCH & SORT & VIEWER FILTER (QoL: Clear Search Button Added) -->
+        <!-- SECTION SEARCH & SORT & VIEWER FILTER -->
         <section id="search-section" class="space-y-3">
             <div class="flex items-center gap-2.5">
                 <div class="relative flex-grow">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
                     <input type="text" id="search-input" oninput="onSearchInput(); toggleClearSearchBtn()" placeholder="Cari judul film atau bulan..." 
                         class="w-full pl-9 pr-8 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-xs sm:text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition shadow-inner">
-                    <!-- Tombol Clear Search (QoL) -->
                     <button id="clear-search-btn" onclick="clearSearchInput()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white text-xs hidden">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
@@ -336,11 +370,11 @@
                         <div class="space-y-1 text-[11px] text-slate-300">
                             <p class="flex items-center gap-1.5">
                                 <i class="fa-solid fa-cake-candles text-sky-400 text-[10px]"></i> 
-                                <span>Lahir: <strong class="text-white">17 Okt 1999</strong></span>
+                                <span>Lahir: <strong class="text-white">17 Okt 1999</strong>[cite: 1]</span>
                             </p>
                             <p class="flex items-center gap-1.5">
                                 <i class="fa-solid fa-star text-sky-400 text-[10px]"></i> 
-                                <span>Zodiak: <strong class="text-white">Libra</strong> | Shio: <strong class="text-white">Kelinci (Tanah)</strong></span>
+                                <span>Zodiak: <strong class="text-white">Libra</strong> | Shio: <strong class="text-white">Kelinci (Tanah)</strong>[cite: 1]</span>
                             </p>
                             <p class="flex items-center gap-1.5">
                                 <i class="fa-solid fa-clock text-sky-400 text-[10px]"></i> 
@@ -362,11 +396,11 @@
                         <div class="space-y-1 text-[11px] text-slate-300">
                             <p class="flex items-center gap-1.5">
                                 <i class="fa-solid fa-cake-candles text-pink-400 text-[10px]"></i> 
-                                <span>Lahir: <strong class="text-white">29 Mei 2003</strong></span>
+                                <span>Lahir: <strong class="text-white">29 Mei 2003</strong>[cite: 1]</span>
                             </p>
                             <p class="flex items-center gap-1.5">
                                 <i class="fa-solid fa-star text-pink-400 text-[10px]"></i> 
-                                <span>Zodiak: <strong class="text-white">Gemini</strong> | Shio: <strong class="text-white">Kambing (Air)</strong></span>
+                                <span>Zodiak: <strong class="text-white">Gemini</strong> | Shio: <strong class="text-white">Kambing (Air)</strong>[cite: 1]</span>
                             </p>
                             <p class="flex items-center gap-1.5">
                                 <i class="fa-solid fa-clock text-pink-400 text-[10px]"></i> 
@@ -390,7 +424,7 @@
                         Bubi's Popcorn
                     </h2>
                     <p class="text-[11px] font-medium text-pink-400 flex items-center gap-1">
-                        <i class="fa-solid fa-heart text-[9px] animate-bounce"></i> Zald & Micel Log
+                        <i class="fa-solid fa-heart text-[9px] animate-bounce"></i> Zald & Micel Log[cite: 1]
                     </p>
                 </div>
             </div>
@@ -542,7 +576,6 @@
                                     class="w-24 px-3 py-1.5 bg-neutral-950 border border-neutral-800 rounded-xl text-center text-xs font-bold text-sky-400 placeholder-slate-600 focus:outline-none focus:border-sky-400 transition shadow-inner">
                             </div>
                         </div>
-                        <!-- QoL: Quick Rating Shortcuts -->
                         <div class="flex items-center gap-1.5 pt-1">
                             <span class="text-[10px] text-slate-500">Quick:</span>
                             <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 7)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-sky-400 font-bold tap-scale">7</button>
@@ -569,7 +602,6 @@
                                     class="w-24 px-3 py-1.5 bg-neutral-950 border border-neutral-800 rounded-xl text-center text-xs font-bold text-pink-400 placeholder-slate-600 focus:outline-none focus:border-pink-400 transition shadow-inner">
                             </div>
                         </div>
-                        <!-- QoL: Quick Rating Shortcuts -->
                         <div class="flex items-center gap-1.5 pt-1">
                             <span class="text-[10px] text-slate-500">Quick:</span>
                             <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 7)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-pink-400 font-bold tap-scale">7</button>
@@ -602,7 +634,6 @@
                     <i class="fa-solid fa-xmark text-xs"></i>
                 </button>
 
-                <!-- Tombol Quick Copy di Banner Atas Modal -->
                 <button onclick="triggerHaptic(); copyMovieDetailSummary()" class="absolute top-3 left-3 z-10 px-3 py-1.5 rounded-full bg-black/80 border border-neutral-800 text-amber-300 text-[10px] font-bold flex items-center gap-1.5 tap-scale shadow" title="Salin Ringkasan Ulasan">
                     <i class="fa-regular fa-copy text-[10px]"></i> Salin Ringkasan
                 </button>
@@ -657,7 +688,6 @@
                     </div>
                 </div>
 
-                <!-- Tombol Edit & Hapus (Hanya muncul jika sudah unlocked) -->
                 <div id="detail-admin-actions" class="pt-3 flex items-center justify-between border-t border-neutral-900 hidden">
                     <div class="flex items-center gap-2">
                         <button onclick="triggerHaptic(); editCurrentMovie()" class="px-3.5 py-2 rounded-xl bg-sky-400/10 border border-sky-400/20 text-sky-400 text-xs font-semibold tap-scale shadow-sm">Edit</button>
@@ -665,7 +695,6 @@
                     </div>
                     <button onclick="triggerHaptic(); closeDetailModal()" class="px-4 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-slate-200 tap-scale shadow-sm">Tutup</button>
                 </div>
-                <!-- Tombol Tutup Saja Jika Terkunci -->
                 <div id="detail-public-actions" class="pt-3 flex items-center justify-end border-t border-neutral-900">
                     <button onclick="triggerHaptic(); closeDetailModal()" class="px-4 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-slate-200 tap-scale shadow-sm">Tutup</button>
                 </div>
@@ -694,6 +723,47 @@
         let lastScrollPosition = 0;
         let lastClickedMovieId = null; 
 
+        // --- HERO SLIDER LOGIC ---
+        let currentSlideIndex = 0;
+        const totalSlides = 5;
+        let slideInterval;
+
+        function updateSlider() {
+            const slider = document.getElementById('hero-slider');
+            const dots = document.querySelectorAll('.slider-dot');
+            if (!slider) return;
+
+            slider.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
+
+            dots.forEach((dot, idx) => {
+                if (idx === currentSlideIndex) {
+                    dot.className = "slider-dot w-5 h-2 rounded-full bg-amber-400 transition-all duration-300 cursor-pointer";
+                } else {
+                    dot.className = "slider-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300 cursor-pointer";
+                }
+            });
+        }
+
+        function nextSlide() {
+            currentSlideIndex = (currentSlideIndex + 1) % totalSlides;
+            updateSlider();
+        }
+
+        function currentSlide(index) {
+            currentSlideIndex = index;
+            updateSlider();
+            resetSlideTimer();
+        }
+
+        function startSlideTimer() {
+            slideInterval = setInterval(nextSlide, 3500);
+        }
+
+        function resetSlideTimer() {
+            clearInterval(slideInterval);
+            startSlideTimer();
+        }
+
         // --- HAPTIC FEEDBACK UTILITY ---
         function triggerHaptic() {
             if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
@@ -701,7 +771,6 @@
             }
         }
 
-        // --- QoL: SCROLL TO TOP UTILITY ---
         function scrollToTop() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -715,7 +784,6 @@
             }
         });
 
-        // --- QoL: CLEAR SEARCH INPUT ---
         function toggleClearSearchBtn() {
             const val = document.getElementById('search-input').value;
             const clearBtn = document.getElementById('clear-search-btn');
@@ -732,7 +800,6 @@
             processFilterAndRender(true);
         }
 
-        // --- QoL: QUICK RATING SETTER ---
         function setQuickRating(inputId, hintId, themeColor, value) {
             const inputEl = document.getElementById(inputId);
             inputEl.value = value;
@@ -740,7 +807,6 @@
             triggerHaptic();
         }
 
-        // --- MANAJEMEN PASSWORD & KUNCI AKSES ---
         const ADMIN_PASSWORD = "bubi123"; 
         let isAdminUnlocked = localStorage.getItem('bubi_admin_unlocked') === 'true';
 
@@ -812,7 +878,6 @@
             }
         }
 
-        // --- PING CHECKER FUNCTION ---
         async function checkPing() {
             const pingText = document.getElementById('ping-text');
             const pingDot = document.getElementById('ping-dot');
@@ -1653,6 +1718,8 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             updateLockUI();
+            updateSlider();
+            startSlideTimer();
             fetchSupabaseData();
         });
     </script>
