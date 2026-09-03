@@ -137,8 +137,13 @@
                 </div>
             </div>
 
-            <!-- Bagian Kanan Atas: Ping Indicator & Tombol Gembok -->
-            <div class="flex items-center gap-2">
+            <!-- Bagian Kanan Atas: Ping Indicator, Tombol Time Calc & Tombol Gembok -->
+            <div class="flex items-center gap-1.5 sm:gap-2">
+                <!-- Time Calculator Quick Access Button -->
+                <button onclick="triggerHaptic(); openTimeCalcModal()" class="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-sky-950 to-pink-950 border border-amber-500/30 text-amber-300 text-[11px] font-bold flex items-center gap-1.5 tap-scale shadow-sm hover:border-amber-400 transition" title="Kalkulator Waktu & Alarm (Japan - Sri Lanka)">
+                    <i class="fa-solid fa-clock text-xs text-amber-400 animate-pulse"></i>
+                    <span class="font-display tracking-tight text-[10px] sm:text-[11px]">JST ↔ SLST</span>
+                </button>
                 <!-- Ping Indicator -->
                 <div id="ping-indicator" onclick="triggerHaptic(); checkPing()" class="px-2.5 py-1.5 rounded-xl bg-neutral-950 border border-neutral-800 text-[11px] text-slate-300 flex items-center gap-1.5 cursor-pointer tap-scale shadow-sm transition hover:border-neutral-700" title="Cek Koneksi Ping">
                     <span id="ping-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -220,34 +225,34 @@
                 </div>
             </div>
 
-            <!-- Dual Clocks Grid -->
-            <div class="grid grid-cols-2 gap-2.5">
+            <!-- Dual Clocks Grid (Clickable to open Time & Alarm Calc) -->
+            <div onclick="triggerHaptic(); openTimeCalcModal()" class="grid grid-cols-2 gap-2.5 cursor-pointer group/clock" title="Klik untuk Buka Kalkulator Waktu & Alarm">
                 <!-- Zald Clock -->
-                <div class="p-2.5 rounded-xl bg-sky-950/25 border border-sky-500/20 flex flex-col justify-between shadow-inner">
+                <div class="p-2.5 rounded-xl bg-sky-950/25 border border-sky-500/20 group-hover/clock:border-sky-500/50 flex flex-col justify-between shadow-inner transition">
                     <div class="flex items-center justify-between mb-1.5">
                         <div class="flex items-center gap-1.5">
                             <img src="assets/pfp_zald.png" alt="Zald" class="w-5 h-5 rounded-md object-cover shadow-sm">
                             <span class="text-[10px] font-bold text-sky-400 uppercase tracking-wider">Zald</span>
                         </div>
-                        <span class="text-[9px] font-semibold text-sky-300/80 bg-sky-900/40 px-1 py-0.5 rounded">GMT+5:30</span>
+                        <span class="text-[9px] font-semibold text-sky-300/80 bg-sky-900/40 px-1 py-0.5 rounded">UTC+5:30</span>
                     </div>
                     <div class="flex items-baseline justify-between">
-                        <div id="zald-clock" class="text-sm font-black font-display text-sky-200 tracking-tight">00:00:00</div>
+                        <div id="zald-clock" class="text-sm font-black font-display text-sky-200 tracking-tight">--:-- --</div>
                         <span id="zald-date" class="text-[9px] text-slate-400">-- ---</span>
                     </div>
                 </div>
 
                 <!-- Micel Clock -->
-                <div class="p-2.5 rounded-xl bg-pink-950/25 border border-pink-500/20 flex flex-col justify-between shadow-inner">
+                <div class="p-2.5 rounded-xl bg-pink-950/25 border border-pink-500/20 group-hover/clock:border-pink-500/50 flex flex-col justify-between shadow-inner transition">
                     <div class="flex items-center justify-between mb-1.5">
                         <div class="flex items-center gap-1.5">
                             <img src="assets/pfp_micel.png" alt="Micel" class="w-5 h-5 rounded-md object-cover shadow-sm">
                             <span class="text-[10px] font-bold text-pink-400 uppercase tracking-wider">Micel</span>
                         </div>
-                        <span class="text-[9px] font-semibold text-pink-300/80 bg-pink-900/40 px-1 py-0.5 rounded">GMT+9:00</span>
+                        <span class="text-[9px] font-semibold text-pink-300/80 bg-pink-900/40 px-1 py-0.5 rounded">UTC+9:00</span>
                     </div>
                     <div class="flex items-baseline justify-between">
-                        <div id="micel-clock" class="text-sm font-black font-display text-pink-200 tracking-tight">00:00:00</div>
+                        <div id="micel-clock" class="text-sm font-black font-display text-pink-200 tracking-tight">--:-- --</div>
                         <span id="micel-date" class="text-[9px] text-slate-400">-- ---</span>
                     </div>
                 </div>
@@ -453,6 +458,55 @@
         <button onclick="triggerHaptic(); scrollToTop()" class="w-11 h-11 rounded-full bg-neutral-900 border border-neutral-700 text-amber-400 flex items-center justify-center shadow-2xl tap-scale transition hover:bg-neutral-800" title="Kembali ke Atas">
             <i class="fa-solid fa-arrow-up text-sm"></i>
         </button>
+    </div>
+
+    <!-- Modal Konverter Waktu Ultra Clean (Sri Lanka <-> Jepang) -->
+    <div id="time-calc-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
+        <div id="time-calc-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-xs rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col transform transition-all pb-[env(safe-area-inset-bottom)]">
+            <!-- Header Modal Clean -->
+            <div class="px-4 py-3 border-b border-neutral-900 flex items-center justify-between bg-neutral-950">
+                <h3 class="font-bold text-xs text-slate-200 font-display flex items-center gap-1.5">
+                    <i class="fa-solid fa-clock text-amber-400"></i> Konverter Waktu
+                </h3>
+                <button type="button" onclick="triggerHaptic(); closeTimeCalcModal()" class="text-slate-400 hover:text-white p-1 tap-scale rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center w-7 h-7">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            </div>
+
+            <!-- Body Modal Clean -->
+            <div class="p-4 space-y-3.5">
+                <!-- Label & Switch Direction -->
+                <div class="flex items-center justify-between">
+                    <span id="conv-input-label" class="text-xs font-bold text-sky-400">
+                        Waktu Sri Lanka:
+                    </span>
+                    <button type="button" onclick="toggleConverterDirection()" class="px-2.5 py-1 rounded-lg bg-black hover:bg-neutral-800 border border-neutral-800 text-amber-300 text-[10px] font-bold tap-scale transition flex items-center gap-1">
+                        <span id="conv-dir-btn-text">Switch ke JST➔SLST</span>
+                        <i class="fa-solid fa-arrows-rotate text-[9px]"></i>
+                    </button>
+                </div>
+
+                <!-- Input Time (Manual Input) -->
+                <input type="time" id="conv-time-input" value="06:00" onchange="updateConvertedTime()" oninput="updateConvertedTime()"
+                    class="w-full px-3 py-3 bg-black border border-neutral-700 rounded-xl text-2xl font-black font-mono text-center text-slate-100 focus:outline-none focus:border-amber-400 transition shadow-inner">
+
+                <!-- Output Hasil Perbedaan Jam -->
+                <div class="p-4 rounded-2xl bg-black border border-neutral-800 text-center space-y-1 shadow-md">
+                    <span id="conv-target-label" class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Hasil Waktu Jepang:</span>
+                    <div id="conv-target-result" class="text-3xl font-black font-display text-amber-300 tracking-tight">
+                        09:30 AM JST
+                    </div>
+                    <div class="pt-1 flex items-center justify-center gap-2">
+                        <span id="conv-day-badge" class="text-[9px] font-bold px-2 py-0.5 rounded bg-neutral-900 text-slate-400 border border-neutral-800">
+                            Hari Yang Sama
+                        </span>
+                        <button type="button" onclick="copyConvResult()" class="text-[9px] font-bold px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-slate-300 border border-neutral-700 tap-scale transition">
+                            <i class="fa-solid fa-copy"></i> Salin
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Modal Masukkan Password -->
@@ -988,9 +1042,9 @@
 
         function updateDualClocks() {
             const now = new Date();
-            const zaldTime = now.toLocaleTimeString('id-ID', { timeZone: 'Asia/Colombo', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const zaldTime = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Colombo', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
             const zaldDate = now.toLocaleDateString('id-ID', { timeZone: 'Asia/Colombo', day: 'numeric', month: 'short' });
-            const micelTime = now.toLocaleTimeString('id-ID', { timeZone: 'Asia/Tokyo', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const micelTime = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Tokyo', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
             const micelDate = now.toLocaleDateString('id-ID', { timeZone: 'Asia/Tokyo', day: 'numeric', month: 'short' });
 
             document.getElementById('zald-clock').innerText = zaldTime;
@@ -1714,6 +1768,136 @@
                 toast.classList.add('opacity-0', '-translate-y-4');
                 setTimeout(() => toast.remove(), 300);
             }, 2500);
+        }
+
+        // --- ULTRA CLEAN TIME CONVERTER LOGIC ---
+        let convDirection = 'sl_to_jp'; // 'sl_to_jp' (Sri Lanka -> Jepang) or 'jp_to_sl' (Jepang -> Sri Lanka)
+
+        function openTimeCalcModal() {
+            const modal = document.getElementById('time-calc-modal');
+            const content = document.getElementById('time-calc-modal-content');
+            if (!modal) return;
+            
+            modal.classList.remove('hidden');
+            document.body.classList.add('modal-lock');
+            content.classList.add('animate-slideUp');
+
+            updateConvertedTime();
+        }
+
+        function closeTimeCalcModal() {
+            const modal = document.getElementById('time-calc-modal');
+            if (modal) modal.classList.add('hidden');
+            document.body.classList.remove('modal-lock');
+        }
+
+        function toggleConverterDirection() {
+            triggerHaptic();
+            convDirection = (convDirection === 'sl_to_jp') ? 'jp_to_sl' : 'sl_to_jp';
+            
+            const inputLabel = document.getElementById('conv-input-label');
+            const targetLabel = document.getElementById('conv-target-label');
+            const dirBtnText = document.getElementById('conv-dir-btn-text');
+
+            if (convDirection === 'sl_to_jp') {
+                if (inputLabel) inputLabel.innerHTML = `Waktu Sri Lanka:`;
+                if (targetLabel) targetLabel.innerText = "HASIL WAKTU JEPANG:";
+                if (dirBtnText) dirBtnText.innerText = "Switch ke JST➔SLST";
+            } else {
+                if (inputLabel) inputLabel.innerHTML = `Waktu Jepang:`;
+                if (targetLabel) targetLabel.innerText = "HASIL WAKTU SRI LANKA:";
+                if (dirBtnText) dirBtnText.innerText = "Switch ke SLST➔JST";
+            }
+
+            updateConvertedTime();
+        }
+
+        function setConvPreset(timeVal) {
+            triggerHaptic();
+            const input = document.getElementById('conv-time-input');
+            if (input) {
+                input.value = timeVal;
+                updateConvertedTime();
+            }
+        }
+
+        function formatAmPm(hours24, minutes) {
+            const period = hours24 >= 12 ? 'PM' : 'AM';
+            let hours12 = hours24 % 12;
+            if (hours12 === 0) hours12 = 12;
+            const strHours = String(hours12).padStart(2, '0');
+            const strMins = String(minutes).padStart(2, '0');
+            return `${strHours}:${strMins} ${period}`;
+        }
+
+        function updateConvertedTime() {
+            const input = document.getElementById('conv-time-input');
+            if (!input || !input.value) return;
+
+            const parts = input.value.split(':');
+            let h = parseInt(parts[0], 10);
+            let m = parseInt(parts[1], 10);
+
+            let resH, resM;
+            let dayDiffStr = "Hari Yang Sama";
+            let dayDiffClass = "bg-neutral-900 text-slate-300 border-neutral-700";
+
+            if (convDirection === 'sl_to_jp') {
+                // Sri Lanka (UTC+5.5) -> Japan (UTC+9): +3 hours 30 mins
+                resM = m + 30;
+                resH = h + 3;
+                if (resM >= 60) {
+                    resM -= 60;
+                    resH += 1;
+                }
+                if (resH >= 24) {
+                    resH -= 24;
+                    dayDiffStr = "+1 Hari (Besok)";
+                    dayDiffClass = "bg-pink-950 text-pink-300 border-pink-700 font-bold animate-pulse";
+                }
+            } else {
+                // Japan (UTC+9) -> Sri Lanka (UTC+5.5): -3 hours 30 mins
+                resM = m - 30;
+                resH = h - 3;
+                if (resM < 0) {
+                    resM += 60;
+                    resH -= 1;
+                }
+                if (resH < 0) {
+                    resH += 24;
+                    dayDiffStr = "-1 Hari (Hari Kemarin)";
+                    dayDiffClass = "bg-sky-950 text-sky-300 border-sky-700 font-bold";
+                }
+            }
+
+            const ampmTargetTimeStr = `${formatAmPm(resH, resM)} ${convDirection === 'sl_to_jp' ? 'JST' : 'SLST'}`;
+
+            const resEl = document.getElementById('conv-target-result');
+            const badgeEl = document.getElementById('conv-day-badge');
+
+            if (resEl) resEl.innerText = ampmTargetTimeStr;
+            if (badgeEl) {
+                badgeEl.innerText = dayDiffStr;
+                badgeEl.className = `text-[9px] font-bold px-2 py-0.5 rounded border ${dayDiffClass}`;
+            }
+        }
+
+        function copyConvResult() {
+            triggerHaptic();
+            const input = document.getElementById('conv-time-input');
+            const resEl = document.getElementById('conv-target-result');
+            if (!resEl || !input) return;
+
+            const parts = input.value.split(':');
+            const inputAmPm = formatAmPm(parseInt(parts[0], 10), parseInt(parts[1], 10));
+
+            const textToCopy = `⏰ Waktu: ${inputAmPm} (${convDirection === 'sl_to_jp' ? 'SLST' : 'JST'}) ➔ ${resEl.innerText}`;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                showToast("Waktu konversi disalin! 📋", "success");
+            }).catch(() => {
+                showToast("Gagal menyalin.", "warning");
+            });
         }
 
         document.addEventListener('DOMContentLoaded', () => {
