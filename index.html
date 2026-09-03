@@ -137,13 +137,8 @@
                 </div>
             </div>
 
-            <!-- Bagian Kanan Atas: Ping Indicator, Tombol Time Calc & Tombol Gembok -->
+            <!-- Bagian Kanan Atas: Ping Indicator & Tombol Gembok -->
             <div class="flex items-center gap-1.5 sm:gap-2">
-                <!-- Time Calculator Quick Access Button -->
-                <button onclick="triggerHaptic(); openTimeCalcModal()" class="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-sky-950 to-pink-950 border border-amber-500/30 text-amber-300 text-[11px] font-bold flex items-center gap-1.5 tap-scale shadow-sm hover:border-amber-400 transition" title="Kalkulator Waktu & Alarm (Japan - Sri Lanka)">
-                    <i class="fa-solid fa-clock text-xs text-amber-400 animate-pulse"></i>
-                    <span class="font-display tracking-tight text-[10px] sm:text-[11px]">JST ↔ SLST</span>
-                </button>
                 <!-- Ping Indicator -->
                 <div id="ping-indicator" onclick="triggerHaptic(); checkPing()" class="px-2.5 py-1.5 rounded-xl bg-neutral-950 border border-neutral-800 text-[11px] text-slate-300 flex items-center gap-1.5 cursor-pointer tap-scale shadow-sm transition hover:border-neutral-700" title="Cek Koneksi Ping">
                     <span id="ping-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -446,11 +441,18 @@
         </footer>
     </main>
 
-    <!-- Floating Action Button (FAB Tambah Film) -->
-    <div id="fab-container" class="fixed bottom-8 right-6 z-40 hidden pb-[env(safe-area-inset-bottom)]">
-        <button onclick="triggerHaptic(); openAddModal()" class="w-14 h-14 rounded-full popcorn-gradient flex items-center justify-center text-black shadow-2xl border-2 border-black tap-scale transition hover:rotate-90 duration-300">
-            <i class="fa-solid fa-plus text-xl"></i>
+    <!-- Floating Action Buttons (Right Bottom) -->
+    <div class="fixed bottom-8 right-6 z-40 flex flex-col gap-3 pb-[env(safe-area-inset-bottom)]">
+        <!-- Floating Time Converter Button -->
+        <button onclick="triggerHaptic(); openTimeCalcModal()" class="w-12 h-12 rounded-full bg-neutral-900 border border-neutral-700 text-amber-400 flex items-center justify-center shadow-2xl tap-scale transition hover:bg-neutral-800 hover:border-amber-400" title="Konverter Waktu">
+            <i class="fa-solid fa-clock text-base"></i>
         </button>
+        <!-- FAB Tambah Film (Only if admin unlocked) -->
+        <div id="fab-container" class="hidden">
+            <button onclick="triggerHaptic(); openAddModal()" class="w-14 h-14 rounded-full popcorn-gradient flex items-center justify-center text-black shadow-2xl border-2 border-black tap-scale transition hover:rotate-90 duration-300">
+                <i class="fa-solid fa-plus text-xl"></i>
+            </button>
+        </div>
     </div>
 
     <!-- QoL: Floating Action Button (Scroll to Top) -->
@@ -478,10 +480,10 @@
                 <!-- Label & Switch Direction -->
                 <div class="flex items-center justify-between">
                     <span id="conv-input-label" class="text-xs font-bold text-sky-400">
-                        Waktu Sri Lanka:
+                        Waktu Zald:
                     </span>
                     <button type="button" onclick="toggleConverterDirection()" class="px-2.5 py-1 rounded-lg bg-black hover:bg-neutral-800 border border-neutral-800 text-amber-300 text-[10px] font-bold tap-scale transition flex items-center gap-1">
-                        <span id="conv-dir-btn-text">Switch ke JST➔SLST</span>
+                        <span id="conv-dir-btn-text">Ke Waktu Zald</span>
                         <i class="fa-solid fa-arrows-rotate text-[9px]"></i>
                     </button>
                 </div>
@@ -490,19 +492,11 @@
                 <input type="time" id="conv-time-input" value="06:00" onchange="updateConvertedTime()" oninput="updateConvertedTime()"
                     class="w-full px-3 py-3 bg-black border border-neutral-700 rounded-xl text-2xl font-black font-mono text-center text-slate-100 focus:outline-none focus:border-amber-400 transition shadow-inner">
 
-                <!-- Output Hasil Perbedaan Jam -->
+                <!-- Output Hasil Perbedaan Jam Clean -->
                 <div class="p-4 rounded-2xl bg-black border border-neutral-800 text-center space-y-1 shadow-md">
-                    <span id="conv-target-label" class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Hasil Waktu Jepang:</span>
+                    <span id="conv-target-label" class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Hasil Waktu Jepang (JST):</span>
                     <div id="conv-target-result" class="text-3xl font-black font-display text-amber-300 tracking-tight">
                         09:30 AM JST
-                    </div>
-                    <div class="pt-1 flex items-center justify-center gap-2">
-                        <span id="conv-day-badge" class="text-[9px] font-bold px-2 py-0.5 rounded bg-neutral-900 text-slate-400 border border-neutral-800">
-                            Hari Yang Sama
-                        </span>
-                        <button type="button" onclick="copyConvResult()" class="text-[9px] font-bold px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-slate-300 border border-neutral-700 tap-scale transition">
-                            <i class="fa-solid fa-copy"></i> Salin
-                        </button>
                     </div>
                 </div>
             </div>
@@ -1800,13 +1794,13 @@
             const dirBtnText = document.getElementById('conv-dir-btn-text');
 
             if (convDirection === 'sl_to_jp') {
-                if (inputLabel) inputLabel.innerHTML = `Waktu Sri Lanka:`;
-                if (targetLabel) targetLabel.innerText = "HASIL WAKTU JEPANG:";
-                if (dirBtnText) dirBtnText.innerText = "Switch ke JST➔SLST";
+                if (inputLabel) inputLabel.innerHTML = `Waktu Zald:`;
+                if (targetLabel) targetLabel.innerText = "HASIL WAKTU JEPANG (JST):";
+                if (dirBtnText) dirBtnText.innerText = "Ke Waktu Zald";
             } else {
-                if (inputLabel) inputLabel.innerHTML = `Waktu Jepang:`;
-                if (targetLabel) targetLabel.innerText = "HASIL WAKTU SRI LANKA:";
-                if (dirBtnText) dirBtnText.innerText = "Switch ke SLST➔JST";
+                if (inputLabel) inputLabel.innerHTML = `Waktu Jepang (JST):`;
+                if (targetLabel) targetLabel.innerText = "HASIL WAKTU ZALD:";
+                if (dirBtnText) dirBtnText.innerText = "Ke Waktu Jepang";
             }
 
             updateConvertedTime();
@@ -1843,7 +1837,7 @@
             let dayDiffClass = "bg-neutral-900 text-slate-300 border-neutral-700";
 
             if (convDirection === 'sl_to_jp') {
-                // Sri Lanka (UTC+5.5) -> Japan (UTC+9): +3 hours 30 mins
+                // Partner (UTC+5.5) -> Japan (UTC+9): +3 hours 30 mins
                 resM = m + 30;
                 resH = h + 3;
                 if (resM >= 60) {
@@ -1856,7 +1850,7 @@
                     dayDiffClass = "bg-pink-950 text-pink-300 border-pink-700 font-bold animate-pulse";
                 }
             } else {
-                // Japan (UTC+9) -> Sri Lanka (UTC+5.5): -3 hours 30 mins
+                // Japan (UTC+9) -> Partner (UTC+5.5): -3 hours 30 mins
                 resM = m - 30;
                 resH = h - 3;
                 if (resM < 0) {
@@ -1870,16 +1864,10 @@
                 }
             }
 
-            const ampmTargetTimeStr = `${formatAmPm(resH, resM)} ${convDirection === 'sl_to_jp' ? 'JST' : 'SLST'}`;
+            const ampmTargetTimeStr = `${formatAmPm(resH, resM)} ${convDirection === 'sl_to_jp' ? 'JST' : ''}`.trim();
 
             const resEl = document.getElementById('conv-target-result');
-            const badgeEl = document.getElementById('conv-day-badge');
-
             if (resEl) resEl.innerText = ampmTargetTimeStr;
-            if (badgeEl) {
-                badgeEl.innerText = dayDiffStr;
-                badgeEl.className = `text-[9px] font-bold px-2 py-0.5 rounded border ${dayDiffClass}`;
-            }
         }
 
         function copyConvResult() {
@@ -1891,7 +1879,7 @@
             const parts = input.value.split(':');
             const inputAmPm = formatAmPm(parseInt(parts[0], 10), parseInt(parts[1], 10));
 
-            const textToCopy = `⏰ Waktu: ${inputAmPm} (${convDirection === 'sl_to_jp' ? 'SLST' : 'JST'}) ➔ ${resEl.innerText}`;
+            const textToCopy = `⏰ Waktu: ${inputAmPm} ➔ ${resEl.innerText}`;
             
             navigator.clipboard.writeText(textToCopy).then(() => {
                 showToast("Waktu konversi disalin! 📋", "success");
