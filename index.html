@@ -479,24 +479,24 @@
             <div class="p-4 space-y-3.5">
                 <!-- Label & Switch Direction -->
                 <div class="flex items-center justify-between">
-                    <span id="conv-input-label" class="text-xs font-bold text-sky-400">
-                        Waktu Zald:
+                    <span id="conv-input-label" class="text-xs font-bold text-pink-400">
+                        Waktu Jepang (JST):
                     </span>
                     <button type="button" onclick="toggleConverterDirection()" class="px-2.5 py-1 rounded-lg bg-black hover:bg-neutral-800 border border-neutral-800 text-amber-300 text-[10px] font-bold tap-scale transition flex items-center gap-1">
-                        <span id="conv-dir-btn-text">Ke Waktu Zald</span>
+                        <span id="conv-dir-btn-text">Ke Waktu Jepang</span>
                         <i class="fa-solid fa-arrows-rotate text-[9px]"></i>
                     </button>
                 </div>
 
-                <!-- Input Time (Manual Input) -->
-                <input type="time" id="conv-time-input" value="06:00" onchange="updateConvertedTime()" oninput="updateConvertedTime()"
+                <!-- Input Time (Manual Input - Default Waktu Jepang) -->
+                <input type="time" id="conv-time-input" value="09:30" onchange="updateConvertedTime()" oninput="updateConvertedTime()"
                     class="w-full px-3 py-3 bg-black border border-neutral-700 rounded-xl text-2xl font-black font-mono text-center text-slate-100 focus:outline-none focus:border-amber-400 transition shadow-inner">
 
                 <!-- Output Hasil Perbedaan Jam Clean -->
                 <div class="p-4 rounded-2xl bg-black border border-neutral-800 text-center space-y-1 shadow-md">
-                    <span id="conv-target-label" class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Hasil Waktu Jepang (JST):</span>
+                    <span id="conv-target-label" class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Hasil Waktu Zald:</span>
                     <div id="conv-target-result" class="text-3xl font-black font-display text-amber-300 tracking-tight">
-                        09:30 AM JST
+                        06:00 AM
                     </div>
                 </div>
             </div>
@@ -1765,7 +1765,7 @@
         }
 
         // --- ULTRA CLEAN TIME CONVERTER LOGIC ---
-        let convDirection = 'sl_to_jp'; // 'sl_to_jp' (Sri Lanka -> Jepang) or 'jp_to_sl' (Jepang -> Sri Lanka)
+        let convDirection = 'jp_to_sl'; // 'jp_to_sl' (Jepang -> Zald) or 'sl_to_jp' (Zald -> Jepang)
 
         function openTimeCalcModal() {
             const modal = document.getElementById('time-calc-modal');
@@ -1787,20 +1787,20 @@
 
         function toggleConverterDirection() {
             triggerHaptic();
-            convDirection = (convDirection === 'sl_to_jp') ? 'jp_to_sl' : 'sl_to_jp';
+            convDirection = (convDirection === 'jp_to_sl') ? 'sl_to_jp' : 'jp_to_sl';
             
             const inputLabel = document.getElementById('conv-input-label');
             const targetLabel = document.getElementById('conv-target-label');
             const dirBtnText = document.getElementById('conv-dir-btn-text');
 
-            if (convDirection === 'sl_to_jp') {
-                if (inputLabel) inputLabel.innerHTML = `Waktu Zald:`;
-                if (targetLabel) targetLabel.innerText = "HASIL WAKTU JEPANG (JST):";
-                if (dirBtnText) dirBtnText.innerText = "Ke Waktu Zald";
-            } else {
+            if (convDirection === 'jp_to_sl') {
                 if (inputLabel) inputLabel.innerHTML = `Waktu Jepang (JST):`;
                 if (targetLabel) targetLabel.innerText = "HASIL WAKTU ZALD:";
                 if (dirBtnText) dirBtnText.innerText = "Ke Waktu Jepang";
+            } else {
+                if (inputLabel) inputLabel.innerHTML = `Waktu Zald:`;
+                if (targetLabel) targetLabel.innerText = "HASIL WAKTU JEPANG (JST):";
+                if (dirBtnText) dirBtnText.innerText = "Ke Waktu Zald";
             }
 
             updateConvertedTime();
@@ -1833,24 +1833,9 @@
             let m = parseInt(parts[1], 10);
 
             let resH, resM;
-            let dayDiffStr = "Hari Yang Sama";
-            let dayDiffClass = "bg-neutral-900 text-slate-300 border-neutral-700";
 
-            if (convDirection === 'sl_to_jp') {
-                // Partner (UTC+5.5) -> Japan (UTC+9): +3 hours 30 mins
-                resM = m + 30;
-                resH = h + 3;
-                if (resM >= 60) {
-                    resM -= 60;
-                    resH += 1;
-                }
-                if (resH >= 24) {
-                    resH -= 24;
-                    dayDiffStr = "+1 Hari (Besok)";
-                    dayDiffClass = "bg-pink-950 text-pink-300 border-pink-700 font-bold animate-pulse";
-                }
-            } else {
-                // Japan (UTC+9) -> Partner (UTC+5.5): -3 hours 30 mins
+            if (convDirection === 'jp_to_sl') {
+                // Japan (UTC+9) -> Zald (UTC+5.5): -3 hours 30 mins
                 resM = m - 30;
                 resH = h - 3;
                 if (resM < 0) {
@@ -1859,8 +1844,17 @@
                 }
                 if (resH < 0) {
                     resH += 24;
-                    dayDiffStr = "-1 Hari (Hari Kemarin)";
-                    dayDiffClass = "bg-sky-950 text-sky-300 border-sky-700 font-bold";
+                }
+            } else {
+                // Zald (UTC+5.5) -> Japan (UTC+9): +3 hours 30 mins
+                resM = m + 30;
+                resH = h + 3;
+                if (resM >= 60) {
+                    resM -= 60;
+                    resH += 1;
+                }
+                if (resH >= 24) {
+                    resH -= 24;
                 }
             }
 
