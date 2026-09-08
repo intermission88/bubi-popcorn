@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-visual">
+    <title>Bubi's Popcorn - Mobile App Cinema Log</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        cinema: { 950: '#000000', 900: '#050505', 800: '#121212' }
+                    },
+                    keyframes: {
+                        shake: {
+                            '0%, 100%': { transform: 'translateX(0)' },
+                            '20%, 60%': { transform: 'translateX(-4px)' },
+                            '40%, 80%': { transform: 'translateX(4px)' },
+                        },
+                        goldGlow: {
+                            '0%, 100%': { borderColor: 'rgba(250, 204, 21, 0.6)', boxShadow: '0 0 16px rgba(250, 204, 21, 0.25)' },
+                            '50%': { borderColor: 'rgba(250, 204, 21, 1)', boxShadow: '0 0 26px rgba(250, 204, 21, 0.5)' }
+                        },
+                        popIn: {
+                            '0%': { transform: 'scale(0.92)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(100%)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-50%)' }
+                        },
+                        pulseSlow: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0.4' }
+                        }
+                    },
+                    animation: {
+                        shake: 'shake 0.3s ease-in-out',
+                        goldGlow: 'goldGlow 2.5s infinite ease-in-out',
+                        popIn: 'popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        slideUp: 'slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        fadeIn: 'fadeIn 0.25s ease-out forwards',
+                        marquee: 'marquee 28s linear infinite',
+                        pulseSlow: 'pulseSlow 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background-color: #000000; 
+            color: #f8fafc; 
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .font-display { font-family: 'Outfit', sans-serif; }
+        .glass-card { 
+            background: rgba(5, 5, 5, 0.95); 
+            backdrop-filter: blur(16px); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+        }
+        .certified-card {
+            background: linear-gradient(135deg, rgba(20, 18, 5, 0.95) 0%, rgba(5, 5, 5, 0.98) 100%);
+            border: 2px solid #facc15;
+            box-shadow: 0 0 16px rgba(250, 204, 21, 0.25);
+        }
+        .popcorn-gradient { background: linear-gradient(135deg, #facc15 0%, #f97316 100%); }
+        .gold-gradient { background: linear-gradient(135deg, #fef08a 0%, #eab308 50%, #ca8a04 100%); }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        input[type="month"]::-webkit-calendar-picker-indicator {
+            filter: invert(1) brightness(0.85);
+            cursor: pointer;
+        }
+
+        .tap-scale {
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tap-scale:active {
+            transform: scale(0.94);
+        }
+
+        .modal-lock {
+            overflow: hidden !important;
+        }
+
+        .marquee-container:hover .marquee-track {
+            animation-play-state: paused;
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-32 pt-16 selection:bg-amber-400 selection:text-black">
+
+    <!-- Header App Bar -->
+    <header class="fixed top-0 inset-x-0 z-40 bg-black/90 backdrop-blur-xl border-b border-neutral-900 px-4 py-3">
+        <div class="max-w-md mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl popcorn-gradient flex items-center justify-center text-black text-base shadow-lg flex-shrink-0 font-bold">
+                    <i class="fa-solid fa-bowl-food"></i>
+                </div>
+                <div>
+                    <h1 class="font-display font-black text-base text-slate-100 leading-tight tracking-tight">
+                        Bubi's Popcorn
+                    </h1>
+                    <p class="text-[11px] font-medium text-pink-400 flex items-center gap-1 mt-0.5">
+                        <i class="fa-solid fa-heart text-[10px] animate-bounce"></i> Zald & Micel Log
+                    </p>
+                </div>
+            </div>
+
+            <!-- Bagian Kanan Atas: Ping Indicator & Tombol Gembok -->
+            <div class="flex items-center gap-1.5 sm:gap-2">
+                <!-- Ping Indicator -->
+                <div id="ping-indicator" onclick="triggerHaptic(); checkPing()" class="px-2.5 py-1.5 rounded-xl bg-neutral-950 border border-neutral-800 text-[11px] text-slate-300 flex items-center gap-1.5 cursor-pointer tap-scale shadow-sm transition hover:border-neutral-700" title="Cek Koneksi Ping">
+                    <span id="ping-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span id="ping-text" class="font-mono font-medium">-- ms</span>
+                </div>
+                <!-- Tombol Gembok -->
+                <button onclick="triggerHaptic(); handleLockClick()" id="lock-btn" class="w-9 h-9 rounded-xl bg-neutral-950 border border-neutral-800 text-slate-400 hover:text-amber-400 flex items-center justify-center transition tap-scale shadow-sm hover:border-neutral-700" title="Akses Admin">
+                    <i id="lock-icon" class="fa-solid fa-lock text-xs"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-md mx-auto px-4 space-y-4 mt-3">
+
+        <!-- SECTION: AUTO SLIDE INFINITE (1000x324 Aspect Ratio) -->
+        <section class="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-neutral-800 bg-neutral-950 group">
+            <div id="hero-slider" class="flex transition-transform duration-700 ease-in-out w-full" style="aspect-ratio: 1000 / 324;">
+                <!-- Slide 1 -->
+                <div class="w-full flex-shrink-0 relative">
+                    <img src="assets/Slider_1.webp" alt="Slider 1" class="w-full h-full object-cover">
+                </div>
+                <!-- Slide 2 -->
+                <div class="w-full flex-shrink-0 relative">
+                    <img src="assets/Slider_2.webp" alt="Slider 2" class="w-full h-full object-cover">
+                </div>
+                <!-- Slide 3 -->
+                <div class="w-full flex-shrink-0 relative">
+                    <img src="assets/Slider_3.webp" alt="Slider 3" class="w-full h-full object-cover">
+                </div>
+                <!-- Slide 4 -->
+                <div class="w-full flex-shrink-0 relative">
+                    <img src="assets/Slider_4.webp" alt="Slider 4" class="w-full h-full object-cover">
+                </div>
+                <!-- Slide 5 -->
+                <div class="w-full flex-shrink-0 relative">
+                    <img src="assets/Slider_5.webp" alt="Slider 5" class="w-full h-full object-cover">
+                </div>
+            </div>
+
+            <!-- Indikator Dots -->
+            <div class="absolute bottom-2.5 inset-x-0 flex justify-center items-center gap-1.5 z-10">
+                <span class="slider-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300 cursor-pointer" onclick="currentSlide(0)"></span>
+                <span class="slider-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300 cursor-pointer" onclick="currentSlide(1)"></span>
+                <span class="slider-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300 cursor-pointer" onclick="currentSlide(2)"></span>
+                <span class="slider-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300 cursor-pointer" onclick="currentSlide(3)"></span>
+                <span class="slider-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300 cursor-pointer" onclick="currentSlide(4)"></span>
+            </div>
+        </section>
+        
+        <!-- SECTION ATAS: Revamped Compact Layout -->
+        <section class="glass-card rounded-2xl p-3.5 border border-neutral-800 bg-gradient-to-br from-black via-neutral-950 to-black space-y-3 shadow-2xl relative overflow-hidden">
+            <div class="absolute -right-10 -top-10 w-24 h-24 bg-pink-500/10 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="absolute -left-10 -bottom-10 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+            <!-- Header Relationship Badge & Days -->
+            <div class="flex items-center justify-between bg-neutral-900/60 border border-neutral-800/80 rounded-xl px-3 py-2.5 shadow-inner">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-pink-500/15 border border-pink-500/30 flex items-center justify-center text-pink-400 text-xs flex-shrink-0">
+                        <i class="fa-solid fa-heart animate-bounce"></i>
+                    </div>
+                    <div>
+                        <div class="text-[10px] text-slate-400 font-medium flex items-center gap-1">
+                            <span>Sejak 5 April 2025</span>
+                        </div>
+                        <div id="relationship-detail-time" class="text-[10px] font-semibold text-slate-300">
+                            Memuat waktu...
+                        </div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="flex items-baseline justify-end gap-1">
+                        <span id="relationship-days" class="text-xl font-black font-display bg-gradient-to-r from-pink-400 via-amber-300 to-pink-500 bg-clip-text text-transparent">
+                            0
+                        </span>
+                        <span class="text-[10px] font-bold text-slate-300 uppercase tracking-wider">Hari</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dual Clocks Grid (Clickable to open Time & Alarm Calc) -->
+            <div onclick="triggerHaptic(); openTimeCalcModal()" class="grid grid-cols-2 gap-2.5 cursor-pointer group/clock" title="Klik untuk Buka Kalkulator Waktu & Alarm">
+                <!-- Zald Clock -->
+                <div class="p-2.5 rounded-xl bg-sky-950/25 border border-sky-500/20 group-hover/clock:border-sky-500/50 flex flex-col justify-between shadow-inner transition">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <div class="flex items-center gap-1.5">
+                            <img src="assets/pfp_zald.png" alt="Zald" class="w-5 h-5 rounded-md object-cover shadow-sm">
+                            <span class="text-[10px] font-bold text-sky-400 uppercase tracking-wider">Zald</span>
+                        </div>
+                        <span class="text-[9px] font-semibold text-sky-300/80 bg-sky-900/40 px-1 py-0.5 rounded">UTC+5:30</span>
+                    </div>
+                    <div class="flex items-baseline justify-between">
+                        <div id="zald-clock" class="text-sm font-black font-display text-sky-200 tracking-tight">--:-- --</div>
+                        <span id="zald-date" class="text-[9px] text-slate-400">-- ---</span>
+                    </div>
+                </div>
+
+                <!-- Micel Clock -->
+                <div class="p-2.5 rounded-xl bg-pink-950/25 border border-pink-500/20 group-hover/clock:border-pink-500/50 flex flex-col justify-between shadow-inner transition">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <div class="flex items-center gap-1.5">
+                            <img src="assets/pfp_micel.png" alt="Micel" class="w-5 h-5 rounded-md object-cover shadow-sm">
+                            <span class="text-[10px] font-bold text-pink-400 uppercase tracking-wider">Micel</span>
+                        </div>
+                        <span class="text-[9px] font-semibold text-pink-300/80 bg-pink-900/40 px-1 py-0.5 rounded">UTC+9:00</span>
+                    </div>
+                    <div class="flex items-baseline justify-between">
+                        <div id="micel-clock" class="text-sm font-black font-display text-pink-200 tracking-tight">--:-- --</div>
+                        <span id="micel-date" class="text-[9px] text-slate-400">-- ---</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INFINITE MARQUEE LDR QUOTES & DISTANCE -->
+            <div class="pt-1.5 border-t border-neutral-900 overflow-hidden relative marquee-container">
+                <div class="absolute left-0 inset-y-0 w-8 bg-gradient-to-r from-neutral-950 to-transparent z-10 pointer-events-none"></div>
+                <div class="absolute right-0 inset-y-0 w-8 bg-gradient-to-l from-neutral-950 to-transparent z-10 pointer-events-none"></div>
+
+                <div class="flex whitespace-nowrap overflow-hidden">
+                    <div class="flex items-center gap-6 marquee-track animate-marquee py-1">
+                        <span class="inline-flex items-center gap-1.5 text-[11px] text-pink-400 font-semibold flex-shrink-0">
+                            <i class="fa-solid fa-earth-asia"></i> ~4,800 km apart
+                        </span>
+                        <span class="text-slate-700 text-[9px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 italic flex-shrink-0">
+                            "Distance is just a test of how far love can travel."
+                        </span>
+                        <span class="text-slate-700 text-[9px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-[11px] text-pink-400 font-semibold flex-shrink-0">
+                            <i class="fa-solid fa-heart text-[9px]"></i> Two hearts, different time zones
+                        </span>
+                        <span class="text-slate-700 text-[9px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 italic flex-shrink-0">
+                            "In true love the smallest distance is too great, and the greatest distance can be bridged."
+                        </span>
+                        <span class="text-slate-700 text-[9px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-[11px] text-amber-400 font-semibold flex-shrink-0">
+                            <i class="fa-solid fa-plane text-[9px]"></i> Counting down the days to meet
+                        </span>
+                        <span class="text-slate-700 text-[9px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 italic flex-shrink-0">
+                            "Miles apart, but close at heart."
+                        </span>
+                        <span class="text-slate-700 text-[9px]">•</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION SEARCH & SORT & VIEWER FILTER -->
+        <section id="search-section" class="space-y-3">
+            <div class="flex items-center gap-2.5">
+                <div class="relative flex-grow">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                    <input type="text" id="search-input" oninput="onSearchInput(); toggleClearSearchBtn()" placeholder="Cari judul film atau bulan..." 
+                        class="w-full pl-9 pr-8 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-xs sm:text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition shadow-inner">
+                    <button id="clear-search-btn" onclick="clearSearchInput()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white text-xs hidden">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                
+                <div class="relative flex-shrink-0">
+                    <select id="sort-select" onchange="triggerHaptic(); renderMovies()" class="px-3.5 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-xs sm:text-sm text-slate-300 focus:outline-none focus:border-amber-400 transition appearance-none pr-8 cursor-pointer tap-scale shadow-inner">
+                        <option value="newest" class="bg-black">Bulan Terkini</option>
+                        <option value="oldest" class="bg-black">Bulan Terlama</option>
+                        <option value="az" class="bg-black">Judul (A-Z)</option>
+                    </select>
+                    <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 text-[10px] pointer-events-none"></i>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+                <button onclick="triggerHaptic(); setViewerFilter('all', this)" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-400 text-black tap-scale flex-shrink-0 transition shadow-sm">Semua</button>
+                <button onclick="triggerHaptic(); setViewerFilter('both', this)" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-slate-300 tap-scale flex-shrink-0 transition">Nonton Bareng</button>
+                <button onclick="triggerHaptic(); setViewerFilter('zald', this)" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-slate-300 tap-scale flex-shrink-0 transition">Zald Picks</button>
+                <button onclick="triggerHaptic(); setViewerFilter('micel', this)" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-slate-300 tap-scale flex-shrink-0 transition">Micel Picks</button>
+                <div class="h-4 w-[1px] bg-neutral-800 mx-1 flex-shrink-0"></div>
+                <button onclick="triggerHaptic(); toggleTopRatedFilter(this)" id="top-rated-btn" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-amber-400 tap-scale flex-shrink-0 transition flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-star text-[10px]"></i> Top 9+
+                </button>
+            </div>
+        </section>
+
+        <!-- Movies Grid List -->
+        <section class="space-y-3">
+            <div class="flex items-center justify-between px-1">
+                <h2 class="text-xs font-bold text-slate-400 font-display uppercase tracking-wider">Koleksi Film</h2>
+                <span id="movie-count-badge" class="text-xs text-slate-400 font-semibold bg-neutral-950 px-2.5 py-1 rounded-lg border border-neutral-800">0 Film</span>
+            </div>
+
+            <div id="movie-grid" class="grid grid-cols-2 gap-3.5"></div>
+
+            <div id="load-more-indicator" class="hidden py-6 text-center">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-950 border border-neutral-800 text-xs text-amber-400 shadow-md">
+                    <i class="fa-solid fa-spinner fa-spin text-sm"></i> Memuat lebih banyak film...
+                </div>
+            </div>
+
+            <div id="empty-state" class="hidden py-12 text-center space-y-3 animate-fadeIn">
+                <div class="w-14 h-14 rounded-2xl bg-neutral-950 border border-neutral-800 flex items-center justify-center mx-auto text-slate-500 text-xl shadow-lg">
+                    <i class="fa-solid fa-film"></i>
+                </div>
+                <div class="space-y-1">
+                    <p class="text-sm text-slate-300 font-semibold">Tidak ada film ditemukan</p>
+                    <p class="text-xs text-slate-500">Coba ubah kata kunci pencarian atau reset filter</p>
+                </div>
+                <button onclick="triggerHaptic(); resetSearch()" class="px-4 py-2 bg-neutral-900 hover:bg-neutral-800 text-amber-400 text-xs font-bold rounded-xl tap-scale shadow-md transition">Reset Pencarian</button>
+            </div>
+        </section>
+
+        <!-- Footer Section -->
+        <footer class="mt-10 pt-6 pb-2 border-t border-neutral-900 text-center space-y-4">
+            
+            <!-- ADMIN-ONLY ABOUT SECTION -->
+            <div id="admin-about-section" class="hidden space-y-3 text-left p-4 rounded-2xl bg-neutral-950 border border-neutral-800 shadow-inner">
+                <div class="flex items-center gap-2 pb-2 border-b border-neutral-900">
+                    <i class="fa-solid fa-user-shield text-amber-400 text-xs"></i>
+                    <h3 class="text-xs font-bold text-slate-200 uppercase tracking-wider font-display">About Zald & Micel</h3>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Info Zald -->
+                    <div class="p-3 rounded-xl bg-sky-950/20 border border-sky-500/20 space-y-2">
+                        <div class="flex items-center gap-2">
+                            <img src="assets/pfp_zald.png" alt="Zald" class="w-5 h-5 rounded-md object-cover">
+                            <span class="text-xs font-bold text-sky-400">Zald</span>
+                        </div>
+                        <div class="space-y-1 text-[11px] text-slate-300">
+                            <p class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-cake-candles text-sky-400 text-[10px]"></i> 
+                                <span>Lahir: <strong class="text-white">17 Okt 1999</strong></span>
+                            </p>
+                            <p class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-star text-sky-400 text-[10px]"></i> 
+                                <span>Zodiak: <strong class="text-white">Libra</strong> | Shio: <strong class="text-white">Kelinci (Tanah)</strong></span>
+                            </p>
+                            <p class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-clock text-sky-400 text-[10px]"></i> 
+                                <span>Usia: <strong id="zald-age" class="text-white">--</strong></span>
+                            </p>
+                            <p class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-gift text-sky-400 text-[10px]"></i> 
+                                <span>Ultah Berikutnya: <strong id="zald-countdown" class="text-amber-300">--</strong></span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Info Micel -->
+                    <div class="p-3 rounded-xl bg-pink-950/20 border border-pink-500/20 space-y-2">
+                        <div class="flex items-center gap-2">
+                            <img src="assets/pfp_micel.png" alt="Micel" class="w-5 h-5 rounded-md object-cover">
+                            <span class="text-xs font-bold text-pink-400">Micel</span>
+                        </div>
+                        <div class="space-y-1 text-[11px] text-slate-300">
+                            <p class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-cake-candles text-pink-400 text-[10px]"></i> 
+                                <span>Lahir: <strong class="text-white">29 Mei 2003</strong></span>
+                            </p>
+                            <p class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-star text-pink-400 text-[10px]"></i> 
+                                <span>Zodiak: <strong class="text-white">Gemini</strong> | Shio: <strong class="text-white">Kambing (Air)</strong></span>
+                            </p>
+                            <p class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-clock text-pink-400 text-[10px]"></i> 
+                                <span>Usia: <strong id="micel-age" class="text-white">--</strong></span>
+                            </p>
+                            <p class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-gift text-pink-400 text-[10px]"></i> 
+                                <span>Ultah Berikutnya: <strong id="micel-countdown" class="text-amber-300">--</strong></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl popcorn-gradient flex items-center justify-center text-black text-sm shadow-md flex-shrink-0 font-bold">
+                    <i class="fa-solid fa-bowl-food"></i>
+                </div>
+                <div>
+                    <h2 class="font-display font-black text-sm text-slate-100 leading-tight text-left">
+                        Bubi's Popcorn
+                    </h2>
+                    <p class="text-[11px] font-medium text-pink-400 flex items-center gap-1">
+                        <i class="fa-solid fa-heart text-[9px] animate-bounce"></i> Zald & Micel Log
+                    </p>
+                </div>
+            </div>
+            
+            <p class="text-xs text-slate-400 max-w-xs mx-auto leading-relaxed">
+                Bubi's Popcorn adalah platform yang dibuat untuk mengarsip history nonton bareng aku dan bubi
+            </p>
+
+            <div class="text-[11px] text-slate-500 flex items-center justify-center gap-1 pt-1">
+                <span>&copy; 2026</span>
+                <span>•</span>
+                <span>made with <i class="fa-solid fa-heart text-pink-500 text-[10px] mx-0.5"></i> @zaldnielsen</span>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Floating Action Buttons (Right Bottom) -->
+    <div class="fixed bottom-8 right-6 z-40 flex flex-col gap-3 pb-[env(safe-area-inset-bottom)]">
+        <!-- Floating Time Converter Button -->
+        <button onclick="triggerHaptic(); openTimeCalcModal()" class="w-12 h-12 rounded-full bg-neutral-900 border border-neutral-700 text-amber-400 flex items-center justify-center shadow-2xl tap-scale transition hover:bg-neutral-800 hover:border-amber-400" title="Konverter Waktu">
+            <i class="fa-solid fa-clock text-base"></i>
+        </button>
+        <!-- FAB Tambah Film (Only if admin unlocked) -->
+        <div id="fab-container" class="hidden">
+            <button onclick="triggerHaptic(); openAddModal()" class="w-14 h-14 rounded-full popcorn-gradient flex items-center justify-center text-black shadow-2xl border-2 border-black tap-scale transition hover:rotate-90 duration-300">
+                <i class="fa-solid fa-plus text-xl"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- QoL: Floating Action Button (Scroll to Top) -->
+    <div id="scroll-top-btn" class="fixed bottom-8 left-6 z-40 hidden pb-[env(safe-area-inset-bottom)] transition-all duration-300">
+        <button onclick="triggerHaptic(); scrollToTop()" class="w-11 h-11 rounded-full bg-neutral-900 border border-neutral-700 text-amber-400 flex items-center justify-center shadow-2xl tap-scale transition hover:bg-neutral-800" title="Kembali ke Atas">
+            <i class="fa-solid fa-arrow-up text-sm"></i>
+        </button>
+    </div>
+
+    <!-- Modal Konverter Waktu Ultra Clean (Sri Lanka <-> Jepang) -->
+    <div id="time-calc-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
+        <div id="time-calc-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-xs rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col transform transition-all pb-[env(safe-area-inset-bottom)]">
+            <!-- Header Modal Clean -->
+            <div class="px-4 py-3 border-b border-neutral-900 flex items-center justify-between bg-neutral-950">
+                <h3 class="font-bold text-xs text-slate-200 font-display flex items-center gap-1.5">
+                    <i class="fa-solid fa-clock text-amber-400"></i> Konverter Waktu
+                </h3>
+                <button type="button" onclick="triggerHaptic(); closeTimeCalcModal()" class="text-slate-400 hover:text-white p-1 tap-scale rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center w-7 h-7">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            </div>
+
+            <!-- Body Modal Clean -->
+            <div class="p-4 space-y-3.5">
+                <!-- Label & Switch Direction -->
+                <div class="flex items-center justify-between">
+                    <span id="conv-input-label" class="text-xs font-bold text-pink-400">
+                        Waktu Jepang (JST):
+                    </span>
+                    <button type="button" onclick="toggleConverterDirection()" class="px-2.5 py-1 rounded-lg bg-black hover:bg-neutral-800 border border-neutral-800 text-amber-300 text-[10px] font-bold tap-scale transition flex items-center gap-1">
+                        <span id="conv-dir-btn-text">Ke Waktu Jepang</span>
+                        <i class="fa-solid fa-arrows-rotate text-[9px]"></i>
+                    </button>
+                </div>
+
+                <!-- Input Time (Manual Input - Default Waktu Jepang) -->
+                <input type="time" id="conv-time-input" value="09:30" onchange="updateConvertedTime()" oninput="updateConvertedTime()"
+                    class="w-full px-3 py-3 bg-black border border-neutral-700 rounded-xl text-2xl font-black font-mono text-center text-slate-100 focus:outline-none focus:border-amber-400 transition shadow-inner">
+
+                <!-- Output Hasil Perbedaan Jam Clean -->
+                <div class="p-4 rounded-2xl bg-black border border-neutral-800 text-center space-y-1 shadow-md">
+                    <span id="conv-target-label" class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Hasil Waktu Zald:</span>
+                    <div id="conv-target-result" class="text-3xl font-black font-display text-amber-300 tracking-tight">
+                        06:00 AM
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Masukkan Password -->
+    <div id="password-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center hidden">
+        <div class="bg-neutral-950 border border-neutral-800 w-11/12 max-w-xs rounded-2xl shadow-2xl overflow-hidden p-5 space-y-4 animate-popIn">
+            <div class="text-center space-y-1.5">
+                <div class="w-12 h-12 rounded-2xl bg-amber-400/10 border border-amber-400/20 text-amber-400 flex items-center justify-center mx-auto text-lg mb-2 shadow-inner">
+                    <i class="fa-solid fa-lock" id="modal-lock-icon"></i>
+                </div>
+                <h3 class="font-bold text-sm text-slate-100 font-display">Akses Admin Terkunci</h3>
+                <p class="text-[11px] text-slate-400 leading-relaxed">Masukkan password untuk mengizinkan tambah/edit film.</p>
+            </div>
+
+            <form onsubmit="handlePasswordSubmit(event)" class="space-y-3">
+                <div>
+                    <input type="password" id="admin-password-input" required placeholder="Masukkan password..." 
+                        class="w-full px-3.5 py-2.5 bg-black border border-neutral-800 rounded-xl text-xs text-center text-slate-200 focus:outline-none focus:border-amber-400 transition shadow-inner">
+                </div>
+                <div class="flex items-center gap-2 pt-1">
+                    <button type="button" onclick="triggerHaptic(); closePasswordModal()" class="w-1/2 py-2.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-slate-300 tap-scale transition">Batal</button>
+                    <button type="submit" onclick="triggerHaptic()" class="w-1/2 py-2.5 rounded-xl popcorn-gradient font-bold text-xs text-black shadow-md tap-scale transition">Buka Kunci</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Sheet / Modal Form -->
+    <div id="add-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
+        <div id="add-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[85vh] sm:h-auto sm:max-h-[85vh] transform transition-all pb-[env(safe-area-inset-bottom)]">
+            <div class="px-5 py-3.5 border-b border-neutral-900 flex items-center justify-between flex-shrink-0 bg-neutral-950">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></div>
+                    <h3 id="modal-form-title" class="font-bold text-sm text-slate-100 font-display">Tambah Ulasan Baru</h3>
+                </div>
+                <button type="button" onclick="triggerHaptic(); requestCloseAddModal()" class="text-slate-400 hover:text-white p-1.5 tap-scale rounded-xl bg-black border border-neutral-800 flex items-center justify-center w-8 h-8">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <form id="add-movie-form" onsubmit="handleFormSubmit(event)" class="p-5 overflow-y-auto space-y-4 flex-grow no-scrollbar">
+                <input type="hidden" name="editing_id" id="editing_id" value="">
+                
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1.5">Judul Film *</label>
+                    <input type="text" name="judul" id="form-judul" required placeholder="Judul film..." 
+                        class="w-full px-3.5 py-3 bg-black border border-neutral-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-slate-200 transition shadow-inner">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1.5">URL Poster Gambar (Opsional)</label>
+                    <input type="url" name="poster" id="form-poster" placeholder="https://..." 
+                        class="w-full px-3.5 py-3 bg-black border border-neutral-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-slate-200 transition shadow-inner">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5 text-center">Tahun Rilis *</label>
+                        <input type="number" name="tahun" id="form-tahun" required min="1900" max="2030" value="2026" 
+                            class="w-full px-3.5 py-3 bg-black border border-neutral-800 rounded-xl text-xs sm:text-sm text-center focus:outline-none focus:border-amber-400 text-slate-200 transition shadow-inner">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5 text-center">Bulan Nonton *</label>
+                        <input type="month" name="bulan" id="form-bulan" required 
+                            class="w-full px-3.5 py-3 bg-black border border-neutral-800 rounded-xl text-xs sm:text-sm text-center focus:outline-none focus:border-amber-400 text-slate-200 transition shadow-inner">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1.5">Siapa yang Nonton? *</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="watched_by" value="both" checked onchange="handleViewerChange()" class="peer sr-only">
+                            <div class="p-3 rounded-xl bg-black border border-neutral-800 text-center text-xs font-semibold text-slate-400 peer-checked:bg-amber-500/10 peer-checked:border-amber-500 peer-checked:text-amber-400 transition shadow-sm">
+                                Bareng
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="watched_by" value="zald" onchange="handleViewerChange()" class="peer sr-only">
+                            <div class="p-3 rounded-xl bg-black border border-neutral-800 text-center text-xs font-semibold text-slate-400 peer-checked:bg-sky-500/10 peer-checked:border-sky-500 peer-checked:text-sky-400 transition shadow-sm">
+                                Zald
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="watched_by" value="micel" onchange="handleViewerChange()" class="peer sr-only">
+                            <div class="p-3 rounded-xl bg-black border border-neutral-800 text-center text-xs font-semibold text-slate-400 peer-checked:bg-pink-500/10 peer-checked:border-pink-500 peer-checked:text-pink-400 transition shadow-sm">
+                                Micel
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-amber-950/20 border border-amber-500/30 flex items-center justify-between shadow-inner">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-xl gold-gradient flex items-center justify-center text-black text-xs shadow-md">
+                            <i class="fa-solid fa-award"></i>
+                        </div>
+                        <div>
+                            <span class="block text-xs font-bold text-amber-300 font-display">Certified Fresh</span>
+                            <span class="block text-[10px] text-slate-400">Penghargaan khusus film terbaik</span>
+                        </div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" name="is_certified" id="form-is-certified" value="true" class="sr-only peer">
+                        <div class="w-10 h-6 bg-neutral-900 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+                    </label>
+                </div>
+
+                <div class="space-y-3 pt-1 border-t border-neutral-900">
+                    <!-- Zald Review Section -->
+                    <div id="section-rating-zald" class="p-3.5 rounded-2xl bg-black border border-sky-400/30 space-y-2.5 shadow-md">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <img src="assets/pfp_zald.png" alt="Zald" class="w-6 h-6 rounded-full object-cover shadow">
+                                <span class="text-xs font-bold text-sky-400 tracking-wide">ZALD REVIEW</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span id="err-hint-aku" class="hidden text-[10px] font-bold text-red-400 animate-pulse">Max 10!</span>
+                                <input type="number" step="0.1" name="rating_aku" id="form-rating-aku" placeholder="0 - 10" 
+                                    oninput="validateRatingInput(this, 'err-hint-aku', 'sky')"
+                                    onblur="clampRatingOnBlur(this, 'err-hint-aku', 'sky')"
+                                    class="w-24 px-3 py-1.5 bg-neutral-950 border border-neutral-800 rounded-xl text-center text-xs font-bold text-sky-400 placeholder-slate-600 focus:outline-none focus:border-sky-400 transition shadow-inner">
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5 pt-1">
+                            <span class="text-[10px] text-slate-500">Quick:</span>
+                            <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 7)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-sky-400 font-bold tap-scale">7</button>
+                            <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 8)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-sky-400 font-bold tap-scale">8</button>
+                            <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 8.5)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-sky-400 font-bold tap-scale">8.5</button>
+                            <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 9)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-sky-400 font-bold tap-scale">9</button>
+                        </div>
+                        <textarea name="review_aku" id="form-review-aku" rows="4" placeholder="Tulis ulasan mendalam dari Zald di sini..." 
+                            class="w-full p-3 bg-neutral-950 border border-neutral-800 rounded-xl text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-sky-400 transition shadow-inner leading-relaxed"></textarea>
+                    </div>
+
+                    <!-- Micel Review Section -->
+                    <div id="section-rating-micel" class="p-3.5 rounded-2xl bg-black border border-pink-400/30 space-y-2.5 shadow-md">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <img src="assets/pfp_micel.png" alt="Micel" class="w-6 h-6 rounded-full object-cover shadow">
+                                <span class="text-xs font-bold text-pink-400 tracking-wide">MICEL REVIEW</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span id="err-hint-dia" class="hidden text-[10px] font-bold text-red-400 animate-pulse">Max 10!</span>
+                                <input type="number" step="0.1" name="rating_dia" id="form-rating-dia" placeholder="0 - 10" 
+                                    oninput="validateRatingInput(this, 'err-hint-dia', 'pink')"
+                                    onblur="clampRatingOnBlur(this, 'err-hint-dia', 'pink')"
+                                    class="w-24 px-3 py-1.5 bg-neutral-950 border border-neutral-800 rounded-xl text-center text-xs font-bold text-pink-400 placeholder-slate-600 focus:outline-none focus:border-pink-400 transition shadow-inner">
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5 pt-1">
+                            <span class="text-[10px] text-slate-500">Quick:</span>
+                            <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 7)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-pink-400 font-bold tap-scale">7</button>
+                            <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 8)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-pink-400 font-bold tap-scale">8</button>
+                            <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 8.5)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-pink-400 font-bold tap-scale">8.5</button>
+                            <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 9)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-pink-400 font-bold tap-scale">9</button>
+                        </div>
+                        <textarea name="review_dia" id="form-review-dia" rows="4" placeholder="Tulis ulasan mendalam dari Micel di sini..." 
+                            class="w-full p-3 bg-neutral-950 border border-neutral-800 rounded-xl text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-pink-400 transition shadow-inner leading-relaxed"></textarea>
+                    </div>
+                </div>
+
+                <div class="pt-4 pb-6 flex items-center justify-end gap-3 border-t border-neutral-900">
+                    <button type="button" onclick="triggerHaptic(); requestCloseAddModal()" class="px-5 py-3 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-slate-300 tap-scale transition">Batal</button>
+                    <button type="submit" id="submit-btn" onclick="triggerHaptic()" class="px-6 py-3 rounded-xl popcorn-gradient font-bold text-xs text-black shadow-lg tap-scale transition">
+                        <span id="submit-btn-text">Simpan Ulasan</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mobile Detail Modal -->
+    <div id="detail-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
+        <div id="detail-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col transform transition-all pb-[env(safe-area-inset-bottom)]">
+            <div class="relative h-48 bg-black overflow-hidden flex-shrink-0">
+                <img id="detail-banner-img" src="" alt="Banner" class="w-full h-full object-cover opacity-40 blur-sm scale-105" onerror="this.src='https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=800&auto=format&fit=crop'">
+                <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/60 to-transparent"></div>
+                <button onclick="triggerHaptic(); closeDetailModal()" class="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-black/80 border border-neutral-800 text-slate-300 flex items-center justify-center tap-scale">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+
+                <button onclick="triggerHaptic(); copyMovieDetailSummary()" class="absolute top-3 left-3 z-10 px-3 py-1.5 rounded-full bg-black/80 border border-neutral-800 text-amber-300 text-[10px] font-bold flex items-center gap-1.5 tap-scale shadow" title="Salin Ringkasan Ulasan">
+                    <i class="fa-regular fa-copy text-[10px]"></i> Salin Ringkasan
+                </button>
+
+                <div class="absolute bottom-3 left-4 right-4 flex items-end justify-between gap-2">
+                    <div>
+                        <div class="flex items-center gap-1.5 mb-1 flex-wrap">
+                            <span id="detail-year" class="text-xs text-slate-300 font-semibold">2026</span>
+                            <span id="detail-watch-month" class="px-2 py-0.5 rounded-lg bg-neutral-900 text-amber-300 text-[10px] font-semibold">Januari 2026</span>
+                            <span id="detail-viewer-badge" class="px-2 py-0.5 rounded-lg bg-neutral-900 text-slate-300 text-[10px] font-bold">Nonton Bareng</span>
+                            <span id="detail-badge-wrapper" class="hidden px-2 py-0.5 rounded-lg gold-gradient text-black text-[10px] font-extrabold flex items-center gap-1 shadow-md">
+                                <i class="fa-solid fa-award text-[9px]"></i> Certified Fresh
+                            </span>
+                        </div>
+                        <h2 id="detail-title" class="text-lg font-black font-display text-white tracking-tight line-clamp-1">Title</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-5 overflow-y-auto space-y-4 flex-grow no-scrollbar">
+                <div id="detail-scores-container" class="grid grid-cols-2 gap-2.5 bg-black border border-neutral-800 p-3 rounded-2xl shadow-inner">
+                    <div id="detail-box-zald" class="flex items-center gap-2.5">
+                        <img src="assets/pfp_zald.png" alt="Zald" class="w-8 h-8 rounded-xl object-cover shadow-sm">
+                        <div>
+                            <div class="text-[10px] font-semibold text-slate-400">Rating Zald</div>
+                            <div id="detail-zald-score" class="text-xs sm:text-sm font-bold text-sky-400">8.0</div>
+                        </div>
+                    </div>
+                    <div id="detail-box-micel" class="flex items-center gap-2.5 border-l border-neutral-800 pl-3">
+                        <img src="assets/pfp_micel.png" alt="Micel" class="w-8 h-8 rounded-xl object-cover shadow-sm">
+                        <div>
+                            <div class="text-[10px] font-semibold text-slate-400">Rating Micel</div>
+                            <div id="detail-micel-score" class="text-xs sm:text-sm font-bold text-pink-400">8.5</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <div id="detail-review-zald-wrap" class="bg-black/80 border border-sky-400/20 rounded-2xl p-3.5 space-y-1.5 shadow-sm">
+                        <div class="flex items-center gap-1.5">
+                            <img src="assets/pfp_zald.png" class="w-4 h-4 rounded-full object-cover">
+                            <span class="text-xs font-bold text-sky-400">Pendapat Zald</span>
+                        </div>
+                        <p id="detail-zald-text" class="text-xs sm:text-sm text-slate-200 italic whitespace-pre-line leading-relaxed">--</p>
+                    </div>
+                    <div id="detail-review-micel-wrap" class="bg-black/80 border border-pink-400/20 rounded-2xl p-3.5 space-y-1.5 shadow-sm">
+                        <div class="flex items-center gap-1.5">
+                            <img src="assets/pfp_micel.png" class="w-4 h-4 rounded-full object-cover">
+                            <span class="text-xs font-bold text-pink-400">Pendapat Micel</span>
+                        </div>
+                        <p id="detail-micel-text" class="text-xs sm:text-sm text-slate-200 italic whitespace-pre-line leading-relaxed">--</p>
+                    </div>
+                </div>
+
+                <div id="detail-admin-actions" class="pt-3 flex items-center justify-between border-t border-neutral-900 hidden">
+                    <div class="flex items-center gap-2">
+                        <button onclick="triggerHaptic(); editCurrentMovie()" class="px-3.5 py-2 rounded-xl bg-sky-400/10 border border-sky-400/20 text-sky-400 text-xs font-semibold tap-scale shadow-sm">Edit</button>
+                        <button onclick="triggerHaptic(); deleteCurrentMovie()" class="px-3.5 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold tap-scale shadow-sm">Hapus</button>
+                    </div>
+                    <button onclick="triggerHaptic(); closeDetailModal()" class="px-4 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-slate-200 tap-scale shadow-sm">Tutup</button>
+                </div>
+                <div id="detail-public-actions" class="pt-3 flex items-center justify-end border-t border-neutral-900">
+                    <button onclick="triggerHaptic(); closeDetailModal()" class="px-4 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-slate-200 tap-scale shadow-sm">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container Mobile -->
+    <div id="toast-container" class="fixed top-16 inset-x-0 z-50 flex flex-col items-center gap-2 pointer-events-none px-4"></div>
+
+    <script>
+        const SUPABASE_URL = 'https://fhpyvnbsreoaiaeqfkvk.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_aSPwcLUMW2y7r3nk6cpBpg_3DJH5sky';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const TABLE_NAME = 'bubi_popcorn';
+        
+        let moviesData = [];
+        let filteredMoviesCache = [];
+        let displayedItemCount = 0;
+        const PAGE_SIZE = 10;
+        
+        let currentDetailMovieId = null;
+        let currentViewerFilter = 'all';
+        let isTopRatedActive = false;
+        let searchDebounceTimer = null;
+        let lastScrollPosition = 0;
+        let lastClickedMovieId = null; 
+
+        // --- HERO SLIDER LOGIC ---
+        let currentSlideIndex = 0;
+        const totalSlides = 5;
+        let slideInterval;
+
+        function updateSlider() {
+            const slider = document.getElementById('hero-slider');
+            const dots = document.querySelectorAll('.slider-dot');
+            if (!slider) return;
+
+            slider.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
+
+            dots.forEach((dot, idx) => {
+                if (idx === currentSlideIndex) {
+                    dot.className = "slider-dot w-5 h-2 rounded-full bg-amber-400 transition-all duration-300 cursor-pointer";
+                } else {
+                    dot.className = "slider-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300 cursor-pointer";
+                }
+            });
+        }
+
+        function nextSlide() {
+            currentSlideIndex = (currentSlideIndex + 1) % totalSlides;
+            updateSlider();
+        }
+
+        function currentSlide(index) {
+            currentSlideIndex = index;
+            updateSlider();
+            resetSlideTimer();
+        }
+
+        function startSlideTimer() {
+            slideInterval = setInterval(nextSlide, 3500);
+        }
+
+        function resetSlideTimer() {
+            clearInterval(slideInterval);
+            startSlideTimer();
+        }
+
+        // --- HAPTIC FEEDBACK UTILITY ---
+        function triggerHaptic() {
+            if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+                navigator.vibrate(12);
+            }
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.addEventListener('scroll', () => {
+            const scrollTopBtn = document.getElementById('scroll-top-btn');
+            if (window.scrollY > 400) {
+                scrollTopBtn.classList.remove('hidden');
+            } else {
+                scrollTopBtn.classList.add('hidden');
+            }
+        });
+
+        function toggleClearSearchBtn() {
+            const val = document.getElementById('search-input').value;
+            const clearBtn = document.getElementById('clear-search-btn');
+            if (val.trim() !== '') {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+        }
+
+        function clearSearchInput() {
+            document.getElementById('search-input').value = '';
+            toggleClearSearchBtn();
+            processFilterAndRender(true);
+        }
+
+        function setQuickRating(inputId, hintId, themeColor, value) {
+            const inputEl = document.getElementById(inputId);
+            inputEl.value = value;
+            validateRatingInput(inputEl, hintId, themeColor);
+            triggerHaptic();
+        }
+
+        const ADMIN_PASSWORD = "bubi123"; 
+        let isAdminUnlocked = localStorage.getItem('bubi_admin_unlocked') === 'true';
+
+        function updateLockUI() {
+            const lockIcon = document.getElementById('lock-icon');
+            const lockBtn = document.getElementById('lock-btn');
+            const fabContainer = document.getElementById('fab-container');
+            const adminActions = document.getElementById('detail-admin-actions');
+            const publicActions = document.getElementById('detail-public-actions');
+            const adminAboutSection = document.getElementById('admin-about-section');
+
+            if (isAdminUnlocked) {
+                if (lockIcon) lockIcon.className = "fa-solid fa-lock-open text-xs text-amber-400";
+                if (lockBtn) lockBtn.className = "w-9 h-9 rounded-xl bg-amber-400/10 border border-amber-500/40 text-amber-400 flex items-center justify-center transition tap-scale shadow-sm";
+                if (fabContainer) fabContainer.classList.remove('hidden');
+                if (adminActions) adminActions.classList.remove('hidden');
+                if (publicActions) publicActions.classList.add('hidden');
+                if (adminAboutSection) adminAboutSection.classList.remove('hidden');
+            } else {
+                if (lockIcon) lockIcon.className = "fa-solid fa-lock text-xs text-slate-400";
+                if (lockBtn) lockBtn.className = "w-9 h-9 rounded-xl bg-neutral-950 border border-neutral-800 text-slate-400 hover:text-amber-400 flex items-center justify-center transition tap-scale shadow-sm";
+                if (fabContainer) fabContainer.classList.add('hidden');
+                if (adminActions) adminActions.classList.add('hidden');
+                if (publicActions) publicActions.classList.remove('hidden');
+                if (adminAboutSection) adminAboutSection.classList.add('hidden');
+            }
+        }
+
+        function handleLockClick() {
+            if (isAdminUnlocked) {
+                if (confirm("Kunci kembali akses admin? Publik tidak akan bisa menambah/edit film.")) {
+                    isAdminUnlocked = false;
+                    localStorage.removeItem('bubi_admin_unlocked');
+                    updateLockUI();
+                    showToast("Akses dikunci kembali.", "warning");
+                }
+            } else {
+                openPasswordModal();
+            }
+        }
+
+        function openPasswordModal() {
+            const modal = document.getElementById('password-modal');
+            const passInput = document.getElementById('admin-password-input');
+            passInput.value = '';
+            modal.classList.remove('hidden');
+            setTimeout(() => passInput.focus(), 100);
+        }
+
+        function closePasswordModal() {
+            document.getElementById('password-modal').classList.add('hidden');
+        }
+
+        function handlePasswordSubmit(event) {
+            event.preventDefault();
+            const passInput = document.getElementById('admin-password-input').value;
+
+            if (passInput === ADMIN_PASSWORD) {
+                isAdminUnlocked = true;
+                localStorage.setItem('bubi_admin_unlocked', 'true');
+                updateLockUI();
+                closePasswordModal();
+                showToast("Akses Terbuka! Mode Admin Aktif.", "success");
+            } else {
+                showToast("Password salah!", "warning");
+                const passInputEl = document.getElementById('admin-password-input');
+                passInputEl.classList.add('border-red-500', 'animate-shake');
+                setTimeout(() => passInputEl.classList.remove('border-red-500', 'animate-shake'), 400);
+            }
+        }
+
+        async function checkPing() {
+            const pingText = document.getElementById('ping-text');
+            const pingDot = document.getElementById('ping-dot');
+            if (!pingText || !pingDot) return;
+
+            pingText.innerText = "ping...";
+            pingDot.className = "w-2 h-2 rounded-full bg-amber-400 animate-ping";
+
+            const startTime = performance.now();
+            try {
+                await fetch(`${SUPABASE_URL}/rest/v1/`, { 
+                    method: 'HEAD',
+                    headers: { 'apikey': SUPABASE_KEY }
+                });
+                const endTime = performance.now();
+                const duration = Math.round(endTime - startTime);
+
+                pingText.innerText = `${duration} ms`;
+                if (duration < 300) {
+                    pingDot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
+                } else if (duration < 800) {
+                    pingDot.className = "w-2 h-2 rounded-full bg-amber-400 animate-pulse";
+                } else {
+                    pingDot.className = "w-2 h-2 rounded-full bg-red-400 animate-pulse";
+                }
+            } catch (err) {
+                pingText.innerText = "Error";
+                pingDot.className = "w-2 h-2 rounded-full bg-red-500";
+            }
+        }
+        setInterval(checkPing, 30000);
+
+        function updateRelationshipCounter() {
+            const startDate = new Date('2025-04-05T00:00:00');
+            const now = new Date();
+            
+            const diffTime = now - startDate;
+            if (diffTime < 0) {
+                document.getElementById('relationship-days').innerText = "0";
+                document.getElementById('relationship-detail-time').innerText = "Menuju 5 April 2025";
+                return;
+            }
+
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            let years = now.getFullYear() - startDate.getFullYear();
+            let months = now.getMonth() - startDate.getMonth();
+            let days = now.getDate() - startDate.getDate();
+
+            if (days < 0) {
+                months--;
+                const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+                days += prevMonth.getDate();
+            }
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+
+            document.getElementById('relationship-days').innerText = diffDays.toLocaleString('id-ID');
+            
+            let detailText = "";
+            if (years > 0) detailText += `${years} Thn `;
+            if (months > 0) detailText += `${months} Bln `;
+            detailText += `${days} Hari`;
+            
+            document.getElementById('relationship-detail-time').innerText = detailText;
+        }
+        setInterval(updateRelationshipCounter, 1000);
+        updateRelationshipCounter();
+
+        function calculateAgeAndCountdown(birthDateStr, ageElementId, countdownElementId) {
+            const birthDate = new Date(birthDateStr);
+            const now = new Date();
+
+            let years = now.getFullYear() - birthDate.getFullYear();
+            let months = now.getMonth() - birthDate.getMonth();
+            if (months < 0 || (months === 0 && now.getDate() < birthDate.getDate())) {
+                years--;
+                months += 12;
+            }
+            if (now.getDate() < birthDate.getDate()) {
+                months--;
+                if (months < 0) months = 11;
+            }
+            const ageEl = document.getElementById(ageElementId);
+            if (ageEl) ageEl.innerText = `${years} Tahun ${months} Bulan`;
+
+            let nextBday = new Date(now.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+            if (now > nextBday) nextBday.setFullYear(now.getFullYear() + 1);
+            
+            const diffTime = nextBday - now;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const diffHours = Math.floor((diffTime / (1000 * 60 * 60)) % 24);
+            const diffMins = Math.floor((diffTime / 1000 / 60) % 60);
+            const diffSecs = Math.floor((diffTime / 1000) % 60);
+
+            const countdownEl = document.getElementById(countdownElementId);
+            if (countdownEl) countdownEl.innerText = `${diffDays} hari ${diffHours}j ${diffMins}m ${diffSecs}d`;
+        }
+
+        function updatePersonalDetails() {
+            calculateAgeAndCountdown('1999-10-17T00:00:00', 'zald-age', 'zald-countdown');
+            calculateAgeAndCountdown('2003-05-29T00:00:00', 'micel-age', 'micel-countdown');
+        }
+        setInterval(updatePersonalDetails, 1000);
+        updatePersonalDetails();
+
+        function updateDualClocks() {
+            const now = new Date();
+            const zaldTime = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Colombo', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+            const zaldDate = now.toLocaleDateString('id-ID', { timeZone: 'Asia/Colombo', day: 'numeric', month: 'short' });
+            const micelTime = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Tokyo', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+            const micelDate = now.toLocaleDateString('id-ID', { timeZone: 'Asia/Tokyo', day: 'numeric', month: 'short' });
+
+            document.getElementById('zald-clock').innerText = zaldTime;
+            document.getElementById('zald-date').innerText = zaldDate;
+            document.getElementById('micel-clock').innerText = micelTime;
+            document.getElementById('micel-date').innerText = micelDate;
+        }
+        setInterval(updateDualClocks, 1000);
+        updateDualClocks();
+
+        function setViewerFilter(filterType, btnEl) {
+            currentViewerFilter = filterType;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.className = "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-slate-300 tap-scale flex-shrink-0 transition";
+            });
+            btnEl.className = "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-400 text-black tap-scale flex-shrink-0 transition shadow-sm";
+            processFilterAndRender(true);
+        }
+
+        function toggleTopRatedFilter(btnEl) {
+            isTopRatedActive = !isTopRatedActive;
+            if (isTopRatedActive) {
+                btnEl.className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-400 text-black tap-scale flex-shrink-0 transition flex items-center gap-1.5 shadow-sm";
+            } else {
+                btnEl.className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-amber-400 tap-scale flex-shrink-0 transition flex items-center gap-1.5 shadow-sm";
+            }
+            processFilterAndRender(true);
+        }
+
+        function onSearchInput() {
+            clearTimeout(searchDebounceTimer);
+            searchDebounceTimer = setTimeout(() => {
+                processFilterAndRender(true);
+            }, 250);
+        }
+
+        function handleViewerChange() {
+            const selected = document.querySelector('input[name="watched_by"]:checked').value;
+            const zaldSection = document.getElementById('section-rating-zald');
+            const micelSection = document.getElementById('section-rating-micel');
+
+            if (selected === 'zald') {
+                zaldSection.style.display = 'block';
+                micelSection.style.display = 'none';
+            } else if (selected === 'micel') {
+                zaldSection.style.display = 'none';
+                micelSection.style.display = 'block';
+            } else {
+                zaldSection.style.display = 'block';
+                micelSection.style.display = 'block';
+            }
+        }
+
+        function parseRating(val) {
+            if (!val || val.toString().trim().toUpperCase() === 'N/A') return null;
+            const num = parseFloat(val);
+            return isNaN(num) ? null : num;
+        }
+
+        function formatMonthDisplay(monthYearStr) {
+            if (!monthYearStr || !monthYearStr.includes('-')) return monthYearStr;
+            const [year, month] = monthYearStr.split('-');
+            const monthsNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            const monthIdx = parseInt(month, 10) - 1;
+            if (monthIdx >= 0 && monthIdx < 12) {
+                return `${monthsNames[monthIdx]} ${year}`;
+            }
+            return monthYearStr;
+        }
+
+        function parseMonthToInputValue(textStr) {
+            if (!textStr) return '';
+            if (/^\d{4}-\d{2}$/.test(textStr)) return textStr;
+            
+            const parts = textStr.trim().split(' ');
+            if (parts.length === 2) {
+                const monthName = parts[0].toLowerCase();
+                const year = parts[1];
+                const monthsMap = {
+                    "januari": "01", "februari": "02", "maret": "03", "april": "04", 
+                    "mei": "05", "juni": "06", "juli": "07", "agustus": "08", 
+                    "september": "09", "oktober": "10", "november": "11", "desember": "12"
+                };
+                if (monthsMap[monthName]) {
+                    return `${year}-${monthsMap[monthName]}`;
+                }
+            }
+            return '';
+        }
+
+        function convertToComparableMonth(bulanStr) {
+            if (!bulanStr) return "0000-00";
+            if (/^\d{4}-\d{2}$/.test(bulanStr)) return bulanStr;
+
+            const parts = bulanStr.trim().split(' ');
+            if (parts.length === 2) {
+                const monthName = parts[0].toLowerCase();
+                const year = parts[1];
+                const monthsMap = {
+                    "januari": "01", "februari": "02", "maret": "03", "april": "04", 
+                    "mei": "05", "juni": "06", "juli": "07", "agustus": "08", 
+                    "september": "09", "oktober": "10", "november": "11", "desember": "12"
+                };
+                if (monthsMap[monthName]) {
+                    return `${year}-${monthsMap[monthName]}`;
+                }
+            }
+            return bulanStr;
+        }
+
+        function validateRatingInput(el, hintId, themeColor) {
+            const hint = document.getElementById(hintId);
+            const val = parseFloat(el.value);
+
+            if (!isNaN(val) && (val > 10 || val < 0)) {
+                el.classList.add('border-red-500', 'bg-red-950/40', 'text-red-400', 'animate-shake');
+                el.classList.remove(`text-${themeColor}-400`, 'border-neutral-800');
+                if (hint) hint.classList.remove('hidden');
+                return false;
+            } else {
+                el.classList.remove('border-red-500', 'bg-red-950/40', 'text-red-400', 'animate-shake');
+                el.classList.add('border-neutral-800', `text-${themeColor}-400`);
+                if (hint) hint.classList.add('hidden');
+                return true;
+            }
+        }
+
+        function clampRatingOnBlur(el, hintId, themeColor) {
+            let val = parseFloat(el.value);
+            if (!isNaN(val) && val > 10) {
+                el.value = "10";
+                validateRatingInput(el, hintId, themeColor);
+                showToast("Rating otomatis disesuaikan ke 10", "warning");
+            } else if (!isNaN(val) && val < 0) {
+                el.value = "0";
+                validateRatingInput(el, hintId, themeColor);
+                showToast("Rating otomatis disesuaikan ke 0", "warning");
+            }
+        }
+
+        function renderSkeletonGrid() {
+            const grid = document.getElementById('movie-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                const skeletonCard = document.createElement('div');
+                skeletonCard.className = "glass-card rounded-2xl overflow-hidden flex flex-col border border-neutral-800 animate-pulseSlow";
+                skeletonCard.innerHTML = `
+                    <div class="aspect-[3/4] w-full bg-neutral-900"></div>
+                    <div class="p-3 space-y-2">
+                        <div class="h-3 bg-neutral-900 rounded w-3/4"></div>
+                        <div class="h-2 bg-neutral-900 rounded w-1/2"></div>
+                        <div class="h-6 bg-neutral-900 rounded w-full mt-2"></div>
+                    </div>
+                `;
+                grid.appendChild(skeletonCard);
+            }
+        }
+
+        async function fetchSupabaseData() {
+            try {
+                if (moviesData.length === 0) renderSkeletonGrid();
+                let { data, error } = await supabaseClient
+                    .from(TABLE_NAME)
+                    .select('*');
+                
+                if (error) throw error;
+                if (Array.isArray(data)) moviesData = data;
+            } catch (err) {
+                console.warn("Supabase Fetch Failed:", err);
+            } finally {
+                processFilterAndRender(true);
+                checkPing();
+            }
+        }
+
+        function processFilterAndRender(resetPagination = false) {
+            const searchVal = (document.getElementById('search-input').value || '').toLowerCase();
+            const sortVal = document.getElementById('sort-select').value;
+
+            let filtered = moviesData.filter(movie => {
+                const watcher = movie.watched_by || 'both';
+                if (currentViewerFilter !== 'all' && watcher !== currentViewerFilter) {
+                    return false;
+                }
+
+                if (isTopRatedActive) {
+                    const rZ = parseRating(movie.rating_aku) || 0;
+                    const rM = parseRating(movie.rating_dia) || 0;
+                    const avg = (watcher === 'zald') ? rZ : (watcher === 'micel' ? rM : ((rZ + rM) / (movie.rating_aku && movie.rating_dia ? 2 : 1)));
+                    if (avg < 9) return false;
+                }
+
+                const judul = (movie.judul || '').toLowerCase();
+                const bulan = (movie.bulan || '').toLowerCase();
+                const formattedBulan = formatMonthDisplay(movie.bulan || '').toLowerCase();
+                
+                return judul.includes(searchVal) ||
+                       bulan.includes(searchVal) ||
+                       formattedBulan.includes(searchVal);
+            });
+
+            filtered.sort((a, b) => {
+                const dateA = convertToComparableMonth(a.bulan);
+                const dateB = convertToComparableMonth(b.bulan);
+
+                if (sortVal === 'newest') {
+                    return dateB.localeCompare(dateA);
+                } else if (sortVal === 'oldest') {
+                    return dateA.localeCompare(dateB);
+                } else if (sortVal === 'az') {
+                    const titleA = (a.judul || '').toLowerCase();
+                    const titleB = (b.judul || '').toLowerCase();
+                    return titleA.localeCompare(titleB);
+                }
+                return 0;
+            });
+
+            filteredMoviesCache = filtered;
+            document.getElementById('movie-count-badge').innerText = `${filteredMoviesCache.length} Film`;
+
+            if (resetPagination) {
+                displayedItemCount = Math.min(PAGE_SIZE, filteredMoviesCache.length);
+            }
+
+            renderGridChunk();
+        }
+
+        function renderGridChunk() {
+            const grid = document.getElementById('movie-grid');
+            const emptyState = document.getElementById('empty-state');
+            const loadMoreIndicator = document.getElementById('load-more-indicator');
+
+            grid.innerHTML = '';
+
+            if (filteredMoviesCache.length === 0) {
+                emptyState.classList.remove('hidden');
+                loadMoreIndicator.classList.add('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            const chunkToRender = filteredMoviesCache.slice(0, displayedItemCount);
+
+            chunkToRender.forEach((movie, index) => {
+                const posterUrl = (movie.poster && movie.poster.trim() !== '') ? movie.poster : 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=600&auto=format&fit=crop';
+                const watcher = movie.watched_by || 'both';
+                const dispZ = (movie.rating_aku && movie.rating_aku.toString().trim() !== '') ? movie.rating_aku : 'N/A';
+                const dispM = (movie.rating_dia && movie.rating_dia.toString().trim() !== '') ? movie.rating_dia : 'N/A';
+                const displayMonthText = formatMonthDisplay(movie.bulan);
+                const isCertified = movie.is_certified === true || movie.is_certified === 'true' || movie.is_certified === 'TRUE';
+
+                const card = document.createElement('div');
+                card.id = `movie-card-${movie.id}`;
+                card.style.animationDelay = `${(index % PAGE_SIZE) * 0.04}s`;
+                card.className = (isCertified 
+                    ? "rounded-2xl overflow-hidden flex flex-col certified-card animate-goldGlow tap-scale cursor-pointer relative shadow-xl"
+                    : "glass-card rounded-2xl overflow-hidden flex flex-col border border-neutral-800 tap-scale cursor-pointer shadow-lg hover:border-neutral-700") + " animate-popIn";
+                
+                card.onclick = () => {
+                    triggerHaptic();
+                    openDetailModal(movie.id);
+                };
+
+                let watcherBadgeHTML = '';
+                if (watcher === 'zald') {
+                    watcherBadgeHTML = `<span class="absolute top-2.5 left-2.5 bg-black/90 border border-sky-500/40 text-sky-400 px-2 py-0.5 rounded-lg text-[10px] font-bold shadow">Zald Picks</span>`;
+                } else if (watcher === 'micel') {
+                    watcherBadgeHTML = `<span class="absolute top-2.5 left-2.5 bg-black/90 border border-pink-500/40 text-pink-400 px-2 py-0.5 rounded-lg text-[10px] font-bold shadow">Micel Picks</span>`;
+                } else if (isCertified) {
+                    watcherBadgeHTML = `<span class="absolute top-2.5 left-2.5 gold-gradient px-2 py-0.5 rounded-lg text-[9px] font-extrabold text-black flex items-center gap-1 shadow-lg animate-pulse"><i class="fa-solid fa-award text-[8px]"></i> FRESH</span>`;
+                }
+
+                let ratingsHTML = '';
+                if (watcher === 'zald') {
+                    ratingsHTML = `
+                        <div class="grid grid-cols-1 gap-1 text-xs">
+                            <div class="bg-sky-400/10 border border-sky-400/20 rounded-xl p-1.5 text-center flex items-center justify-center gap-2 shadow-inner">
+                                <img src="assets/pfp_zald.png" class="w-4 h-4 rounded-full object-cover shadow-sm">
+                                <div>
+                                    <span class="block text-[8px] font-bold text-sky-400 uppercase">Zald Picks</span>
+                                    <span class="font-black text-slate-100 text-xs">${dispZ}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else if (watcher === 'micel') {
+                    ratingsHTML = `
+                        <div class="grid grid-cols-1 gap-1 text-xs">
+                            <div class="bg-pink-400/10 border border-pink-400/20 rounded-xl p-1.5 text-center flex items-center justify-center gap-2 shadow-inner">
+                                <img src="assets/pfp_micel.png" class="w-4 h-4 rounded-full object-cover shadow-sm">
+                                <div>
+                                    <span class="block text-[8px] font-bold text-pink-400 uppercase">Micel Picks</span>
+                                    <span class="font-black text-slate-100 text-xs">${dispM}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    ratingsHTML = `
+                        <div class="grid grid-cols-2 gap-1.5 text-xs">
+                            <div class="bg-sky-400/10 border border-sky-400/20 rounded-xl p-1.5 text-center flex flex-col items-center shadow-inner">
+                                <div class="flex items-center gap-1">
+                                    <img src="assets/pfp_zald.png" class="w-3.5 h-3.5 rounded-full object-cover">
+                                    <span class="text-[8px] font-bold text-sky-400">ZALD</span>
+                                </div>
+                                <span class="font-black text-slate-100 text-xs mt-0.5">${dispZ}</span>
+                            </div>
+                            <div class="bg-pink-400/10 border border-pink-400/20 rounded-xl p-1.5 text-center flex flex-col items-center shadow-inner">
+                                <div class="flex items-center gap-1">
+                                    <img src="assets/pfp_micel.png" class="w-3.5 h-3.5 rounded-full object-cover">
+                                    <span class="text-[8px] font-bold text-pink-400">MICEL</span>
+                                </div>
+                                <span class="font-black text-slate-100 text-xs mt-0.5">${dispM}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="relative aspect-[3/4] w-full overflow-hidden bg-black">
+                        <img src="${posterUrl}" alt="${movie.judul}" class="w-full h-full object-cover transform hover:scale-110 transition duration-500" onerror="this.src='https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=600&auto=format&fit=crop'">
+                        <span class="absolute top-2.5 right-2.5 bg-black/85 backdrop-blur px-2 py-0.5 rounded-lg text-[10px] font-bold text-slate-300 border border-neutral-800 shadow">${movie.tahun || ''}</span>
+                        ${watcherBadgeHTML}
+                    </div>
+                    <div class="p-3 flex flex-col justify-between flex-grow space-y-2.5">
+                        <div>
+                            <h3 class="font-display font-bold text-xs sm:text-sm ${isCertified ? 'text-amber-200' : 'text-slate-100'} line-clamp-1">${movie.judul || 'Tanpa Judul'}</h3>
+                            <p class="text-[10px] text-slate-400 line-clamp-1 mt-0.5">${displayMonthText || '-'}</p>
+                        </div>
+                        ${ratingsHTML}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            if (displayedItemCount < filteredMoviesCache.length) {
+                loadMoreIndicator.classList.remove('hidden');
+            } else {
+                loadMoreIndicator.classList.add('hidden');
+            }
+        }
+
+        window.addEventListener('scroll', () => {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 300) {
+                if (displayedItemCount < filteredMoviesCache.length) {
+                    displayedItemCount += PAGE_SIZE;
+                    renderGridChunk();
+                }
+            }
+        });
+
+        function renderMovies() {
+            processFilterAndRender(false);
+        }
+
+        function resetSearch() {
+            document.getElementById('search-input').value = '';
+            toggleClearSearchBtn();
+            document.getElementById('sort-select').value = 'newest';
+            currentViewerFilter = 'all';
+            isTopRatedActive = false;
+            
+            const topRatedBtn = document.getElementById('top-rated-btn');
+            if (topRatedBtn) {
+                topRatedBtn.className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-amber-400 tap-scale flex-shrink-0 transition flex items-center gap-1.5 shadow-sm";
+            }
+
+            document.querySelectorAll('.filter-btn').forEach((btn, idx) => {
+                if (idx === 0) {
+                    btn.className = "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-400 text-black tap-scale flex-shrink-0 transition shadow-sm";
+                } else {
+                    btn.className = "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-slate-300 tap-scale flex-shrink-0 transition";
+                }
+            });
+            processFilterAndRender(true);
+        }
+
+        function openAddModal() {
+            if (!isAdminUnlocked) {
+                showToast("Akses dikunci! Masukkan password via ikon gembok.", "warning");
+                openPasswordModal();
+                return;
+            }
+
+            lastScrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+
+            document.getElementById('editing_id').value = '';
+            document.getElementById('add-movie-form').reset();
+            
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            document.getElementById('form-bulan').value = `${year}-${month}`;
+            document.getElementById('form-is-certified').checked = false;
+
+            document.querySelector('input[name="watched_by"][value="both"]').checked = true;
+            handleViewerChange();
+
+            const rAku = document.getElementById('form-rating-aku');
+            const rDia = document.getElementById('form-rating-dia');
+            rAku.value = '';
+            rDia.value = '';
+            validateRatingInput(rAku, 'err-hint-aku', 'sky');
+            validateRatingInput(rDia, 'err-hint-dia', 'pink');
+
+            document.getElementById('modal-form-title').innerText = "Tambah Ulasan Baru";
+            document.getElementById('submit-btn-text').innerText = "Simpan Ulasan";
+            
+            const modal = document.getElementById('add-modal');
+            const content = document.getElementById('add-modal-content');
+            modal.classList.remove('hidden');
+            document.body.classList.add('modal-lock');
+            content.classList.add('animate-slideUp');
+
+            setTimeout(() => {
+                const titleInput = document.getElementById('form-judul');
+                if (titleInput) titleInput.focus();
+            }, 100);
+        }
+
+        function requestCloseAddModal() {
+            const titleVal = document.getElementById('form-judul').value.trim();
+            const reviewAkuVal = document.getElementById('form-review-aku').value.trim();
+            const reviewDiaVal = document.getElementById('form-review-dia').value.trim();
+
+            if ((titleVal !== '' || reviewAkuVal !== '' || reviewDiaVal !== '') && !confirm("Formulir belum disimpan. Yakin ingin menutup dan membatalkan input?")) {
+                return;
+            }
+            closeAddModal();
+        }
+
+        function closeAddModal() {
+            const modal = document.getElementById('add-modal');
+            modal.classList.add('hidden');
+            document.body.classList.remove('modal-lock');
+            
+            window.scrollTo({
+                top: lastScrollPosition,
+                behavior: 'instant'
+            });
+        }
+
+        function openDetailModal(id) {
+            lastScrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+            lastClickedMovieId = id;
+
+            const movie = moviesData.find(m => m.id == id);
+            if (!movie) return;
+
+            currentDetailMovieId = id;
+            document.getElementById('detail-title').innerText = movie.judul || 'Tanpa Judul';
+            document.getElementById('detail-year').innerText = movie.tahun || '';
+            document.getElementById('detail-watch-month').innerText = formatMonthDisplay(movie.bulan) || '-';
+
+            const watcher = movie.watched_by || 'both';
+            const viewerBadge = document.getElementById('detail-viewer-badge');
+            const boxZald = document.getElementById('detail-box-zald');
+            const boxMicel = document.getElementById('detail-box-micel');
+            const wrapZald = document.getElementById('detail-review-zald-wrap');
+            const wrapMicel = document.getElementById('detail-review-micel-wrap');
+            const scoresContainer = document.getElementById('detail-scores-container');
+
+            if (watcher === 'zald') {
+                viewerBadge.innerText = "Zald Picks";
+                viewerBadge.className = "px-2 py-0.5 rounded-lg bg-black border border-sky-500/40 text-sky-400 text-[10px] font-bold";
+                boxZald.style.display = 'flex';
+                boxMicel.style.display = 'none';
+                scoresContainer.className = "grid grid-cols-1 gap-2.5 bg-black border border-neutral-800 p-3 rounded-2xl shadow-inner";
+                wrapZald.style.display = 'block';
+                wrapMicel.style.display = 'none';
+            } else if (watcher === 'micel') {
+                viewerBadge.innerText = "Micel Picks";
+                viewerBadge.className = "px-2 py-0.5 rounded-lg bg-black border border-pink-500/40 text-pink-400 text-[10px] font-bold";
+                boxZald.style.display = 'none';
+                boxMicel.style.display = 'flex';
+                scoresContainer.className = "grid grid-cols-1 gap-2.5 bg-black border border-neutral-800 p-3 rounded-2xl shadow-inner";
+                wrapZald.style.display = 'none';
+                wrapMicel.style.display = 'block';
+            } else {
+                viewerBadge.innerText = "Nonton Bareng";
+                viewerBadge.className = "px-2 py-0.5 rounded-lg bg-neutral-900 text-amber-300 text-[10px] font-bold";
+                boxZald.style.display = 'flex';
+                boxMicel.style.display = 'flex';
+                scoresContainer.className = "grid grid-cols-2 gap-2.5 bg-black border border-neutral-800 p-3 rounded-2xl shadow-inner";
+                wrapZald.style.display = 'block';
+                wrapMicel.style.display = 'block';
+            }
+
+            const isCertified = movie.is_certified === true || movie.is_certified === 'true' || movie.is_certified === 'TRUE';
+            const badgeWrapper = document.getElementById('detail-badge-wrapper');
+            if (isCertified) {
+                badgeWrapper.classList.remove('hidden');
+            } else {
+                badgeWrapper.classList.add('hidden');
+            }
+
+            const rZ = movie.rating_aku || 'N/A';
+            const rM = movie.rating_dia || 'N/A';
+
+            document.getElementById('detail-zald-score').innerText = rZ !== 'N/A' ? `${rZ} / 10` : 'N/A';
+            document.getElementById('detail-micel-score').innerText = rM !== 'N/A' ? `${rM} / 10` : 'N/A';
+
+            document.getElementById('detail-zald-text').innerText = movie.review_aku ? `"${movie.review_aku}"` : "Belum ada review.";
+            document.getElementById('detail-micel-text').innerText = movie.review_dia ? `"${movie.review_dia}"` : "Belum ada review.";
+
+            document.getElementById('detail-banner-img').src = (movie.poster && movie.poster.trim() !== '') ? movie.poster : 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=800&auto=format&fit=crop';
+
+            const modal = document.getElementById('detail-modal');
+            const content = document.getElementById('detail-modal-content');
+            modal.classList.remove('hidden');
+            document.body.classList.add('modal-lock');
+            content.classList.add('animate-slideUp');
+        }
+
+        function closeDetailModal() {
+            const modal = document.getElementById('detail-modal');
+            modal.classList.add('hidden');
+            document.body.classList.remove('modal-lock');
+            
+            if (lastClickedMovieId) {
+                setTimeout(() => {
+                    const targetCard = document.getElementById(`movie-card-${lastClickedMovieId}`);
+                    if (targetCard) {
+                        targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    } else {
+                        window.scrollTo({ top: lastScrollPosition, behavior: 'instant' });
+                    }
+                }, 50);
+            } else {
+                window.scrollTo({ top: lastScrollPosition, behavior: 'instant' });
+            }
+        }
+
+        function copyMovieDetailSummary() {
+            const movie = moviesData.find(m => m.id == currentDetailMovieId);
+            if (!movie) return;
+
+            const title = movie.judul || 'Tanpa Judul';
+            const year = movie.tahun || '';
+            const month = formatMonthDisplay(movie.bulan) || '';
+            const watcher = movie.watched_by === 'zald' ? 'Zald Picks' : (movie.watched_by === 'micel' ? 'Micel Picks' : 'Nonton Bareng');
+            const rZ = movie.rating_aku ? `Zald: ${movie.rating_aku}/10` : '';
+            const rM = movie.rating_dia ? `Micel: ${movie.rating_dia}/10` : '';
+            const revZ = movie.review_aku ? `\n💬 Zald: "${movie.review_aku}"` : '';
+            const revM = movie.review_dia ? `\n💬 Micel: "${movie.review_dia}"` : '';
+
+            const summaryText = `🍿 *Bubi's Popcorn Log* 🍿\n🎬 *${title}* (${year})\n📅 Waktu: ${month}\n👥 Kategori: ${watcher}\n⭐ Rating: ${rZ} ${rM}${revZ}${revM}\n\n_Archived by Zald & Micel_`;
+
+            navigator.clipboard.writeText(summaryText).then(() => {
+                showToast("Ringkasan film disalin ke clipboard! 📋", "success");
+            }).catch(() => {
+                showToast("Gagal menyalin ringkasan.", "warning");
+            });
+        }
+
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+            if (!isAdminUnlocked) {
+                showToast("Akses ditolak! Masukkan password admin terlebih dahulu.", "warning");
+                return;
+            }
+
+            const form = event.target;
+            const formData = new FormData(form);
+            const editingId = formData.get('editing_id');
+            const watcher = formData.get('watched_by');
+
+            const rAkuEl = document.getElementById('form-rating-aku');
+            const rDiaEl = document.getElementById('form-rating-dia');
+
+            let validAku = true, validDia = true;
+            if (watcher === 'both' || watcher === 'zald') {
+                validAku = validateRatingInput(rAkuEl, 'err-hint-aku', 'sky');
+            }
+            if (watcher === 'both' || watcher === 'micel') {
+                validDia = validateRatingInput(rDiaEl, 'err-hint-dia', 'pink');
+            }
+
+            if (!validAku || !validDia) {
+                showToast("Nilai rating tidak boleh lebih dari 10 atau kurang dari 0!", "warning");
+                return;
+            }
+
+            const rawBulan = formData.get('bulan');
+            const isCertifiedChecked = document.getElementById('form-is-certified').checked;
+
+            const payload = {
+                bulan: rawBulan,
+                judul: formData.get('judul'),
+                tahun: parseInt(formData.get('tahun')) || 2026,
+                watched_by: watcher,
+                is_certified: isCertifiedChecked,
+                review_aku: (watcher === 'both' || watcher === 'zald') ? formData.get('review_aku') : null,
+                rating_aku: (watcher === 'both' || watcher === 'zald') && formData.get('rating_aku').trim() !== '' ? formData.get('rating_aku').trim() : null,
+                review_dia: (watcher === 'both' || watcher === 'micel') ? formData.get('review_dia') : null,
+                rating_dia: (watcher === 'both' || watcher === 'micel') && formData.get('rating_dia').trim() !== '' ? formData.get('rating_dia').trim() : null,
+                poster: formData.get('poster')
+            };
+
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+
+            try {
+                if (editingId) {
+                    const { error } = await supabaseClient
+                        .from(TABLE_NAME)
+                        .update(payload)
+                        .eq('id', editingId);
+                    
+                    if (error) throw error;
+                    showToast("Ulasan diperbarui!", "success");
+                } else {
+                    payload.id = `m_${Date.now()}`;
+                    const { error } = await supabaseClient
+                        .from(TABLE_NAME)
+                        .insert([payload]);
+                    
+                    if (error) throw error;
+                    showToast("Ulasan berhasil ditambah!", "success");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Gagal menyimpan ke server.", "warning");
+            } finally {
+                submitBtn.disabled = false;
+                closeAddModal();
+                await fetchSupabaseData();
+            }
+        }
+
+        function editCurrentMovie() {
+            if (!isAdminUnlocked) {
+                showToast("Akses ditolak!", "warning");
+                return;
+            }
+
+            const movie = moviesData.find(m => m.id == currentDetailMovieId);
+            if (!movie) return;
+
+            closeDetailModal();
+
+            document.getElementById('editing_id').value = movie.id;
+            const form = document.getElementById('add-movie-form');
+            form.judul.value = movie.judul || '';
+            form.poster.value = movie.poster || '';
+            form.tahun.value = movie.tahun || '2026';
+            form.bulan.value = parseMonthToInputValue(movie.bulan || '');
+            
+            const watcher = movie.watched_by || 'both';
+            document.querySelector(`input[name="watched_by"][value="${watcher}"]`).checked = true;
+            handleViewerChange();
+
+            const isCertified = movie.is_certified === true || movie.is_certified === 'true' || movie.is_certified === 'TRUE';
+            document.getElementById('form-is-certified').checked = isCertified;
+
+            const rAku = document.getElementById('form-rating-aku');
+            const rDia = document.getElementById('form-rating-dia');
+
+            rAku.value = (movie.rating_aku && movie.rating_aku !== 'N/A') ? movie.rating_aku : '';
+            rDia.value = (movie.rating_dia && movie.rating_dia !== 'N/A') ? movie.rating_dia : '';
+            
+            validateRatingInput(rAku, 'err-hint-aku', 'sky');
+            validateRatingInput(rDia, 'err-hint-dia', 'pink');
+
+            form.review_aku.value = movie.review_aku || '';
+            form.review_dia.value = movie.review_dia || '';
+
+            document.getElementById('modal-form-title').innerText = "Edit Ulasan Film";
+            document.getElementById('submit-btn-text').innerText = "Simpan Perubahan";
+            
+            const modal = document.getElementById('add-modal');
+            const content = document.getElementById('add-modal-content');
+            modal.classList.remove('hidden');
+            document.body.classList.add('modal-lock');
+            content.classList.add('animate-slideUp');
+        }
+
+        async function deleteCurrentMovie() {
+            if (!isAdminUnlocked) {
+                showToast("Akses ditolak!", "warning");
+                return;
+            }
+
+            if (!currentDetailMovieId || !confirm("Hapus ulasan film ini?")) return;
+
+            const idToDelete = currentDetailMovieId;
+            closeDetailModal();
+
+            try {
+                const { error } = await supabaseClient
+                    .from(TABLE_NAME)
+                    .delete()
+                    .eq('id', idToDelete);
+
+                if (error) throw error;
+                showToast("Ulasan dihapus!", "success");
+            } catch (err) {
+                console.error(err);
+                showToast("Gagal menghapus.", "warning");
+            } finally {
+                await fetchSupabaseData();
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-emerald-950 border-emerald-500' : 
+                            type === 'warning' ? 'bg-amber-950 border-amber-500' : 'bg-neutral-900 border-neutral-700';
+            
+            toast.className = `px-3.5 py-2 rounded-xl border ${bgColor} text-slate-100 text-xs font-semibold shadow-xl backdrop-blur-md transition-all duration-300 transform -translate-y-4 opacity-0 pointer-events-auto`;
+            toast.innerText = message;
+
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove('-translate-y-4', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', '-translate-y-4');
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        // --- ULTRA CLEAN TIME CONVERTER LOGIC ---
+        let convDirection = 'jp_to_sl'; // 'jp_to_sl' (Jepang -> Zald) or 'sl_to_jp' (Zald -> Jepang)
+
+        function openTimeCalcModal() {
+            const modal = document.getElementById('time-calc-modal');
+            const content = document.getElementById('time-calc-modal-content');
+            if (!modal) return;
+            
+            modal.classList.remove('hidden');
+            document.body.classList.add('modal-lock');
+            content.classList.add('animate-slideUp');
+
+            updateConvertedTime();
+        }
+
+        function closeTimeCalcModal() {
+            const modal = document.getElementById('time-calc-modal');
+            if (modal) modal.classList.add('hidden');
+            document.body.classList.remove('modal-lock');
+        }
+
+        function toggleConverterDirection() {
+            triggerHaptic();
+            convDirection = (convDirection === 'jp_to_sl') ? 'sl_to_jp' : 'jp_to_sl';
+            
+            const inputLabel = document.getElementById('conv-input-label');
+            const targetLabel = document.getElementById('conv-target-label');
+            const dirBtnText = document.getElementById('conv-dir-btn-text');
+
+            if (convDirection === 'jp_to_sl') {
+                if (inputLabel) inputLabel.innerHTML = `Waktu Jepang (JST):`;
+                if (targetLabel) targetLabel.innerText = "HASIL WAKTU ZALD:";
+                if (dirBtnText) dirBtnText.innerText = "Ke Waktu Jepang";
+            } else {
+                if (inputLabel) inputLabel.innerHTML = `Waktu Zald:`;
+                if (targetLabel) targetLabel.innerText = "HASIL WAKTU JEPANG (JST):";
+                if (dirBtnText) dirBtnText.innerText = "Ke Waktu Zald";
+            }
+
+            updateConvertedTime();
+        }
+
+        function setConvPreset(timeVal) {
+            triggerHaptic();
+            const input = document.getElementById('conv-time-input');
+            if (input) {
+                input.value = timeVal;
+                updateConvertedTime();
+            }
+        }
+
+        function formatAmPm(hours24, minutes) {
+            const period = hours24 >= 12 ? 'PM' : 'AM';
+            let hours12 = hours24 % 12;
+            if (hours12 === 0) hours12 = 12;
+            const strHours = String(hours12).padStart(2, '0');
+            const strMins = String(minutes).padStart(2, '0');
+            return `${strHours}:${strMins} ${period}`;
+        }
+
+        function updateConvertedTime() {
+            const input = document.getElementById('conv-time-input');
+            if (!input || !input.value) return;
+
+            const parts = input.value.split(':');
+            let h = parseInt(parts[0], 10);
+            let m = parseInt(parts[1], 10);
+
+            let resH, resM;
+
+            if (convDirection === 'jp_to_sl') {
+                // Japan (UTC+9) -> Zald (UTC+5.5): -3 hours 30 mins
+                resM = m - 30;
+                resH = h - 3;
+                if (resM < 0) {
+                    resM += 60;
+                    resH -= 1;
+                }
+                if (resH < 0) {
+                    resH += 24;
+                }
+            } else {
+                // Zald (UTC+5.5) -> Japan (UTC+9): +3 hours 30 mins
+                resM = m + 30;
+                resH = h + 3;
+                if (resM >= 60) {
+                    resM -= 60;
+                    resH += 1;
+                }
+                if (resH >= 24) {
+                    resH -= 24;
+                }
+            }
+
+            const ampmTargetTimeStr = `${formatAmPm(resH, resM)} ${convDirection === 'sl_to_jp' ? 'JST' : ''}`.trim();
+
+            const resEl = document.getElementById('conv-target-result');
+            if (resEl) resEl.innerText = ampmTargetTimeStr;
+        }
+
+        function copyConvResult() {
+            triggerHaptic();
+            const input = document.getElementById('conv-time-input');
+            const resEl = document.getElementById('conv-target-result');
+            if (!resEl || !input) return;
+
+            const parts = input.value.split(':');
+            const inputAmPm = formatAmPm(parseInt(parts[0], 10), parseInt(parts[1], 10));
+
+            const textToCopy = `⏰ Waktu: ${inputAmPm} ➔ ${resEl.innerText}`;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                showToast("Waktu konversi disalin! 📋", "success");
+            }).catch(() => {
+                showToast("Gagal menyalin.", "warning");
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateLockUI();
+            updateSlider();
+            startSlideTimer();
+            fetchSupabaseData();
+        });
+    </script>
+</body>
+</html>
