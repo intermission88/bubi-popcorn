@@ -12,7 +12,7 @@
 - **Fitur Khusus:**
     - **Hero Slider:** Galeri visual untuk kenangan.
     - **Relationship Tracker:** Penghitung hari hubungan sejak 5 April 2025.
-    - **Dual Timezone Clock:** Memantau waktu antara Sri Lanka (Zald) dan Jepang (Micel).
+    - **Dual Timezone Clock:** Memantau waktu antara Zald dan Micel.
     - **Certified Fresh:** Badge khusus untuk film-film favorit.
     - **Copy Summary:** Memudahkan menyalin ringkasan film ke clipboard.
 
