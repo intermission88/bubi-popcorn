@@ -11,7 +11,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -22,7 +22,7 @@
                 extend: {
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
-                        display: ['"Bebas Neue"', 'sans-serif'],
+                        display: ['Anton', 'sans-serif'],
                     },
                     colors: {
                         cinema: { 950: '#000000', 900: '#050505', 800: '#121212' }
@@ -227,7 +227,7 @@
         <section class="glass-card rounded-2xl p-3.5 border border-neutral-800 bg-gradient-to-br from-black via-neutral-950 to-black space-y-3 shadow-2xl relative overflow-hidden">
             <!-- NOW SHOWING Header -->
             <div class="text-center pb-0.5">
-                <div class="font-display text-base tracking-[0.45em] text-amber-400 uppercase leading-none">Now Showing</div>
+                <div class="font-display text-lg tracking-[0.15em] text-amber-400 uppercase leading-none">Now Showing</div>
                 <div class="text-[9px] text-slate-500 mt-1 tracking-[0.25em] uppercase">A Zald &amp; Micel Production</div>
             </div>
 
@@ -252,7 +252,7 @@
 
             <!-- Showtimes: Dual Clocks (Clickable to open Time & Alarm Calc) -->
             <div onclick="triggerHaptic(); openTimeCalcModal()" class="cursor-pointer group/clock" title="Klik untuk Buka Kalkulator Waktu & Alarm">
-                <div class="text-center font-display text-xs tracking-[0.35em] text-slate-500 uppercase mb-2">Showtimes</div>
+                <div class="text-center font-display text-sm tracking-[0.2em] text-slate-500 uppercase mb-2">Showtimes</div>
                 <div class="grid grid-cols-2 gap-2.5">
                     <!-- Zald Clock -->
                     <div class="p-2.5 rounded-xl bg-sky-950/25 border border-sky-500/20 group-hover/clock:border-sky-500/50 flex flex-col justify-between shadow-inner transition">
@@ -356,7 +356,7 @@
         <!-- Movies: Horizontal Month Carousel (Swipe Right for Older Months) -->
         <section class="space-y-3">
             <div class="flex items-center justify-between px-1">
-                <h2 class="font-display text-sm text-slate-400 uppercase tracking-[0.3em] leading-none pt-1">Bulan Tayang</h2>
+                <h2 class="font-display text-base text-slate-400 uppercase tracking-[0.2em] leading-none pt-1">Bulan Tayang</h2>
                 <span class="text-[10px] text-slate-500 flex items-center gap-1.5">
                     <i class="fa-solid fa-arrows-left-right text-amber-400/70 text-[9px]"></i> Geser antar bulan
                 </span>
@@ -379,7 +379,7 @@
         <!-- SECTION: TOTAL MOVIES WATCHED HEADLINE (di atas footer) -->
         <section class="relative text-center py-8 space-y-2">
             <div class="film-strip -mx-4 mb-6"></div>
-            <div class="font-display text-[11px] tracking-[0.5em] text-slate-500 uppercase">Total Movies Watched:</div>
+            <div class="font-display text-sm tracking-[0.3em] text-slate-500 uppercase">Total Movies Watched:</div>
             <div class="flex items-center justify-center gap-4">
                 <i class="fa-solid fa-clapperboard text-amber-500/60 text-lg"></i>
                 <span id="total-movies-count" class="font-display text-7xl gold-text leading-none tracking-wider">0</span>
