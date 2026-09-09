@@ -11,7 +11,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -22,7 +22,7 @@
                 extend: {
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
-                        display: ['Outfit', 'sans-serif'],
+                        display: ['"Bebas Neue"', 'sans-serif'],
                     },
                     colors: {
                         cinema: { 950: '#000000', 900: '#050505', 800: '#121212' }
@@ -93,6 +93,39 @@
         }
         .popcorn-gradient { background: linear-gradient(135deg, #facc15 0%, #f97316 100%); }
         .gold-gradient { background: linear-gradient(135deg, #fef08a 0%, #eab308 50%, #ca8a04 100%); }
+        .gold-text {
+            background: linear-gradient(135deg, #fef08a 0%, #eab308 50%, #ca8a04 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .film-strip {
+            height: 12px;
+            background-color: #0d0d0d;
+            background-image: radial-gradient(circle, #3f3f46 2.5px, transparent 3px);
+            background-size: 16px 12px;
+            background-position: center;
+            border-top: 1px solid #262626;
+            border-bottom: 1px solid #262626;
+        }
+        .ticket-card { position: relative; }
+        .ticket-card::before, .ticket-card::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: #050505;
+            border: 1px dashed rgba(250, 204, 21, 0.4);
+            border-radius: 9999px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .ticket-card::before { left: -8px; }
+        .ticket-card::after { right: -8px; }
+        .stroke-number {
+            color: transparent;
+            -webkit-text-stroke: 1.5px #3f3f46;
+        }
         
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -190,94 +223,106 @@
             </div>
         </section>
         
-        <!-- SECTION ATAS: Revamped Compact Layout -->
-        <section class="glass-card rounded-2xl p-3.5 border border-neutral-800 bg-gradient-to-br from-black via-neutral-950 to-black space-y-3 shadow-2xl relative overflow-hidden">
-            <div class="absolute -right-10 -top-10 w-24 h-24 bg-pink-500/10 rounded-full blur-2xl pointer-events-none"></div>
-            <div class="absolute -left-10 -bottom-10 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+        <!-- SECTION: TOTAL MOVIES WATCHED HEADLINE -->
+        <section class="relative text-center py-5 space-y-2">
+            <div class="font-display text-[11px] tracking-[0.5em] text-slate-500 uppercase">Total Movies Watched:</div>
+            <div class="flex items-center justify-center gap-4">
+                <i class="fa-solid fa-clapperboard text-amber-500/60 text-lg"></i>
+                <span id="total-movies-count" class="font-display text-7xl gold-text leading-none tracking-wider">0</span>
+                <i class="fa-solid fa-clapperboard text-amber-500/60 text-lg"></i>
+            </div>
+            <div class="text-[10px] text-slate-500 italic">"Every film is a memory we keep forever."</div>
+        </section>
 
-            <!-- Header Relationship Badge & Days -->
-            <div class="flex items-center justify-between bg-neutral-900/60 border border-neutral-800/80 rounded-xl px-3 py-2.5 shadow-inner">
-                <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-lg bg-pink-500/15 border border-pink-500/30 flex items-center justify-center text-pink-400 text-xs flex-shrink-0">
-                        <i class="fa-solid fa-heart animate-bounce"></i>
+        <!-- SECTION ATAS: Cinema Themed Now Showing Card -->
+        <section class="glass-card rounded-2xl p-3.5 border border-neutral-800 bg-gradient-to-br from-black via-neutral-950 to-black space-y-3 shadow-2xl relative overflow-hidden">
+            <!-- NOW SHOWING Header -->
+            <div class="text-center pb-0.5">
+                <div class="font-display text-base tracking-[0.45em] text-amber-400 uppercase leading-none">Now Showing</div>
+                <div class="text-[9px] text-slate-500 mt-1 tracking-[0.25em] uppercase">A Zald &amp; Micel Production</div>
+            </div>
+
+            <!-- Ticket: Relationship Days -->
+            <div class="ticket-card flex items-center justify-between rounded-xl border border-dashed border-amber-500/40 bg-gradient-to-r from-amber-950/30 via-black to-pink-950/30 px-4 py-3 shadow-inner">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-amber-400/10 border border-amber-500/30 flex items-center justify-center text-amber-400 flex-shrink-0">
+                        <i class="fa-solid fa-heart animate-bounce text-xs"></i>
                     </div>
                     <div>
-                        <div class="text-[10px] text-slate-400 font-medium flex items-center gap-1">
-                            <span>Sejak 5 April 2025</span>
-                        </div>
-                        <div id="relationship-detail-time" class="text-[10px] font-semibold text-slate-300">
-                            Memuat waktu...
-                        </div>
+                        <div class="text-[9px] text-slate-400 font-bold uppercase tracking-[0.2em]">In Theaters Since</div>
+                        <div class="text-[10px] font-semibold text-slate-300 mt-0.5">5 April 2025 • <span id="relationship-detail-time">Memuat waktu...</span></div>
                     </div>
                 </div>
                 <div class="text-right">
-                    <div class="flex items-baseline justify-end gap-1">
-                        <span id="relationship-days" class="text-xl font-black font-display bg-gradient-to-r from-pink-400 via-amber-300 to-pink-500 bg-clip-text text-transparent">
-                            0
-                        </span>
-                        <span class="text-[10px] font-bold text-slate-300 uppercase tracking-wider">Hari</span>
+                    <div class="flex items-baseline justify-end gap-1.5">
+                        <span id="relationship-days" class="font-display text-3xl gold-text leading-none">0</span>
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Hari</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Dual Clocks Grid (Clickable to open Time & Alarm Calc) -->
-            <div onclick="triggerHaptic(); openTimeCalcModal()" class="grid grid-cols-2 gap-2.5 cursor-pointer group/clock" title="Klik untuk Buka Kalkulator Waktu & Alarm">
-                <!-- Zald Clock -->
-                <div class="p-2.5 rounded-xl bg-sky-950/25 border border-sky-500/20 group-hover/clock:border-sky-500/50 flex flex-col justify-between shadow-inner transition">
-                    <div class="flex items-center justify-between mb-1.5">
-                        <div class="flex items-center gap-1.5">
-                            <img src="assets/pfp_zald.png" alt="Zald" class="w-5 h-5 rounded-md object-cover shadow-sm">
-                            <span class="text-[10px] font-bold text-sky-400 uppercase tracking-wider">Zald</span>
+            <!-- Showtimes: Dual Clocks (Clickable to open Time & Alarm Calc) -->
+            <div onclick="triggerHaptic(); openTimeCalcModal()" class="cursor-pointer group/clock" title="Klik untuk Buka Kalkulator Waktu & Alarm">
+                <div class="text-center font-display text-xs tracking-[0.35em] text-slate-500 uppercase mb-2">Showtimes</div>
+                <div class="grid grid-cols-2 gap-2.5">
+                    <!-- Zald Clock -->
+                    <div class="p-2.5 rounded-xl bg-sky-950/25 border border-sky-500/20 group-hover/clock:border-sky-500/50 flex flex-col justify-between shadow-inner transition">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <div class="flex items-center gap-1.5">
+                                <img src="assets/pfp_zald.png" alt="Zald" class="w-5 h-5 rounded-md object-cover shadow-sm">
+                                <span class="text-[10px] font-bold text-sky-400 uppercase tracking-wider">Zald</span>
+                            </div>
+                            <span class="text-[9px] font-semibold text-sky-300/80 bg-sky-900/40 px-1 py-0.5 rounded">UTC+5:30</span>
                         </div>
-                        <span class="text-[9px] font-semibold text-sky-300/80 bg-sky-900/40 px-1 py-0.5 rounded">UTC+5:30</span>
+                        <div class="flex items-baseline justify-between">
+                            <div id="zald-clock" class="font-display text-lg text-sky-200 tracking-wide leading-none">--:-- --</div>
+                            <span id="zald-date" class="text-[9px] text-slate-400">-- ---</span>
+                        </div>
                     </div>
-                    <div class="flex items-baseline justify-between">
-                        <div id="zald-clock" class="text-sm font-black font-display text-sky-200 tracking-tight">--:-- --</div>
-                        <span id="zald-date" class="text-[9px] text-slate-400">-- ---</span>
-                    </div>
-                </div>
 
-                <!-- Micel Clock -->
-                <div class="p-2.5 rounded-xl bg-pink-950/25 border border-pink-500/20 group-hover/clock:border-pink-500/50 flex flex-col justify-between shadow-inner transition">
-                    <div class="flex items-center justify-between mb-1.5">
-                        <div class="flex items-center gap-1.5">
-                            <img src="assets/pfp_micel.png" alt="Micel" class="w-5 h-5 rounded-md object-cover shadow-sm">
-                            <span class="text-[10px] font-bold text-pink-400 uppercase tracking-wider">Micel</span>
+                    <!-- Micel Clock -->
+                    <div class="p-2.5 rounded-xl bg-pink-950/25 border border-pink-500/20 group-hover/clock:border-pink-500/50 flex flex-col justify-between shadow-inner transition">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <div class="flex items-center gap-1.5">
+                                <img src="assets/pfp_micel.png" alt="Micel" class="w-5 h-5 rounded-md object-cover shadow-sm">
+                                <span class="text-[10px] font-bold text-pink-400 uppercase tracking-wider">Micel</span>
+                            </div>
+                            <span class="text-[9px] font-semibold text-pink-300/80 bg-pink-900/40 px-1 py-0.5 rounded">UTC+9:00</span>
                         </div>
-                        <span class="text-[9px] font-semibold text-pink-300/80 bg-pink-900/40 px-1 py-0.5 rounded">UTC+9:00</span>
-                    </div>
-                    <div class="flex items-baseline justify-between">
-                        <div id="micel-clock" class="text-sm font-black font-display text-pink-200 tracking-tight">--:-- --</div>
-                        <span id="micel-date" class="text-[9px] text-slate-400">-- ---</span>
+                        <div class="flex items-baseline justify-between">
+                            <div id="micel-clock" class="font-display text-lg text-pink-200 tracking-wide leading-none">--:-- --</div>
+                            <span id="micel-date" class="text-[9px] text-slate-400">-- ---</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- INFINITE MARQUEE LDR QUOTES & DISTANCE -->
-            <div class="pt-1.5 border-t border-neutral-900 overflow-hidden relative marquee-container">
+            <!-- Film Strip Divider + Infinite Movie Quotes Marquee -->
+            <div class="film-strip -mx-3.5"></div>
+            <div class="overflow-hidden relative marquee-container">
                 <div class="absolute left-0 inset-y-0 w-8 bg-gradient-to-r from-neutral-950 to-transparent z-10 pointer-events-none"></div>
                 <div class="absolute right-0 inset-y-0 w-8 bg-gradient-to-l from-neutral-950 to-transparent z-10 pointer-events-none"></div>
 
                 <div class="flex whitespace-nowrap overflow-hidden">
                     <div class="flex items-center gap-6 marquee-track animate-marquee py-1">
-                        <span class="inline-flex items-center gap-1.5 text-[11px] text-pink-400 font-semibold flex-shrink-0">
-                            <i class="fa-solid fa-earth-asia"></i> ~4,800 km apart
+                        <span class="inline-flex items-center gap-1.5 text-[11px] text-amber-400 font-semibold flex-shrink-0">
+                            <i class="fa-solid fa-film"></i> "Adventure is out there!" — Up
                         </span>
                         <span class="text-slate-700 text-[9px]">•</span>
                         <span class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 italic flex-shrink-0">
-                            "Distance is just a test of how far love can travel."
+                            "Whatever happens tomorrow, we've had today." — One Day
                         </span>
                         <span class="text-slate-700 text-[9px]">•</span>
                         <span class="inline-flex items-center gap-1.5 text-[11px] text-pink-400 font-semibold flex-shrink-0">
-                            <i class="fa-solid fa-heart text-[9px]"></i> Two hearts, different time zones
+                            <i class="fa-solid fa-heart text-[9px]"></i> "To me, you are perfect." — Love Actually
                         </span>
                         <span class="text-slate-700 text-[9px]">•</span>
                         <span class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 italic flex-shrink-0">
-                            "In true love the smallest distance is too great, and the greatest distance can be bridged."
+                            "I'm also just a girl, standing in front of a boy, asking him to love her." — Notting Hill
                         </span>
                         <span class="text-slate-700 text-[9px]">•</span>
                         <span class="inline-flex items-center gap-1.5 text-[11px] text-amber-400 font-semibold flex-shrink-0">
-                            <i class="fa-solid fa-plane text-[9px]"></i> Counting down the days to meet
+                            <i class="fa-solid fa-plane text-[9px]"></i> "Come with me if you want to live." — Terminator 2
                         </span>
                         <span class="text-slate-700 text-[9px]">•</span>
                         <span class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 italic flex-shrink-0">
@@ -289,7 +334,7 @@
             </div>
         </section>
 
-        <!-- SECTION SEARCH & SORT & VIEWER FILTER -->
+        <!-- SECTION SEARCH & VIEWER FILTER -->
         <section id="search-section" class="space-y-3">
             <div class="flex items-center gap-2.5">
                 <div class="relative flex-grow">
@@ -300,15 +345,7 @@
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
-                
-                <div class="relative flex-shrink-0">
-                    <select id="sort-select" onchange="triggerHaptic(); renderMovies()" class="px-3.5 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-xs sm:text-sm text-slate-300 focus:outline-none focus:border-amber-400 transition appearance-none pr-8 cursor-pointer tap-scale shadow-inner">
-                        <option value="newest" class="bg-black">Bulan Terkini</option>
-                        <option value="oldest" class="bg-black">Bulan Terlama</option>
-                        <option value="az" class="bg-black">Judul (A-Z)</option>
-                    </select>
-                    <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 text-[10px] pointer-events-none"></i>
-                </div>
+                <span id="movie-count-badge" class="flex-shrink-0 px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-neutral-800 font-display text-sm text-amber-400 tracking-[0.15em] uppercase">0 Film</span>
             </div>
 
             <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
@@ -323,20 +360,16 @@
             </div>
         </section>
 
-        <!-- Movies Grid List -->
+        <!-- Movies: Horizontal Month Carousel (Swipe Right for Older Months) -->
         <section class="space-y-3">
             <div class="flex items-center justify-between px-1">
-                <h2 class="text-xs font-bold text-slate-400 font-display uppercase tracking-wider">Koleksi Film</h2>
-                <span id="movie-count-badge" class="text-xs text-slate-400 font-semibold bg-neutral-950 px-2.5 py-1 rounded-lg border border-neutral-800">0 Film</span>
+                <h2 class="font-display text-sm text-slate-400 uppercase tracking-[0.3em] leading-none pt-1">Bulan Tayang</h2>
+                <span class="text-[10px] text-slate-500 flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrows-left-right text-amber-400/70 text-[9px]"></i> Geser antar bulan
+                </span>
             </div>
 
-            <div id="movie-grid" class="grid grid-cols-2 gap-3.5"></div>
-
-            <div id="load-more-indicator" class="hidden py-6 text-center">
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-950 border border-neutral-800 text-xs text-amber-400 shadow-md">
-                    <i class="fa-solid fa-spinner fa-spin text-sm"></i> Memuat lebih banyak film...
-                </div>
-            </div>
+            <div id="months-carousel" class="flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2 -mx-4 px-4"></div>
 
             <div id="empty-state" class="hidden py-12 text-center space-y-3 animate-fadeIn">
                 <div class="w-14 h-14 rounded-2xl bg-neutral-950 border border-neutral-800 flex items-center justify-center mx-auto text-slate-500 text-xl shadow-lg">
@@ -761,8 +794,6 @@
         
         let moviesData = [];
         let filteredMoviesCache = [];
-        let displayedItemCount = 0;
-        const PAGE_SIZE = 10;
         
         let currentDetailMovieId = null;
         let currentViewerFilter = 'all';
@@ -845,7 +876,7 @@
         function clearSearchInput() {
             document.getElementById('search-input').value = '';
             toggleClearSearchBtn();
-            processFilterAndRender(true);
+            processFilterAndRender();
         }
 
         function setQuickRating(inputId, hintId, themeColor, value) {
@@ -1055,7 +1086,7 @@
                 btn.className = "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-slate-300 tap-scale flex-shrink-0 transition";
             });
             btnEl.className = "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-400 text-black tap-scale flex-shrink-0 transition shadow-sm";
-            processFilterAndRender(true);
+            processFilterAndRender();
         }
 
         function toggleTopRatedFilter(btnEl) {
@@ -1065,13 +1096,13 @@
             } else {
                 btnEl.className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-amber-400 tap-scale flex-shrink-0 transition flex items-center gap-1.5 shadow-sm";
             }
-            processFilterAndRender(true);
+            processFilterAndRender();
         }
 
         function onSearchInput() {
             clearTimeout(searchDebounceTimer);
             searchDebounceTimer = setTimeout(() => {
-                processFilterAndRender(true);
+                processFilterAndRender();
             }, 250);
         }
 
@@ -1180,22 +1211,26 @@
         }
 
         function renderSkeletonGrid() {
-            const grid = document.getElementById('movie-grid');
-            if (!grid) return;
-            grid.innerHTML = '';
-            for (let i = 0; i < 4; i++) {
-                const skeletonCard = document.createElement('div');
-                skeletonCard.className = "glass-card rounded-2xl overflow-hidden flex flex-col border border-neutral-800 animate-pulseSlow";
-                skeletonCard.innerHTML = `
-                    <div class="aspect-[3/4] w-full bg-neutral-900"></div>
-                    <div class="p-3 space-y-2">
-                        <div class="h-3 bg-neutral-900 rounded w-3/4"></div>
-                        <div class="h-2 bg-neutral-900 rounded w-1/2"></div>
-                        <div class="h-6 bg-neutral-900 rounded w-full mt-2"></div>
-                    </div>
-                `;
-                grid.appendChild(skeletonCard);
-            }
+            const carousel = document.getElementById('months-carousel');
+            if (!carousel) return;
+            carousel.innerHTML = '';
+            const panel = document.createElement('div');
+            panel.className = "w-[86%] sm:w-[72%] flex-shrink-0 snap-start";
+            panel.innerHTML = `
+                <div class="h-10 w-44 bg-neutral-900 rounded-lg animate-pulseSlow mb-3"></div>
+                <div class="grid grid-cols-2 gap-3.5">
+                    ${Array.from({ length: 4 }).map(() => `
+                        <div class="glass-card rounded-2xl overflow-hidden flex flex-col border border-neutral-800 animate-pulseSlow">
+                            <div class="aspect-[3/4] w-full bg-neutral-900"></div>
+                            <div class="p-3 space-y-2">
+                                <div class="h-3 bg-neutral-900 rounded w-3/4"></div>
+                                <div class="h-2 bg-neutral-900 rounded w-1/2"></div>
+                                <div class="h-6 bg-neutral-900 rounded w-full mt-2"></div>
+                            </div>
+                        </div>`).join('')}
+                </div>
+            `;
+            carousel.appendChild(panel);
         }
 
         async function fetchSupabaseData() {
@@ -1210,14 +1245,13 @@
             } catch (err) {
                 console.warn("Supabase Fetch Failed:", err);
             } finally {
-                processFilterAndRender(true);
+                processFilterAndRender();
                 checkPing();
             }
         }
 
-        function processFilterAndRender(resetPagination = false) {
+        function processFilterAndRender() {
             const searchVal = (document.getElementById('search-input').value || '').toLowerCase();
-            const sortVal = document.getElementById('sort-select').value;
 
             let filtered = moviesData.filter(movie => {
                 const watcher = movie.watched_by || 'both';
@@ -1241,165 +1275,160 @@
                        formattedBulan.includes(searchVal);
             });
 
-            filtered.sort((a, b) => {
-                const dateA = convertToComparableMonth(a.bulan);
-                const dateB = convertToComparableMonth(b.bulan);
-
-                if (sortVal === 'newest') {
-                    return dateB.localeCompare(dateA);
-                } else if (sortVal === 'oldest') {
-                    return dateA.localeCompare(dateB);
-                } else if (sortVal === 'az') {
-                    const titleA = (a.judul || '').toLowerCase();
-                    const titleB = (b.judul || '').toLowerCase();
-                    return titleA.localeCompare(titleB);
-                }
-                return 0;
-            });
-
             filteredMoviesCache = filtered;
             document.getElementById('movie-count-badge').innerText = `${filteredMoviesCache.length} Film`;
 
-            if (resetPagination) {
-                displayedItemCount = Math.min(PAGE_SIZE, filteredMoviesCache.length);
-            }
+            const totalCountEl = document.getElementById('total-movies-count');
+            if (totalCountEl) totalCountEl.innerText = moviesData.length;
 
-            renderGridChunk();
+            renderMonthsCarousel();
         }
 
-        function renderGridChunk() {
-            const grid = document.getElementById('movie-grid');
-            const emptyState = document.getElementById('empty-state');
-            const loadMoreIndicator = document.getElementById('load-more-indicator');
+        function createMovieCard(movie, index) {
+            const posterUrl = (movie.poster && movie.poster.trim() !== '') ? movie.poster : 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=600&auto=format&fit=crop';
+            const watcher = movie.watched_by || 'both';
+            const dispZ = (movie.rating_aku && movie.rating_aku.toString().trim() !== '') ? movie.rating_aku : 'N/A';
+            const dispM = (movie.rating_dia && movie.rating_dia.toString().trim() !== '') ? movie.rating_dia : 'N/A';
+            const isCertified = movie.is_certified === true || movie.is_certified === 'true' || movie.is_certified === 'TRUE';
 
-            grid.innerHTML = '';
+            const card = document.createElement('div');
+            card.id = `movie-card-${movie.id}`;
+            card.style.animationDelay = `${(index % 8) * 0.05}s`;
+            card.className = (isCertified 
+                ? "rounded-2xl overflow-hidden flex flex-col certified-card animate-goldGlow tap-scale cursor-pointer relative shadow-xl"
+                : "glass-card rounded-2xl overflow-hidden flex flex-col border border-neutral-800 tap-scale cursor-pointer shadow-lg hover:border-neutral-700") + " animate-popIn";
+            
+            card.onclick = () => {
+                triggerHaptic();
+                openDetailModal(movie.id);
+            };
+
+            let watcherBadgeHTML = '';
+            if (watcher === 'zald') {
+                watcherBadgeHTML = `<span class="absolute top-2.5 left-2.5 bg-black/90 border border-sky-500/40 text-sky-400 px-2 py-0.5 rounded-lg text-[10px] font-bold shadow">Zald Picks</span>`;
+            } else if (watcher === 'micel') {
+                watcherBadgeHTML = `<span class="absolute top-2.5 left-2.5 bg-black/90 border border-pink-500/40 text-pink-400 px-2 py-0.5 rounded-lg text-[10px] font-bold shadow">Micel Picks</span>`;
+            } else if (isCertified) {
+                watcherBadgeHTML = `<span class="absolute top-2.5 left-2.5 gold-gradient px-2 py-0.5 rounded-lg text-[9px] font-extrabold text-black flex items-center gap-1 shadow-lg animate-pulse"><i class="fa-solid fa-award text-[8px]"></i> FRESH</span>`;
+            }
+
+            let ratingsHTML = '';
+            if (watcher === 'zald') {
+                ratingsHTML = `
+                    <div class="grid grid-cols-1 gap-1 text-xs">
+                        <div class="bg-sky-400/10 border border-sky-400/20 rounded-xl p-1.5 text-center flex items-center justify-center gap-2 shadow-inner">
+                            <img src="assets/pfp_zald.png" class="w-4 h-4 rounded-full object-cover shadow-sm">
+                            <div>
+                                <span class="block text-[8px] font-bold text-sky-400 uppercase">Zald Picks</span>
+                                <span class="font-black text-slate-100 text-xs">${dispZ}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (watcher === 'micel') {
+                ratingsHTML = `
+                    <div class="grid grid-cols-1 gap-1 text-xs">
+                        <div class="bg-pink-400/10 border border-pink-400/20 rounded-xl p-1.5 text-center flex items-center justify-center gap-2 shadow-inner">
+                            <img src="assets/pfp_micel.png" class="w-4 h-4 rounded-full object-cover shadow-sm">
+                            <div>
+                                <span class="block text-[8px] font-bold text-pink-400 uppercase">Micel Picks</span>
+                                <span class="font-black text-slate-100 text-xs">${dispM}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                ratingsHTML = `
+                    <div class="grid grid-cols-2 gap-1.5 text-xs">
+                        <div class="bg-sky-400/10 border border-sky-400/20 rounded-xl p-1.5 text-center flex flex-col items-center shadow-inner">
+                            <div class="flex items-center gap-1">
+                                <img src="assets/pfp_zald.png" class="w-3.5 h-3.5 rounded-full object-cover">
+                                <span class="text-[8px] font-bold text-sky-400">ZALD</span>
+                            </div>
+                            <span class="font-black text-slate-100 text-xs mt-0.5">${dispZ}</span>
+                        </div>
+                        <div class="bg-pink-400/10 border border-pink-400/20 rounded-xl p-1.5 text-center flex flex-col items-center shadow-inner">
+                            <div class="flex items-center gap-1">
+                                <img src="assets/pfp_micel.png" class="w-3.5 h-3.5 rounded-full object-cover">
+                                <span class="text-[8px] font-bold text-pink-400">MICEL</span>
+                            </div>
+                            <span class="font-black text-slate-100 text-xs mt-0.5">${dispM}</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            card.innerHTML = `
+                <div class="relative aspect-[3/4] w-full overflow-hidden bg-black">
+                    <img src="${posterUrl}" alt="${movie.judul}" class="w-full h-full object-cover transform hover:scale-110 transition duration-500" onerror="this.src='https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=600&auto=format&fit=crop'">
+                    <span class="absolute top-2.5 right-2.5 bg-black/85 backdrop-blur px-2 py-0.5 rounded-lg text-[10px] font-bold text-slate-300 border border-neutral-800 shadow">${movie.tahun || ''}</span>
+                    ${watcherBadgeHTML}
+                </div>
+                <div class="p-3 flex flex-col justify-between flex-grow space-y-2.5">
+                    <div>
+                        <h3 class="font-display text-base ${isCertified ? 'text-amber-200' : 'text-slate-100'} line-clamp-1 tracking-wide uppercase">${movie.judul || 'Tanpa Judul'}</h3>
+                        <p class="text-[10px] text-slate-400 line-clamp-1 mt-0.5">${formatMonthDisplay(movie.bulan) || '-'}</p>
+                    </div>
+                    ${ratingsHTML}
+                </div>
+            `;
+            return card;
+        }
+
+        function renderMonthsCarousel() {
+            const carousel = document.getElementById('months-carousel');
+            const emptyState = document.getElementById('empty-state');
+            if (!carousel) return;
+
+            carousel.innerHTML = '';
 
             if (filteredMoviesCache.length === 0) {
                 emptyState.classList.remove('hidden');
-                loadMoreIndicator.classList.add('hidden');
                 return;
-            } else {
-                emptyState.classList.add('hidden');
             }
+            emptyState.classList.add('hidden');
 
-            const chunkToRender = filteredMoviesCache.slice(0, displayedItemCount);
-
-            chunkToRender.forEach((movie, index) => {
-                const posterUrl = (movie.poster && movie.poster.trim() !== '') ? movie.poster : 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=600&auto=format&fit=crop';
-                const watcher = movie.watched_by || 'both';
-                const dispZ = (movie.rating_aku && movie.rating_aku.toString().trim() !== '') ? movie.rating_aku : 'N/A';
-                const dispM = (movie.rating_dia && movie.rating_dia.toString().trim() !== '') ? movie.rating_dia : 'N/A';
-                const displayMonthText = formatMonthDisplay(movie.bulan);
-                const isCertified = movie.is_certified === true || movie.is_certified === 'true' || movie.is_certified === 'TRUE';
-
-                const card = document.createElement('div');
-                card.id = `movie-card-${movie.id}`;
-                card.style.animationDelay = `${(index % PAGE_SIZE) * 0.04}s`;
-                card.className = (isCertified 
-                    ? "rounded-2xl overflow-hidden flex flex-col certified-card animate-goldGlow tap-scale cursor-pointer relative shadow-xl"
-                    : "glass-card rounded-2xl overflow-hidden flex flex-col border border-neutral-800 tap-scale cursor-pointer shadow-lg hover:border-neutral-700") + " animate-popIn";
-                
-                card.onclick = () => {
-                    triggerHaptic();
-                    openDetailModal(movie.id);
-                };
-
-                let watcherBadgeHTML = '';
-                if (watcher === 'zald') {
-                    watcherBadgeHTML = `<span class="absolute top-2.5 left-2.5 bg-black/90 border border-sky-500/40 text-sky-400 px-2 py-0.5 rounded-lg text-[10px] font-bold shadow">Zald Picks</span>`;
-                } else if (watcher === 'micel') {
-                    watcherBadgeHTML = `<span class="absolute top-2.5 left-2.5 bg-black/90 border border-pink-500/40 text-pink-400 px-2 py-0.5 rounded-lg text-[10px] font-bold shadow">Micel Picks</span>`;
-                } else if (isCertified) {
-                    watcherBadgeHTML = `<span class="absolute top-2.5 left-2.5 gold-gradient px-2 py-0.5 rounded-lg text-[9px] font-extrabold text-black flex items-center gap-1 shadow-lg animate-pulse"><i class="fa-solid fa-award text-[8px]"></i> FRESH</span>`;
-                }
-
-                let ratingsHTML = '';
-                if (watcher === 'zald') {
-                    ratingsHTML = `
-                        <div class="grid grid-cols-1 gap-1 text-xs">
-                            <div class="bg-sky-400/10 border border-sky-400/20 rounded-xl p-1.5 text-center flex items-center justify-center gap-2 shadow-inner">
-                                <img src="assets/pfp_zald.png" class="w-4 h-4 rounded-full object-cover shadow-sm">
-                                <div>
-                                    <span class="block text-[8px] font-bold text-sky-400 uppercase">Zald Picks</span>
-                                    <span class="font-black text-slate-100 text-xs">${dispZ}</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                } else if (watcher === 'micel') {
-                    ratingsHTML = `
-                        <div class="grid grid-cols-1 gap-1 text-xs">
-                            <div class="bg-pink-400/10 border border-pink-400/20 rounded-xl p-1.5 text-center flex items-center justify-center gap-2 shadow-inner">
-                                <img src="assets/pfp_micel.png" class="w-4 h-4 rounded-full object-cover shadow-sm">
-                                <div>
-                                    <span class="block text-[8px] font-bold text-pink-400 uppercase">Micel Picks</span>
-                                    <span class="font-black text-slate-100 text-xs">${dispM}</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    ratingsHTML = `
-                        <div class="grid grid-cols-2 gap-1.5 text-xs">
-                            <div class="bg-sky-400/10 border border-sky-400/20 rounded-xl p-1.5 text-center flex flex-col items-center shadow-inner">
-                                <div class="flex items-center gap-1">
-                                    <img src="assets/pfp_zald.png" class="w-3.5 h-3.5 rounded-full object-cover">
-                                    <span class="text-[8px] font-bold text-sky-400">ZALD</span>
-                                </div>
-                                <span class="font-black text-slate-100 text-xs mt-0.5">${dispZ}</span>
-                            </div>
-                            <div class="bg-pink-400/10 border border-pink-400/20 rounded-xl p-1.5 text-center flex flex-col items-center shadow-inner">
-                                <div class="flex items-center gap-1">
-                                    <img src="assets/pfp_micel.png" class="w-3.5 h-3.5 rounded-full object-cover">
-                                    <span class="text-[8px] font-bold text-pink-400">MICEL</span>
-                                </div>
-                                <span class="font-black text-slate-100 text-xs mt-0.5">${dispM}</span>
-                            </div>
-                        </div>
-                    `;
-                }
-
-                card.innerHTML = `
-                    <div class="relative aspect-[3/4] w-full overflow-hidden bg-black">
-                        <img src="${posterUrl}" alt="${movie.judul}" class="w-full h-full object-cover transform hover:scale-110 transition duration-500" onerror="this.src='https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=600&auto=format&fit=crop'">
-                        <span class="absolute top-2.5 right-2.5 bg-black/85 backdrop-blur px-2 py-0.5 rounded-lg text-[10px] font-bold text-slate-300 border border-neutral-800 shadow">${movie.tahun || ''}</span>
-                        ${watcherBadgeHTML}
-                    </div>
-                    <div class="p-3 flex flex-col justify-between flex-grow space-y-2.5">
-                        <div>
-                            <h3 class="font-display font-bold text-xs sm:text-sm ${isCertified ? 'text-amber-200' : 'text-slate-100'} line-clamp-1">${movie.judul || 'Tanpa Judul'}</h3>
-                            <p class="text-[10px] text-slate-400 line-clamp-1 mt-0.5">${displayMonthText || '-'}</p>
-                        </div>
-                        ${ratingsHTML}
-                    </div>
-                `;
-                grid.appendChild(card);
+            // Kelompokkan film per bulan
+            const monthGroups = {};
+            filteredMoviesCache.forEach(movie => {
+                const key = convertToComparableMonth(movie.bulan) || '0000-00';
+                if (!monthGroups[key]) monthGroups[key] = [];
+                monthGroups[key].push(movie);
             });
 
-            if (displayedItemCount < filteredMoviesCache.length) {
-                loadMoreIndicator.classList.remove('hidden');
-            } else {
-                loadMoreIndicator.classList.add('hidden');
-            }
-        }
+            // Bulan terbaru di KIRI (default view), terlama di KANAN (nomor 1)
+            const monthKeys = Object.keys(monthGroups).sort((a, b) => b.localeCompare(a));
+            const totalMonths = monthKeys.length;
 
-        window.addEventListener('scroll', () => {
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 300) {
-                if (displayedItemCount < filteredMoviesCache.length) {
-                    displayedItemCount += PAGE_SIZE;
-                    renderGridChunk();
-                }
-            }
-        });
+            monthKeys.forEach((key, idx) => {
+                const panelNumber = totalMonths - idx; // paling kanan (terlama) = 1
+                const monthMovies = monthGroups[key].sort((a, b) => (a.judul || '').localeCompare(b.judul || ''));
 
-        function renderMovies() {
-            processFilterAndRender(false);
+                const panel = document.createElement('div');
+                panel.className = "w-[86%] sm:w-[72%] flex-shrink-0 snap-start";
+                panel.innerHTML = `
+                    <div class="flex items-end gap-2.5 mb-3 px-0.5">
+                        <span class="font-display text-5xl leading-[0.8] stroke-number">${String(panelNumber).padStart(2, '0')}</span>
+                        <div class="pb-0.5">
+                            <div class="font-display text-lg text-amber-300 uppercase tracking-[0.15em] leading-none">${formatMonthDisplay(key)}</div>
+                            <div class="text-[10px] text-slate-500 mt-1">${monthMovies.length} film • Chapter ${panelNumber}/${totalMonths}</div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3.5"></div>
+                `;
+
+                const grid = panel.querySelector('.grid');
+                monthMovies.forEach((movie, i) => grid.appendChild(createMovieCard(movie, i)));
+                carousel.appendChild(panel);
+            });
+
+            // Default view: paling kiri (bulan terbaru)
+            carousel.scrollTo({ left: 0 });
         }
 
         function resetSearch() {
             document.getElementById('search-input').value = '';
             toggleClearSearchBtn();
-            document.getElementById('sort-select').value = 'newest';
             currentViewerFilter = 'all';
             isTopRatedActive = false;
             
@@ -1415,7 +1444,7 @@
                     btn.className = "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-slate-300 tap-scale flex-shrink-0 transition";
                 }
             });
-            processFilterAndRender(true);
+            processFilterAndRender();
         }
 
         function openAddModal() {
@@ -1475,6 +1504,7 @@
         function closeAddModal() {
             const modal = document.getElementById('add-modal');
             modal.classList.add('hidden');
+            document.getElementById('add-modal-content').classList.remove('animate-slideUp');
             document.body.classList.remove('modal-lock');
             
             window.scrollTo({
@@ -1558,6 +1588,7 @@
         function closeDetailModal() {
             const modal = document.getElementById('detail-modal');
             modal.classList.add('hidden');
+            document.getElementById('detail-modal-content').classList.remove('animate-slideUp');
             document.body.classList.remove('modal-lock');
             
             if (lastClickedMovieId) {
@@ -1782,6 +1813,8 @@
         function closeTimeCalcModal() {
             const modal = document.getElementById('time-calc-modal');
             if (modal) modal.classList.add('hidden');
+            const content = document.getElementById('time-calc-modal-content');
+            if (content) content.classList.remove('animate-slideUp');
             document.body.classList.remove('modal-lock');
         }
 
@@ -1804,15 +1837,6 @@
             }
 
             updateConvertedTime();
-        }
-
-        function setConvPreset(timeVal) {
-            triggerHaptic();
-            const input = document.getElementById('conv-time-input');
-            if (input) {
-                input.value = timeVal;
-                updateConvertedTime();
-            }
         }
 
         function formatAmPm(hours24, minutes) {
@@ -1862,24 +1886,6 @@
 
             const resEl = document.getElementById('conv-target-result');
             if (resEl) resEl.innerText = ampmTargetTimeStr;
-        }
-
-        function copyConvResult() {
-            triggerHaptic();
-            const input = document.getElementById('conv-time-input');
-            const resEl = document.getElementById('conv-target-result');
-            if (!resEl || !input) return;
-
-            const parts = input.value.split(':');
-            const inputAmPm = formatAmPm(parseInt(parts[0], 10), parseInt(parts[1], 10));
-
-            const textToCopy = `⏰ Waktu: ${inputAmPm} ➔ ${resEl.innerText}`;
-            
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                showToast("Waktu konversi disalin! 📋", "success");
-            }).catch(() => {
-                showToast("Gagal menyalin.", "warning");
-            });
         }
 
         document.addEventListener('DOMContentLoaded', () => {
