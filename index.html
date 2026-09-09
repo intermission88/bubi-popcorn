@@ -369,7 +369,7 @@
                 </span>
             </div>
 
-            <div id="months-carousel" class="flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2 -mx-4 px-4"></div>
+            <div id="months-carousel" class="space-y-5"></div>
 
             <div id="empty-state" class="hidden py-12 text-center space-y-3 animate-fadeIn">
                 <div class="w-14 h-14 rounded-2xl bg-neutral-950 border border-neutral-800 flex items-center justify-center mx-auto text-slate-500 text-xl shadow-lg">
@@ -1215,12 +1215,11 @@
             if (!carousel) return;
             carousel.innerHTML = '';
             const panel = document.createElement('div');
-            panel.className = "w-[86%] sm:w-[72%] flex-shrink-0 snap-start";
             panel.innerHTML = `
                 <div class="h-10 w-44 bg-neutral-900 rounded-lg animate-pulseSlow mb-3"></div>
-                <div class="grid grid-cols-2 gap-3.5">
-                    ${Array.from({ length: 4 }).map(() => `
-                        <div class="glass-card rounded-2xl overflow-hidden flex flex-col border border-neutral-800 animate-pulseSlow">
+                <div class="flex gap-3.5 overflow-hidden">
+                    ${Array.from({ length: 3 }).map(() => `
+                        <div class="glass-card w-36 flex-shrink-0 rounded-2xl overflow-hidden flex flex-col border border-neutral-800 animate-pulseSlow">
                             <div class="aspect-[3/4] w-full bg-neutral-900"></div>
                             <div class="p-3 space-y-2">
                                 <div class="h-3 bg-neutral-900 rounded w-3/4"></div>
@@ -1396,34 +1395,39 @@
                 monthGroups[key].push(movie);
             });
 
-            // Bulan terbaru di KIRI (default view), terlama di KANAN (nomor 1)
+            // Bulan terbaru di ATAS, bulan sebelumnya di BAWAH
             const monthKeys = Object.keys(monthGroups).sort((a, b) => b.localeCompare(a));
             const totalMonths = monthKeys.length;
 
             monthKeys.forEach((key, idx) => {
-                const panelNumber = totalMonths - idx; // paling kanan (terlama) = 1
+                const panelNumber = totalMonths - idx; // paling bawah (terlama) = 1
                 const monthMovies = monthGroups[key].sort((a, b) => (a.judul || '').localeCompare(b.judul || ''));
 
-                const panel = document.createElement('div');
-                panel.className = "w-[86%] sm:w-[72%] flex-shrink-0 snap-start";
-                panel.innerHTML = `
+                const row = document.createElement('div');
+                row.innerHTML = `
                     <div class="flex items-end gap-2.5 mb-3 px-0.5">
                         <span class="font-display text-5xl leading-[0.8] stroke-number">${String(panelNumber).padStart(2, '0')}</span>
                         <div class="pb-0.5">
                             <div class="font-display text-lg text-amber-300 uppercase tracking-[0.15em] leading-none">${formatMonthDisplay(key)}</div>
                             <div class="text-[10px] text-slate-500 mt-1">${monthMovies.length} film • Chapter ${panelNumber}/${totalMonths}</div>
                         </div>
+                        <span class="ml-auto text-[9px] text-slate-500 flex items-center gap-1.5 pb-1">
+                            <i class="fa-solid fa-arrows-left-right text-amber-400/70 text-[8px]"></i> Geser
+                        </span>
                     </div>
-                    <div class="grid grid-cols-2 gap-3.5"></div>
                 `;
 
-                const grid = panel.querySelector('.grid');
-                monthMovies.forEach((movie, i) => grid.appendChild(createMovieCard(movie, i)));
-                carousel.appendChild(panel);
-            });
+                const track = document.createElement('div');
+                track.className = "flex gap-3.5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2 -mx-4 px-4";
+                monthMovies.forEach((movie, i) => {
+                    const card = createMovieCard(movie, i);
+                    card.className = card.className.replace("overflow-hidden flex flex-col", "overflow-hidden flex flex-col w-36 flex-shrink-0 snap-start");
+                    track.appendChild(card);
+                });
 
-            // Default view: paling kiri (bulan terbaru)
-            carousel.scrollTo({ left: 0 });
+                row.appendChild(track);
+                carousel.appendChild(row);
+            });
         }
 
         function resetSearch() {
