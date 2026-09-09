@@ -222,17 +222,6 @@
                 <span class="slider-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300 cursor-pointer" onclick="currentSlide(4)"></span>
             </div>
         </section>
-        
-        <!-- SECTION: TOTAL MOVIES WATCHED HEADLINE -->
-        <section class="relative text-center py-5 space-y-2">
-            <div class="font-display text-[11px] tracking-[0.5em] text-slate-500 uppercase">Total Movies Watched:</div>
-            <div class="flex items-center justify-center gap-4">
-                <i class="fa-solid fa-clapperboard text-amber-500/60 text-lg"></i>
-                <span id="total-movies-count" class="font-display text-7xl gold-text leading-none tracking-wider">0</span>
-                <i class="fa-solid fa-clapperboard text-amber-500/60 text-lg"></i>
-            </div>
-            <div class="text-[10px] text-slate-500 italic">"Every film is a memory we keep forever."</div>
-        </section>
 
         <!-- SECTION ATAS: Cinema Themed Now Showing Card -->
         <section class="glass-card rounded-2xl p-3.5 border border-neutral-800 bg-gradient-to-br from-black via-neutral-950 to-black space-y-3 shadow-2xl relative overflow-hidden">
@@ -306,27 +295,31 @@
                 <div class="flex whitespace-nowrap overflow-hidden">
                     <div class="flex items-center gap-6 marquee-track animate-marquee py-1">
                         <span class="inline-flex items-center gap-1.5 text-[11px] text-amber-400 font-semibold flex-shrink-0">
-                            <i class="fa-solid fa-film"></i> "Adventure is out there!" — Up
+                            <i class="fa-solid fa-scroll"></i> "I lack in nothing but thy sight." — Shakespeare
                         </span>
                         <span class="text-slate-700 text-[9px]">•</span>
                         <span class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 italic flex-shrink-0">
-                            "Whatever happens tomorrow, we've had today." — One Day
+                            "Love is not love which alters when it alteration finds." — Sonnet 116
                         </span>
                         <span class="text-slate-700 text-[9px]">•</span>
                         <span class="inline-flex items-center gap-1.5 text-[11px] text-pink-400 font-semibold flex-shrink-0">
-                            <i class="fa-solid fa-heart text-[9px]"></i> "To me, you are perfect." — Love Actually
+                            <i class="fa-solid fa-heart text-[9px]"></i> "Absence is to love what wind is to fire; it extinguishes the small, it inflames the great."
                         </span>
                         <span class="text-slate-700 text-[9px]">•</span>
                         <span class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 italic flex-shrink-0">
-                            "I'm also just a girl, standing in front of a boy, asking him to love her." — Notting Hill
+                            "Doubt thou the stars are fire; doubt that the sun doth move... But never doubt I love." — Hamlet
                         </span>
                         <span class="text-slate-700 text-[9px]">•</span>
                         <span class="inline-flex items-center gap-1.5 text-[11px] text-amber-400 font-semibold flex-shrink-0">
-                            <i class="fa-solid fa-plane text-[9px]"></i> "Come with me if you want to live." — Terminator 2
+                            <i class="fa-solid fa-feather text-[9px]"></i> "Parting is such sweet sorrow." — Romeo & Juliet
                         </span>
                         <span class="text-slate-700 text-[9px]">•</span>
                         <span class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 italic flex-shrink-0">
-                            "Miles apart, but close at heart."
+                            "Love looks not with the eyes, but with the mind, and therefore is winged Cupid painted blind." — A Midsummer Night's Dream
+                        </span>
+                        <span class="text-slate-700 text-[9px]">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-[11px] text-pink-400 font-semibold flex-shrink-0">
+                            <i class="fa-solid fa-moon text-[9px]"></i> "The iron tongue of midnight hath told twelve. Lovers, to bed." — A Midsummer Night's Dream
                         </span>
                         <span class="text-slate-700 text-[9px]">•</span>
                     </div>
@@ -381,6 +374,18 @@
                 </div>
                 <button onclick="triggerHaptic(); resetSearch()" class="px-4 py-2 bg-neutral-900 hover:bg-neutral-800 text-amber-400 text-xs font-bold rounded-xl tap-scale shadow-md transition">Reset Pencarian</button>
             </div>
+        </section>
+
+        <!-- SECTION: TOTAL MOVIES WATCHED HEADLINE (di atas footer) -->
+        <section class="relative text-center py-8 space-y-2">
+            <div class="film-strip -mx-4 mb-6"></div>
+            <div class="font-display text-[11px] tracking-[0.5em] text-slate-500 uppercase">Total Movies Watched:</div>
+            <div class="flex items-center justify-center gap-4">
+                <i class="fa-solid fa-clapperboard text-amber-500/60 text-lg"></i>
+                <span id="total-movies-count" class="font-display text-7xl gold-text leading-none tracking-wider">0</span>
+                <i class="fa-solid fa-clapperboard text-amber-500/60 text-lg"></i>
+            </div>
+            <div class="text-[10px] text-slate-500 italic">"Every film is a memory we keep forever."</div>
         </section>
 
         <!-- Footer Section -->
