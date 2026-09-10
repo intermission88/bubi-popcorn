@@ -805,7 +805,7 @@
     <div id="detail-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
         <div id="detail-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col transform transition-all pb-[env(safe-area-inset-bottom)]">
             <div class="relative h-48 bg-black overflow-hidden flex-shrink-0">
-                <img id="detail-banner-img" src="" alt="Banner" class="w-full h-full object-cover opacity-40 blur-sm scale-105" onerror="this.src='POSTER_FALLBACK'">
+                <img id="detail-banner-img" src="" alt="Banner" class="w-full h-full object-cover opacity-40 blur-sm scale-105" onerror="posterFallback(this)">
                 <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/60 to-transparent"></div>
                 <button onclick="triggerHaptic(); closeDetailModal()" class="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-black/80 border border-neutral-800 text-slate-300 flex items-center justify-center tap-scale">
                     <i class="fa-solid fa-xmark text-xs"></i>
@@ -892,6 +892,11 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const TABLE_NAME = 'bubi_popcorn';
         const POSTER_FALLBACK = 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400"><rect width="300" height="400" fill="#0a0a0a"/><circle cx="150" cy="180" r="80" fill="none" stroke="#facc15" stroke-width="6"/><circle cx="150" cy="180" r="14" fill="#facc15"/><circle cx="150" cy="116" r="16" fill="#facc15"/><circle cx="214" cy="180" r="16" fill="#facc15"/><circle cx="150" cy="244" r="16" fill="#facc15"/><circle cx="86" cy="180" r="16" fill="#facc15"/><text x="150" y="320" font-family="Arial" font-size="16" fill="#52525b" text-anchor="middle">NO POSTER</text></svg>`);
+
+        function posterFallback(img) {
+            img.onerror = null;
+            img.src = POSTER_FALLBACK;
+        }
         
         let moviesData = [];
         let filteredMoviesCache = [];
@@ -1387,7 +1392,7 @@
         }
 
         function createMovieCard(movie, index) {
-            const posterUrl = (movie.poster && movie.poster.trim() !== '') ? movie.poster : 'POSTER_FALLBACK';
+            const posterUrl = (movie.poster && movie.poster.trim() !== '') ? movie.poster : POSTER_FALLBACK;
             const watcher = movie.watched_by || 'both';
             const dispZ = (movie.rating_aku && movie.rating_aku.toString().trim() !== '') ? movie.rating_aku : 'N/A';
             const dispM = (movie.rating_dia && movie.rating_dia.toString().trim() !== '') ? movie.rating_dia : 'N/A';
@@ -1462,7 +1467,7 @@
 
             card.innerHTML = `
                 <div class="relative aspect-[3/4] w-full overflow-hidden bg-black">
-                    <img src="${posterUrl}" alt="${movie.judul}" loading="lazy" decoding="async" class="w-full h-full object-cover transform hover:scale-110 transition duration-500" onerror="this.src='POSTER_FALLBACK'">
+                    <img src="${posterUrl}" alt="${movie.judul}" loading="lazy" decoding="async" class="w-full h-full object-cover transform hover:scale-110 transition duration-500" onerror="posterFallback(this)">
                     <span class="absolute top-2.5 right-2.5 bg-black/85 backdrop-blur px-2 py-0.5 rounded-lg text-[10px] font-bold text-slate-300 border border-neutral-800 shadow">${movie.tahun || ''}</span>
                     ${watcherBadgeHTML}
                 </div>
@@ -1684,7 +1689,7 @@
             document.getElementById('detail-zald-text').innerText = movie.review_aku ? `"${movie.review_aku}"` : "Belum ada review.";
             document.getElementById('detail-micel-text').innerText = movie.review_dia ? `"${movie.review_dia}"` : "Belum ada review.";
 
-            document.getElementById('detail-banner-img').src = (movie.poster && movie.poster.trim() !== '') ? movie.poster : 'POSTER_FALLBACK';
+            document.getElementById('detail-banner-img').src = (movie.poster && movie.poster.trim() !== '') ? movie.poster : POSTER_FALLBACK;
 
             const modal = document.getElementById('detail-modal');
             const content = document.getElementById('detail-modal-content');
