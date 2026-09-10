@@ -17,11 +17,12 @@ Seluruh aplikasi berada dalam satu file: [`index.html`](index.html) (HTML, CSS, 
 
 ### Fitur Khusus
 
-- **Hero Slider:** 5 slide otomatis (interval 3,5 detik) dengan indikator yang bisa dipilih.
-- **Relationship Tracker:** penghitung hari sejak 5 April 2025, diperbarui tiap detik.
+- **Hero Slider:** 5 slide otomatis (interval 3,5 detik) dengan title card "A Love Story in Films" dan indikator yang bisa dipilih.
+- **Relationship Tracker:** penghitung hari sejak 5 April 2025, diperbarui tiap detik, ditampilkan besar dengan gaya angka emas di atas tiket bercahaya proyektor.
 - **Dual Timezone Clock:** waktu Zald (`Asia/Colombo`) dan Micel (`Asia/Tokyo`).
 - **Konverter Waktu:** modal konversi waktu dua arah antara JST dan waktu Zald.
-- **Certified Fresh:** badge khusus untuk film favorit, membawa gaya dan animasi tersendiri.
+- **Certified Fresh:** badge khusus untuk film favorit dengan treatment emas statis.
+- **Sentuhan Bioskop:** papan marquee berlampu untuk judul section, divider film-strip, empty state "Intermission", dan footer "The End".
 - **Perayaan Ulang Tahun:** usia dan hitungan hari menuju ulang tahun berikutnya.
 - **PWA:** dapat dipasang ke layar utama, dengan service worker dan fallback offline.
 

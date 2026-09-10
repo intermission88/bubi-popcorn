@@ -1,6 +1,6 @@
 - Prefers website audits to use Brave in headless mode or via CDP, without opening browser GUI or taking control of the mouse. Confidence: 1.0
 - Prefers faster coding workflows that skip unnecessary work and prioritize high-impact changes. Confidence: 1.0
-- Communicates in casual Indonesian and expects replies in the same language. Confidence: 0.7
+- Communicates in casual Indonesian and expects replies in the same language. Confidence: 0.8
 - Cares about security: secrets/passwords must not be exposed in public client-side code (nothing readable via Inspect Element); prefers real server-side auth and proper database-level access control over client-side gates. Confidence: 0.9
 - Wants documentation (e.g. README) kept in sync with the latest code and feature changes. Confidence: 0.7
 - Prefers simple, low-setup solutions and pushes back on perceived complexity ("kok ribet banget? aku mau yang simpel simpel aja"); values fewer moving parts and steps, even at the cost of features. Confidence: 0.75
