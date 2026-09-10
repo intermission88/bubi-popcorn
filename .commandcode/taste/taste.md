@@ -1,2 +1,9 @@
 - Prefers website audits to use Brave in headless mode or via CDP, without opening browser GUI or taking control of the mouse. Confidence: 1.0
 - Prefers faster coding workflows that skip unnecessary work and prioritize high-impact changes. Confidence: 1.0
+- Communicates in casual Indonesian and expects replies in the same language. Confidence: 0.7
+- Cares about security: secrets/passwords must not be exposed in public client-side code (nothing readable via Inspect Element); prefers real server-side auth and proper database-level access control over client-side gates. Confidence: 0.9
+- Wants documentation (e.g. README) kept in sync with the latest code and feature changes. Confidence: 0.7
+- Prefers simple, low-setup solutions and pushes back on perceived complexity ("kok ribet banget? aku mau yang simpel simpel aja"); values fewer moving parts and steps, even at the cost of features. Confidence: 0.75
+- Expects the agent to drive a task to completion: when the user reports finishing a manual step, they want a clear ordered list of what comes next — including steps only they can perform in external dashboards — rather than being left to figure it out. Confidence: 0.7
+- Prefers a minimal, password-only login UX over email+password sign-in: no visible email/account field, single shared credential for a small group of users, and non-secret identifiers (e.g. admin email) hardcoded in code rather than shown in the UI. Confidence: 0.7
+- Needs plain-language, jargon-free explanations (non-technical user): when confronted with terms like RLS, publishable key, or auth APIs they say they still don't understand, so explanations should use everyday analogies and exact click-by-click paths through external dashboards, not technical vocabulary. Confidence: 0.7

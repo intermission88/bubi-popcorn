@@ -77,14 +77,48 @@ const SUPABASE_KEY = '<publishable-key>';
 const TABLE_NAME = 'bubi_popcorn';
 ```
 
-## 🔐 Mode Admin
+## 🔐 Mode Admin (satu password, tanpa email)
 
-- Klik ikon gembok di kanan atas, lalu masukkan password admin.
-- Password default ada di `const ADMIN_PASSWORD` di dalam `index.html` (`bubi123`). **Ganti sebelum dipakai publik.**
-- Status buka/kunci disimpan di `localStorage` dengan key `bubi_admin_unlocked`.
-- Setelah terbuka, tombol tambah (FAB), tombol edit, dan tombol hapus muncul.
+- Admin memakai **satu password bersama**, jadi kamu dan Micel memakai password yang sama.
+- Di layar cuma ada kotak password. Email tidak ditampilkan karena sudah tetap di kode (`const ADMIN_EMAIL`).
+- Password **tidak ada** di dalam `index.html`, jadi tidak bisa dibaca lewat Inspect Element.
+- Sesi disimpan otomatis oleh Supabase, jadi admin tetap masuk setelah reload.
+- Klik gembok lagi saat sedang masuk untuk **keluar** (*sign out*).
+- Setelah masuk: FAB tambah film, tombol edit, dan tombol hapus muncul.
 
-> **Catatan keamanan:** ini hanya gerbang di sisi klien, bukan pengamanan data. Siapa pun bisa membaca `index.html`. Proteksi sebenarnya harus dipasang sebagai **Row Level Security (RLS)** di Supabase, agar operasi tulis hanya diizinkan untuk peran yang berhak.
+### Setup (sekali saja)
+
+1. **Matikan pendaftaran publik.** Supabase Dashboard → **Authentication → Sign In / Providers → Email** → nonaktifkan **Allow new users to sign up**.
+   Ini wajib: kalau pendaftaran terbuka, siapa pun bisa membuat akun sendiri dan otomatis mendapat izin tulis.
+
+2. **Buat satu akun admin.** **Authentication → Users → Add user**:
+   - Email: `admin@bubipopcorn.app` (harus sama persis dengan `ADMIN_EMAIL` di `index.html`)
+   - Password: bebas, ini yang kalian ketik di aplikasi.
+   - Centang **Auto Confirm User** (kalau tidak, login akan gagal).
+
+3. **Aktifkan RLS** di **SQL Editor**:
+
+```sql
+alter table public.bubi_popcorn enable row level security;
+
+create policy "Public read" on public.bubi_popcorn
+  for select using (true);
+
+create policy "Admin insert" on public.bubi_popcorn
+  for insert to authenticated with check (true);
+
+create policy "Admin update" on public.bubi_popcorn
+  for update to authenticated using (true) with check (true);
+
+create policy "Admin delete" on public.bubi_popcorn
+  for delete to authenticated using (true);
+```
+
+Ganti password kapan saja lewat dashboard (Authentication → Users), tanpa mengubah kode dan tanpa deploy ulang. Kalau mau ganti emailnya, ubah `ADMIN_EMAIL` di `index.html` **dan** di dashboard.
+
+> **Kenapa harus ada akun di server?** Karena password yang dicek di browser selalu bisa dibaca lewat Inspect Element. Satu-satunya cara agar tidak terbaca adalah memverifikasinya di server. Akun ini tidak pernah kamu lihat sebagai "login email" — yang kamu ketik tetap cuma password.
+>
+> Publishable key di `index.html` memang aman untuk publik, tetapi **tanpa RLS** siapa pun yang membacanya dari source bisa `insert`/`update`/`delete` langsung ke tabel. RLS inilah yang benar-benar menolak permintaan tulis dari pengunjung yang tidak login. Tombol admin di UI hanya kenyamanan, bukan pengamanan.
 
 ## ♿ Aksesibilitas & Responsif
 
