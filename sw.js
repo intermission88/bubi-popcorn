@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bubi-popcorn-v1';
+const CACHE_NAME = 'bubi-popcorn-v2';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -33,6 +33,20 @@ self.addEventListener('fetch', (event) => {
 
   // Supabase & API: selalu network (jangan cache data dinamis)
   if (url.hostname.includes('supabase.co')) {
+    return;
+  }
+
+  // HTML/navigasi: network-first agar update deploy selalu tampil, fallback cache saat offline
+  if (event.request.mode === 'navigate' || event.request.destination === 'document') {
+    event.respondWith(
+      fetch(event.request).then((response) => {
+        if (response.ok) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+        }
+        return response;
+      }).catch(() => caches.match('./index.html'))
+    );
     return;
   }
 
