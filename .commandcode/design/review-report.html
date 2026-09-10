@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bubi's Popcorn - Design Review Report</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .report-section { border: 1px solid #222226; background: #0a0a0b; position: relative; }
+    .corner-box { position: absolute; width: 20px; height: 20px; border: 1px solid #222226; background: #000; }
+  </style>
+</head>
+<body class="bg-black text-[#fafafa]">
+  <main class="mx-auto w-full max-w-6xl px-5 py-8 md:px-10 md:py-12">
+    <header class="report-section mb-8 p-6 md:p-8">
+      <div class="corner-box left-0 top-0 -translate-x-1/2 -translate-y-1/2"></div>
+      <div class="corner-box right-0 top-0 translate-x-1/2 -translate-y-1/2"></div>
+      <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div><div class="mono mb-2 text-xs tracking-widest text-[#666]">// DESIGN REVIEW</div><h1 class="text-4xl font-bold tracking-tight md:text-6xl">Bubi's Popcorn</h1></div>
+        <div class="mono text-left text-xs text-[#666] md:text-right"><div>COMMANDCODE REPORT</div><div class="text-[#444]">2026-09-10</div></div>
+      </div>
+    </header>
+
+    <section class="report-section mb-8 p-6 md:p-8">
+      <div class="corner-box left-0 top-0 -translate-x-1/2 -translate-y-1/2"></div><div class="corner-box right-0 top-0 translate-x-1/2 -translate-y-1/2"></div>
+      <div class="grid gap-8 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+        <div><div class="mono mb-2 text-xs tracking-widest text-[#666]">// OVERALL</div><div class="text-6xl font-bold tracking-tight md:text-7xl">31</div><div class="mt-1 text-lg text-[#666]">/ 50</div><div class="mt-4 inline-flex border border-[#f43f5e]/30 bg-[#f43f5e]/10 px-3 py-1 text-sm text-[#f43f5e]">BLOCK</div></div>
+        <div><div class="mono mb-3 text-xs tracking-widest text-[#666]">// TL;DR</div><p class="text-sm leading-6 text-[#a0a0a0]">Identitas cinema-log terasa personal dan kuat. Namun, alur keyboard terputus, beberapa kontrol tidak bernama, zoom dinonaktifkan, modal belum aksesibel, dan tombol tutup tertutup tombol bagikan pada detail film.</p><p class="mt-4 text-sm leading-6 text-[#fbbf24]">Mulai dengan /design a11y, lalu /design responsive untuk komposisi desktop dan kepadatan 320 px.</p></div>
+      </div>
+    </section>
+
+    <section class="report-section mb-8 p-6 md:p-8">
+      <div class="mono mb-6 text-xs tracking-widest text-[#666]">// FIRST IMPRESSION</div>
+      <p class="max-w-3xl text-sm leading-7 text-[#a0a0a0]">Kategori produk langsung jelas: arsip film pasangan dengan bahasa visual bioskop. “Now Showing” menjadi anchor paling memorable. Di desktop, kolom 448 px terasa seperti preview aplikasi di tengah kanvas kosong, bukan komposisi web layar lebar yang disengaja.</p>
+    </section>
+
+    <section class="report-section mb-8 p-6 md:p-8">
+      <div class="mono mb-6 text-xs tracking-widest text-[#666]">// HEURISTIC SCORES</div>
+      <div class="overflow-x-auto"><table class="w-full min-w-[720px] border-collapse text-sm"><thead><tr class="border-b border-[#222226] text-left mono text-xs text-[#666]"><th class="py-3 pr-4 font-normal">#</th><th class="py-3 pr-4 font-normal">LENS</th><th class="py-3 pr-4 font-normal">SCORE</th><th class="py-3 font-normal">KEY FINDING</th></tr></thead><tbody class="divide-y divide-[#1a1a1e]">
+        <tr><td class="py-4 pr-4 text-[#555]">1</td><td class="py-4 pr-4">First impression</td><td class="py-4 pr-4 text-[#34d399]">8/10</td><td class="py-4 text-[#a0a0a0]">Identitas cinema-log langsung terbaca dan terasa personal</td></tr>
+        <tr><td class="py-4 pr-4 text-[#555]">2</td><td class="py-4 pr-4">Hierarchy</td><td class="py-4 pr-4 text-[#fbbf24]">7/10</td><td class="py-4 text-[#a0a0a0]">Alur jelas, tetapi micro-copy bersaing pada 320 px</td></tr>
+        <tr><td class="py-4 pr-4 text-[#555]">3</td><td class="py-4 pr-4">Color voice</td><td class="py-4 pr-4 text-[#34d399]">8/10</td><td class="py-4 text-[#a0a0a0]">Amber, sky, dan pink memiliki peran konsisten</td></tr>
+        <tr><td class="py-4 pr-4 text-[#555]">4</td><td class="py-4 pr-4">Type voice</td><td class="py-4 pr-4 text-[#fbbf24]">5/10</td><td class="py-4 text-[#a0a0a0]">Display face kuat, micro-copy 8–11 px terlalu dominan</td></tr>
+        <tr><td class="py-4 pr-4 text-[#555]">5</td><td class="py-4 pr-4">Interaction feel</td><td class="py-4 pr-4 text-[#f43f5e]">3/10</td><td class="py-4 text-[#a0a0a0]">Touch flow kaya, keyboard dan modal belum lengkap</td></tr>
+      </tbody></table></div>
+    </section>
+
+    <section class="report-section mb-8 p-6 md:p-8">
+      <div class="mono mb-6 text-xs tracking-widest text-[#666]">// WHAT'S WORKING</div>
+      <div class="grid gap-4 md:grid-cols-3">
+        <article class="border border-[#1f1f24] p-4"><h2 class="mb-2 text-sm font-semibold">Art direction spesifik</h2><p class="text-sm leading-6 text-[#a0a0a0]">Film strip, ticket, chapter bulanan, poster, dan copy membangun dunia visual yang konsisten.</p></article>
+        <article class="border border-[#1f1f24] p-4"><h2 class="mb-2 text-sm font-semibold">Browse flow jelas</h2><p class="text-sm leading-6 text-[#a0a0a0]">Search, filter viewer, Top 9+, kelompok bulan, dan kartu film tersusun logis.</p></article>
+        <article class="border border-[#1f1f24] p-4"><h2 class="mb-2 text-sm font-semibold">Data terasa personal</h2><p class="text-sm leading-6 text-[#a0a0a0]">Dual clocks, relationship counter, dan dua perspektif review membuat produk bukan katalog generik.</p></article>
+      </div>
+    </section>
+
+    <section class="report-section mb-8 p-6 md:p-8">
+      <div class="mono mb-6 text-xs tracking-widest text-[#666]">// PRIORITY FINDINGS</div>
+      <div class="overflow-x-auto"><table class="w-full min-w-[1050px] border-collapse text-sm"><thead><tr class="border-b border-[#222226] text-left mono text-xs text-[#666]"><th class="py-3 pr-4">#</th><th class="py-3 pr-4">SEVERITY</th><th class="py-3 pr-4">LOCATION</th><th class="py-3 pr-4">BEFORE</th><th class="py-3 pr-4">AFTER</th><th class="py-3">WHY</th></tr></thead><tbody class="divide-y divide-[#1a1a1e]">
+        <tr><td class="py-4 pr-4">1</td><td class="py-4 pr-4 text-[#f43f5e]">HIGH</td><td class="py-4 pr-4 mono text-xs">811–821</td><td class="py-4 pr-4 text-[#a0a0a0]">Close dan share sama-sama top-3 right-3</td><td class="py-4 pr-4 text-[#fbbf24]">Pisahkan posisi atau jadikan toolbar</td><td class="py-4 text-[#a0a0a0]">Keduanya terukur pada koordinat 320 px yang identik</td></tr>
+        <tr><td class="py-4 pr-4">2</td><td class="py-4 pr-4 text-[#f43f5e]">HIGH</td><td class="py-4 pr-4 mono text-xs">1405–1415</td><td class="py-4 pr-4 text-[#a0a0a0]">Movie card berupa div onclick</td><td class="py-4 pr-4 text-[#fbbf24]">Gunakan button/link bernama</td><td class="py-4 text-[#a0a0a0]">Primary detail flow tidak dapat dibuka dengan keyboard</td></tr>
+        <tr><td class="py-4 pr-4">3</td><td class="py-4 pr-4 text-[#f43f5e]">HIGH</td><td class="py-4 pr-4 mono text-xs">236–239, 281–285, 327–360</td><td class="py-4 pr-4 text-[#a0a0a0]">Div/span onclick tanpa keyboard atau nama</td><td class="py-4 pr-4 text-[#fbbf24]">Gunakan button, name, dan state</td><td class="py-4 text-[#a0a0a0]">Brave menemukan tujuh kontrol pointer-only</td></tr>
+        <tr><td class="py-4 pr-4">4</td><td class="py-4 pr-4 text-[#f43f5e]">HIGH</td><td class="py-4 pr-4 mono text-xs">408–412, 649–650, 751–791</td><td class="py-4 pr-4 text-[#a0a0a0]">Placeholder bekerja sebagai label</td><td class="py-4 pr-4 text-[#fbbf24]">Tambahkan label programatik yang persisten</td><td class="py-4 text-[#a0a0a0]">Nama field hilang saat pengguna mengetik</td></tr>
+        <tr><td class="py-4 pr-4">5</td><td class="py-4 pr-4 text-[#f43f5e]">HIGH</td><td class="py-4 pr-4 mono text-xs">5</td><td class="py-4 pr-4 text-[#a0a0a0]">Pinch zoom dinonaktifkan</td><td class="py-4 pr-4 text-[#fbbf24]">Hapus maximum-scale dan user-scalable</td><td class="py-4 text-[#a0a0a0]">Menghalangi pengguna low vision</td></tr>
+        <tr><td class="py-4 pr-4">6</td><td class="py-4 pr-4 text-[#f43f5e]">HIGH</td><td class="py-4 pr-4 mono text-xs">596–885, 1567–1723</td><td class="py-4 pr-4 text-[#a0a0a0]">Modal div tanpa trap, inert, Escape, restore</td><td class="py-4 pr-4 text-[#fbbf24]">Gunakan dialog atau pola modal lengkap</td><td class="py-4 text-[#a0a0a0]">Fokus dapat keluar ke halaman belakang</td></tr>
+        <tr><td class="py-4 pr-4">7</td><td class="py-4 pr-4 text-[#f43f5e]">HIGH</td><td class="py-4 pr-4 mono text-xs">241–243, 410–429, 577–590</td><td class="py-4 pr-4 text-[#a0a0a0]">Banyak target di bawah 44×44 px</td><td class="py-4 pr-4 text-[#fbbf24]">Perluas hit area minimal 44×44</td><td class="py-4 text-[#a0a0a0]">Risiko salah tekan pada mobile-first</td></tr>
+        <tr><td class="py-4 pr-4">8</td><td class="py-4 pr-4 text-[#fbbf24]">MEDIUM</td><td class="py-4 pr-4 mono text-xs">218, 249, 807</td><td class="py-4 pr-4 text-[#a0a0a0]">Konten dikunci max-w-md di desktop</td><td class="py-4 pr-4 text-[#fbbf24]">Buat komposisi explore 2 kolom</td><td class="py-4 text-[#a0a0a0]">Layar 1440 px menyisakan kanvas kosong besar</td></tr>
+        <tr><td class="py-4 pr-4">9</td><td class="py-4 pr-4 text-[#fbbf24]">MEDIUM</td><td class="py-4 pr-4 mono text-xs">227–229, 293–315, 1419–1482</td><td class="py-4 pr-4 text-[#a0a0a0]">Micro-copy 8–11 px terlalu sering</td><td class="py-4 pr-4 text-[#fbbf24]">Naikkan metadata penting ke 12–14 px</td><td class="py-4 text-[#a0a0a0]">Kepadatan baca tinggi pada 320 px</td></tr>
+        <tr><td class="py-4 pr-4">10</td><td class="py-4 pr-4 text-[#fbbf24]">MEDIUM</td><td class="py-4 pr-4 mono text-xs">1347–1361, 1494–1500</td><td class="py-4 pr-4 text-[#a0a0a0]">Fetch error berubah menjadi empty state</td><td class="py-4 pr-4 text-[#fbbf24]">Tampilkan error dan aksi coba lagi</td><td class="py-4 text-[#a0a0a0]">Tidak bisa membedakan data kosong dan server gagal</td></tr>
+        <tr><td class="py-4 pr-4">11</td><td class="py-4 pr-4 text-[#fbbf24]">MEDIUM</td><td class="py-4 pr-4 mono text-xs">917–951, 204–211</td><td class="py-4 pr-4 text-[#a0a0a0]">Hero autoplay tanpa pause; JS abaikan reduced motion</td><td class="py-4 pr-4 text-[#fbbf24]">Pause dan hentikan autoplay pada reduced motion</td><td class="py-4 text-[#a0a0a0]">Konten bergerak tanpa kontrol lengkap</td></tr>
+        <tr><td class="py-4 pr-4">12</td><td class="py-4 pr-4 text-[#60a5fa]">LOW</td><td class="py-4 pr-4 mono text-xs">293–315, 436–465</td><td class="py-4 pr-4 text-[#a0a0a0]">Label Indonesia dan Inggris bercampur</td><td class="py-4 pr-4 text-[#fbbf24]">Tetapkan aturan bahasa UI dan art direction</td><td class="py-4 text-[#a0a0a0]">Voice belum sepenuhnya rapi</td></tr>
+      </tbody></table></div>
+    </section>
+
+    <section class="report-section mb-8 p-6 md:p-8">
+      <div class="grid gap-6 md:grid-cols-2"><div><div class="mono mb-3 text-xs tracking-widest text-[#666]">// COGNITIVE LOAD / RISK</div><div class="mb-3 text-xl font-semibold">High interaction risk</div><ul class="space-y-3 text-sm text-[#a0a0a0]"><li><span class="mono mr-2 text-[#34d399]">PASS</span>Touch browsing flow mudah dipahami</li><li><span class="mono mr-2 text-[#fbbf24]">WATCH</span>320 px padat oleh badge, ticker, clock, dan micro-copy</li><li><span class="mono mr-2 text-[#ef4444]">FAIL</span>Primary detail flow terputus untuk keyboard</li><li><span class="mono mr-2 text-[#ef4444]">FAIL</span>Close dan share bertumpuk</li></ul></div><div><div class="mono mb-3 text-xs tracking-widest text-[#666]">// NEXT MODES</div><div class="flex flex-wrap gap-2"><span class="border border-[#333] px-3 py-1 text-sm">/design a11y</span><span class="border border-[#333] px-3 py-1 text-sm">/design responsive</span><span class="border border-[#333] px-3 py-1 text-sm">/design typeset</span><span class="border border-[#333] px-3 py-1 text-sm">/design interaction</span><span class="border border-[#333] px-3 py-1 text-sm">/design finish</span></div></div></div>
+    </section>
+
+    <section class="report-section mb-8 p-6 md:p-8">
+      <div class="mono mb-6 text-xs tracking-widest text-[#666]">// CONSIDERED BUT REJECTED</div>
+      <div class="overflow-x-auto"><table class="w-full min-w-[720px] text-sm"><thead><tr class="border-b border-[#222226] text-left mono text-xs text-[#666]"><th class="py-3 pr-4">LOCATION</th><th class="py-3 pr-4">CANDIDATE</th><th class="py-3">REJECTED BECAUSE</th></tr></thead><tbody class="divide-y divide-[#1a1a1e] text-[#a0a0a0]"><tr><td class="py-4 pr-4 mono text-xs">97–104</td><td class="py-4 pr-4">Hilangkan gradient amber</td><td class="py-4">Mendukung identitas dan dipakai cukup terarah</td></tr><tr><td class="py-4 pr-4 mono text-xs">92–96, 1408–1410</td><td class="py-4 pr-4">Sederhanakan certified card</td><td class="py-4">Treatment khusus membawa makna dan hierarchy</td></tr><tr><td class="py-4 pr-4 mono text-xs">421–430, 1532–1537</td><td class="py-4 pr-4">Hilangkan horizontal scrolling</td><td class="py-4">Swipe adalah pola tepat untuk chips dan rak film mobile</td></tr></tbody></table></div>
+    </section>
+
+    <section class="report-section mb-8 p-6 md:p-8">
+      <div class="mono mb-6 text-xs tracking-widest text-[#666]">// VERIFICATION</div>
+      <div class="grid gap-6 md:grid-cols-2"><div><h2 class="mb-3 text-sm font-semibold text-[#34d399]">PASSED</h2><ul class="space-y-2 text-sm leading-6 text-[#a0a0a0]"><li>Brave render: 320×900, 375×900, 1440×1000</li><li>320 px: document width sama dengan viewport</li><li>DOM measurement: focus, names, targets, pointer-only controls</li><li>Supabase data loaded dan detail modal dibuka</li><li>Close/share terbukti memiliki koordinat identik</li></ul></div><div><h2 class="mb-3 text-sm font-semibold text-[#fbbf24]">NOT VERIFIED</h2><ul class="space-y-2 text-sm leading-6 text-[#a0a0a0]"><li>VoiceOver announcement aktual</li><li>Admin write/delete agar data produksi tidak berubah</li><li>PWA offline setelah install</li><li>Color-vision simulation dan contrast pixel measurement</li></ul></div></div>
+    </section>
+
+    <section class="border border-[#f43f5e]/30 bg-[#110b0d] p-6 md:p-8"><div class="mono mb-3 text-xs tracking-widest text-[#f43f5e]">// VERDICT</div><div class="text-3xl font-bold">Block</div><p class="mt-3 max-w-3xl text-sm leading-6 text-[#a0a0a0]">Masih ada temuan HIGH: kontrol modal overlap, primary card flow tanpa keyboard, modal focus model tidak lengkap, label hilang, zoom dibatasi, dan target sentuh kecil.</p></section>
+    <footer class="mono py-8 text-center text-xs tracking-widest text-[#444]">Generated with CommandCode - 2026-09-10</footer>
+  </main>
+</body>
+</html>

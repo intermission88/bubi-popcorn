@@ -2,7 +2,7 @@
 <html lang="id" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-visual">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-visual">
     <meta name="theme-color" content="#000000">
     <link rel="manifest" href="manifest.json">
     <title>Bubi's Popcorn - Mobile App Cinema Log</title>
@@ -201,12 +201,29 @@
             to { transform: rotate(360deg); }
         }
 
+        :focus-visible {
+            outline: 2px solid #facc15 !important;
+            outline-offset: 3px;
+        }
+
+        .touch-target { min-width: 44px; min-height: 44px; }
+
+        @media (max-width: 639px) {
+            input, select, textarea { font-size: 16px !important; }
+        }
+
+        @media (min-width: 1024px) {
+            .app-shell { max-width: 72rem !important; }
+            .movie-card { width: 11rem !important; }
+        }
+
         /* QoL: Respect reduced motion preference */
         @media (prefers-reduced-motion: reduce) {
-            .marquee-track, .live-dot, .counting-glow, .animate-marquee,
-            .animate-bounce, .animate-pulse, .animate-pulseSlow,
-            .animate-goldGlow, .animate-popIn {
-                animation: none !important;
+            *, *::before, *::after {
+                scroll-behavior: auto !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
             }
         }
     </style>
@@ -215,7 +232,7 @@
 
     <!-- Header App Bar -->
     <header class="fixed top-0 inset-x-0 z-40 bg-black/90 backdrop-blur-xl border-b border-neutral-900 px-4 py-3">
-        <div class="max-w-md mx-auto flex items-center justify-between">
+        <div class="app-shell max-w-md mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl popcorn-gradient flex items-center justify-center text-black text-base shadow-lg flex-shrink-0 font-bold">
                     <i class="fa-solid fa-bowl-food"></i>
@@ -233,12 +250,12 @@
             <!-- Bagian Kanan Atas: Ping Indicator & Tombol Gembok -->
             <div class="flex items-center gap-1.5 sm:gap-2">
                 <!-- Ping Indicator -->
-                <div id="ping-indicator" onclick="triggerHaptic(); checkPing()" class="px-2.5 py-1.5 rounded-xl bg-neutral-950 border border-neutral-800 text-[11px] text-slate-300 flex items-center gap-1.5 cursor-pointer tap-scale shadow-sm transition hover:border-neutral-700" title="Cek Koneksi Ping">
-                    <span id="ping-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <button type="button" id="ping-indicator" onclick="triggerHaptic(); checkPing()" class="touch-target px-2.5 rounded-xl bg-neutral-950 border border-neutral-800 text-[11px] text-slate-300 flex items-center gap-1.5 tap-scale shadow-sm transition hover:border-neutral-700" aria-label="Cek koneksi server">
+                    <span id="ping-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true"></span>
                     <span id="ping-text" class="font-mono font-medium">-- ms</span>
-                </div>
+                </button>
                 <!-- Tombol Gembok -->
-                <button onclick="triggerHaptic(); handleLockClick()" id="lock-btn" class="w-9 h-9 rounded-xl bg-neutral-950 border border-neutral-800 text-slate-400 hover:text-amber-400 flex items-center justify-center transition tap-scale shadow-sm hover:border-neutral-700" title="Akses Admin">
+                <button type="button" onclick="triggerHaptic(); handleLockClick()" id="lock-btn" class="touch-target rounded-xl bg-neutral-950 border border-neutral-800 text-slate-400 hover:text-amber-400 flex items-center justify-center transition tap-scale shadow-sm hover:border-neutral-700" aria-label="Buka akses admin">
                     <i id="lock-icon" class="fa-solid fa-lock text-xs"></i>
                 </button>
             </div>
@@ -246,7 +263,7 @@
     </header>
 
     <!-- Main Container -->
-    <main class="max-w-md mx-auto px-4 space-y-4 mt-3">
+    <main id="main-content" class="app-shell max-w-md mx-auto px-4 space-y-4 mt-3">
 
         <!-- SECTION: AUTO SLIDE INFINITE (1000x324 Aspect Ratio) -->
         <section class="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-neutral-800 bg-neutral-950 group">
@@ -277,12 +294,12 @@
             <div class="absolute inset-0 pointer-events-none z-[5]" style="background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%);"></div>
 
             <!-- Indikator Dots -->
-            <div class="absolute bottom-2.5 inset-x-0 flex justify-center items-center gap-1.5 z-10">
-                <span class="slider-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300 cursor-pointer" onclick="currentSlide(0)"></span>
-                <span class="slider-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300 cursor-pointer" onclick="currentSlide(1)"></span>
-                <span class="slider-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300 cursor-pointer" onclick="currentSlide(2)"></span>
-                <span class="slider-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300 cursor-pointer" onclick="currentSlide(3)"></span>
-                <span class="slider-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300 cursor-pointer" onclick="currentSlide(4)"></span>
+            <div class="absolute bottom-0 inset-x-0 flex justify-center items-center gap-0.5 z-10" aria-label="Pilih slide">
+                <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(0)" aria-label="Slide 1"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
+                <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(1)" aria-label="Slide 2"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
+                <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(2)" aria-label="Slide 3"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
+                <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(3)" aria-label="Slide 4"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
+                <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(4)" aria-label="Slide 5"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
             </div>
         </section>
 
@@ -324,7 +341,7 @@
             </div>
 
             <!-- Showtimes: Dual Clocks (Clickable to open Time & Alarm Calc) -->
-            <div onclick="triggerHaptic(); openTimeCalcModal()" class="cursor-pointer group/clock" title="Klik untuk Buka Kalkulator Waktu & Alarm">
+            <button type="button" onclick="triggerHaptic(); openTimeCalcModal()" class="w-full text-left group/clock rounded-xl" aria-label="Buka konverter waktu Zald dan Micel">
                 <div class="text-center font-display text-sm tracking-[0.2em] text-slate-500 uppercase mb-2">Showtimes</div>
                 <div class="grid grid-cols-2 gap-2.5">
                     <!-- Zald Clock -->
@@ -357,7 +374,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </button>
 
             <!-- Film Strip Divider + Infinite Movie Quotes Marquee -->
             <div class="film-strip -mx-3.5"></div>
@@ -405,26 +422,27 @@
             <div class="flex items-center gap-2.5">
                 <div class="relative flex-grow">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                    <label for="search-input" class="sr-only">Cari judul film atau bulan</label>
                     <input type="text" id="search-input" oninput="onSearchInput(); toggleClearSearchBtn()" placeholder="Cari judul film atau bulan..." 
-                        class="w-full pl-9 pr-8 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-xs sm:text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition shadow-inner">
-                    <button id="clear-search-btn" onclick="clearSearchInput()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white text-xs hidden">
+                        class="w-full min-h-11 pl-9 pr-12 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-xs sm:text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition shadow-inner">
+                    <button type="button" id="clear-search-btn" onclick="clearSearchInput()" class="touch-target absolute right-0 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white text-xs hidden" aria-label="Hapus pencarian">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
                 <span id="movie-count-badge" class="flex-shrink-0 px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-neutral-800 font-display text-sm text-amber-400 tracking-[0.15em] uppercase">0 Film</span>
                 <button onclick="triggerHaptic(); refreshData(this)" title="Muat ulang data"
-                    class="flex-shrink-0 w-10 rounded-xl bg-neutral-950 border border-neutral-800 hover:border-amber-400/60 text-slate-400 hover:text-amber-400 flex items-center justify-center transition tap-scale shadow-sm">
+                    class="touch-target flex-shrink-0 rounded-xl bg-neutral-950 border border-neutral-800 hover:border-amber-400/60 text-slate-400 hover:text-amber-400 flex items-center justify-center transition tap-scale shadow-sm">
                     <i id="refresh-icon" class="fa-solid fa-rotate-right text-xs"></i>
                 </button>
             </div>
 
             <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
-                <button onclick="triggerHaptic(); setViewerFilter('all', this)" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-400 text-black tap-scale flex-shrink-0 transition shadow-sm">Semua</button>
-                <button onclick="triggerHaptic(); setViewerFilter('both', this)" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-slate-300 tap-scale flex-shrink-0 transition">Nonton Bareng</button>
-                <button onclick="triggerHaptic(); setViewerFilter('zald', this)" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-slate-300 tap-scale flex-shrink-0 transition">Zald Picks</button>
-                <button onclick="triggerHaptic(); setViewerFilter('micel', this)" class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-slate-300 tap-scale flex-shrink-0 transition">Micel Picks</button>
+                <button onclick="triggerHaptic(); setViewerFilter('all', this)" class="filter-btn touch-target px-3.5 rounded-xl text-xs font-semibold bg-amber-400 text-black tap-scale flex-shrink-0 transition shadow-sm">Semua</button>
+                <button onclick="triggerHaptic(); setViewerFilter('both', this)" class="filter-btn touch-target px-3.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-slate-300 tap-scale flex-shrink-0 transition">Nonton Bareng</button>
+                <button onclick="triggerHaptic(); setViewerFilter('zald', this)" class="filter-btn touch-target px-3.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-slate-300 tap-scale flex-shrink-0 transition">Zald Picks</button>
+                <button onclick="triggerHaptic(); setViewerFilter('micel', this)" class="filter-btn touch-target px-3.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-slate-300 tap-scale flex-shrink-0 transition">Micel Picks</button>
                 <div class="h-4 w-[1px] bg-neutral-800 mx-1 flex-shrink-0"></div>
-                <button onclick="triggerHaptic(); toggleTopRatedFilter(this)" id="top-rated-btn" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-amber-400 tap-scale flex-shrink-0 transition flex items-center gap-1.5 shadow-sm">
+                <button onclick="triggerHaptic(); toggleTopRatedFilter(this)" id="top-rated-btn" class="touch-target px-3.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-amber-400 tap-scale flex-shrink-0 transition flex items-center gap-1.5 shadow-sm">
                     <i class="fa-solid fa-star text-[10px]"></i> Top 9+
                 </button>
             </div>
@@ -440,6 +458,17 @@
             </div>
 
             <div id="months-carousel" class="space-y-5"></div>
+
+            <div id="error-state" class="hidden py-12 text-center space-y-3 animate-fadeIn" role="alert">
+                <div class="w-14 h-14 rounded-2xl bg-red-950/30 border border-red-500/30 flex items-center justify-center mx-auto text-red-400 text-xl shadow-lg">
+                    <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+                </div>
+                <div class="space-y-1">
+                    <p class="text-sm text-slate-200 font-semibold">Data film gagal dimuat</p>
+                    <p class="text-xs text-slate-400">Periksa koneksi lalu coba lagi.</p>
+                </div>
+                <button type="button" onclick="fetchSupabaseData()" class="touch-target px-4 bg-neutral-900 hover:bg-neutral-800 text-amber-400 text-xs font-bold rounded-xl tap-scale shadow-md transition">Coba lagi</button>
+            </div>
 
             <div id="empty-state" class="hidden py-12 text-center space-y-3 animate-fadeIn">
                 <div class="w-14 h-14 rounded-2xl bg-neutral-950 border border-neutral-800 flex items-center justify-center mx-auto text-slate-500 text-xl shadow-lg">
@@ -550,11 +579,11 @@
 
             <div class="flex items-center justify-center gap-2.5 pt-1">
                 <a href="https://instagram.com/zaldnielsen" target="_blank" rel="noopener noreferrer"
-                    class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-neutral-950 border border-neutral-800 hover:border-pink-500/50 hover:bg-neutral-900 text-xs font-semibold text-slate-300 hover:text-white transition tap-scale shadow-sm">
+                    class="touch-target inline-flex items-center gap-2 px-4 rounded-xl bg-neutral-950 border border-neutral-800 hover:border-pink-500/50 hover:bg-neutral-900 text-xs font-semibold text-slate-300 hover:text-white transition tap-scale shadow-sm">
                     <i class="fa-brands fa-instagram text-pink-400 text-sm"></i> @zaldnielsen
                 </a>
                 <a href="https://github.com/intermission88/bubi-popcorn" target="_blank" rel="noopener noreferrer"
-                    class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-neutral-950 border border-neutral-800 hover:border-amber-400/50 hover:bg-neutral-900 text-slate-400 hover:text-amber-400 transition tap-scale shadow-sm" title="Source Code">
+                    class="touch-target inline-flex items-center justify-center rounded-xl bg-neutral-950 border border-neutral-800 hover:border-amber-400/50 hover:bg-neutral-900 text-slate-400 hover:text-amber-400 transition tap-scale shadow-sm" title="Source Code">
                     <i class="fa-brands fa-github text-sm"></i>
                 </a>
             </div>
@@ -579,7 +608,7 @@
         </button>
         <!-- FAB Tambah Film (Only if admin unlocked) -->
         <div id="fab-container" class="hidden">
-            <button onclick="triggerHaptic(); openAddModal()" class="w-14 h-14 rounded-full popcorn-gradient flex items-center justify-center text-black shadow-2xl border-2 border-black tap-scale transition hover:rotate-90 duration-300">
+            <button type="button" onclick="triggerHaptic(); openAddModal()" class="w-14 h-14 rounded-full popcorn-gradient flex items-center justify-center text-black shadow-2xl border-2 border-black tap-scale transition hover:rotate-90 duration-300" aria-label="Tambah ulasan film">
                 <i class="fa-solid fa-plus text-xl"></i>
             </button>
         </div>
@@ -593,14 +622,14 @@
     </div>
 
     <!-- Modal Konverter Waktu Ultra Clean -->
-    <div id="time-calc-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
+    <div id="time-calc-modal" role="dialog" aria-modal="true" aria-labelledby="time-calc-title" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
         <div id="time-calc-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-xs rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col transform transition-all pb-[env(safe-area-inset-bottom)]">
             <!-- Header Modal Clean -->
             <div class="px-4 py-3 border-b border-neutral-900 flex items-center justify-between bg-neutral-950">
-                <h3 class="font-bold text-xs text-slate-200 font-display flex items-center gap-1.5">
+                <h3 id="time-calc-title" class="font-bold text-xs text-slate-200 font-display flex items-center gap-1.5">
                     <i class="fa-solid fa-clock text-amber-400"></i> Konverter Waktu
                 </h3>
-                <button type="button" onclick="triggerHaptic(); closeTimeCalcModal()" class="text-slate-400 hover:text-white p-1 tap-scale rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center w-7 h-7">
+                <button type="button" onclick="triggerHaptic(); closeTimeCalcModal()" class="touch-target text-slate-400 hover:text-white tap-scale rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center" aria-label="Tutup konverter waktu">
                     <i class="fa-solid fa-xmark text-xs"></i>
                 </button>
             </div>
@@ -634,19 +663,20 @@
     </div>
 
     <!-- Modal Masukkan Password -->
-    <div id="password-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center hidden">
+    <div id="password-modal" role="dialog" aria-modal="true" aria-labelledby="password-modal-title" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center hidden">
         <div class="bg-neutral-950 border border-neutral-800 w-11/12 max-w-xs rounded-2xl shadow-2xl overflow-hidden p-5 space-y-4 animate-popIn">
             <div class="text-center space-y-1.5">
                 <div class="w-12 h-12 rounded-2xl bg-amber-400/10 border border-amber-400/20 text-amber-400 flex items-center justify-center mx-auto text-lg mb-2 shadow-inner">
                     <i class="fa-solid fa-lock" id="modal-lock-icon"></i>
                 </div>
-                <h3 class="font-bold text-sm text-slate-100 font-display">Akses Admin Terkunci</h3>
+                <h3 id="password-modal-title" class="font-bold text-sm text-slate-100 font-display">Akses Admin Terkunci</h3>
                 <p class="text-[11px] text-slate-400 leading-relaxed">Masukkan password untuk mengizinkan tambah/edit film.</p>
             </div>
 
             <form onsubmit="handlePasswordSubmit(event)" class="space-y-3">
                 <div>
-                    <input type="password" id="admin-password-input" required placeholder="Masukkan password..." 
+                    <label for="admin-password-input" class="sr-only">Password admin</label>
+                    <input type="password" id="admin-password-input" autocomplete="current-password" required placeholder="Masukkan password..." 
                         class="w-full px-3.5 py-2.5 bg-black border border-neutral-800 rounded-xl text-xs text-center text-slate-200 focus:outline-none focus:border-amber-400 transition shadow-inner">
                 </div>
                 <div class="flex items-center gap-2 pt-1">
@@ -658,14 +688,14 @@
     </div>
 
     <!-- Mobile Bottom Sheet / Modal Form -->
-    <div id="add-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
+    <div id="add-modal" role="dialog" aria-modal="true" aria-labelledby="modal-form-title" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
         <div id="add-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[85vh] sm:h-auto sm:max-h-[85vh] transform transition-all pb-[env(safe-area-inset-bottom)]">
             <div class="px-5 py-3.5 border-b border-neutral-900 flex items-center justify-between flex-shrink-0 bg-neutral-950">
                 <div class="flex items-center gap-2.5">
                     <div class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></div>
                     <h3 id="modal-form-title" class="font-bold text-sm text-slate-100 font-display">Tambah Ulasan Baru</h3>
                 </div>
-                <button type="button" onclick="triggerHaptic(); requestCloseAddModal()" class="text-slate-400 hover:text-white p-1.5 tap-scale rounded-xl bg-black border border-neutral-800 flex items-center justify-center w-8 h-8">
+                <button type="button" onclick="triggerHaptic(); requestCloseAddModal()" class="touch-target text-slate-400 hover:text-white tap-scale rounded-xl bg-black border border-neutral-800 flex items-center justify-center" aria-label="Tutup formulir ulasan">
                     <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
             </div>
@@ -748,7 +778,8 @@
                             </div>
                             <div class="flex items-center gap-1.5">
                                 <span id="err-hint-aku" class="hidden text-[10px] font-bold text-red-400 animate-pulse">Max 10!</span>
-                                <input type="number" step="0.1" name="rating_aku" id="form-rating-aku" placeholder="0 - 10" 
+                                <label for="form-rating-aku" class="sr-only">Rating Zald dari 0 sampai 10</label>
+                                <input type="number" step="0.1" name="rating_aku" id="form-rating-aku" aria-describedby="err-hint-aku" placeholder="0 - 10" 
                                     oninput="validateRatingInput(this, 'err-hint-aku', 'sky')"
                                     onblur="clampRatingOnBlur(this, 'err-hint-aku', 'sky')"
                                     class="w-24 px-3 py-1.5 bg-neutral-950 border border-neutral-800 rounded-xl text-center text-xs font-bold text-sky-400 placeholder-slate-600 focus:outline-none focus:border-sky-400 transition shadow-inner">
@@ -756,11 +787,12 @@
                         </div>
                         <div class="flex items-center gap-1.5 pt-1">
                             <span class="text-[10px] text-slate-500">Quick:</span>
-                            <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 7)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-sky-400 font-bold tap-scale">7</button>
-                            <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 8)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-sky-400 font-bold tap-scale">8</button>
-                            <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 8.5)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-sky-400 font-bold tap-scale">8.5</button>
-                            <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 9)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-sky-400 font-bold tap-scale">9</button>
+                            <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 7)" class="touch-target min-w-11 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-[11px] text-sky-400 font-bold tap-scale">7</button>
+                            <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 8)" class="touch-target min-w-11 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-[11px] text-sky-400 font-bold tap-scale">8</button>
+                            <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 8.5)" class="touch-target min-w-11 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-[11px] text-sky-400 font-bold tap-scale">8.5</button>
+                            <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 9)" class="touch-target min-w-11 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-[11px] text-sky-400 font-bold tap-scale">9</button>
                         </div>
+                        <label for="form-review-aku" class="sr-only">Ulasan Zald</label>
                         <textarea name="review_aku" id="form-review-aku" rows="4" placeholder="Tulis ulasan mendalam dari Zald di sini..." 
                             class="w-full p-3 bg-neutral-950 border border-neutral-800 rounded-xl text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-sky-400 transition shadow-inner leading-relaxed"></textarea>
                     </div>
@@ -774,7 +806,8 @@
                             </div>
                             <div class="flex items-center gap-1.5">
                                 <span id="err-hint-dia" class="hidden text-[10px] font-bold text-red-400 animate-pulse">Max 10!</span>
-                                <input type="number" step="0.1" name="rating_dia" id="form-rating-dia" placeholder="0 - 10" 
+                                <label for="form-rating-dia" class="sr-only">Rating Micel dari 0 sampai 10</label>
+                                <input type="number" step="0.1" name="rating_dia" id="form-rating-dia" aria-describedby="err-hint-dia" placeholder="0 - 10" 
                                     oninput="validateRatingInput(this, 'err-hint-dia', 'pink')"
                                     onblur="clampRatingOnBlur(this, 'err-hint-dia', 'pink')"
                                     class="w-24 px-3 py-1.5 bg-neutral-950 border border-neutral-800 rounded-xl text-center text-xs font-bold text-pink-400 placeholder-slate-600 focus:outline-none focus:border-pink-400 transition shadow-inner">
@@ -782,11 +815,12 @@
                         </div>
                         <div class="flex items-center gap-1.5 pt-1">
                             <span class="text-[10px] text-slate-500">Quick:</span>
-                            <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 7)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-pink-400 font-bold tap-scale">7</button>
-                            <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 8)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-pink-400 font-bold tap-scale">8</button>
-                            <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 8.5)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-pink-400 font-bold tap-scale">8.5</button>
-                            <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 9)" class="px-2 py-0.5 rounded bg-neutral-900 hover:bg-neutral-800 text-[10px] text-pink-400 font-bold tap-scale">9</button>
+                            <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 7)" class="touch-target min-w-11 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-[11px] text-pink-400 font-bold tap-scale">7</button>
+                            <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 8)" class="touch-target min-w-11 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-[11px] text-pink-400 font-bold tap-scale">8</button>
+                            <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 8.5)" class="touch-target min-w-11 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-[11px] text-pink-400 font-bold tap-scale">8.5</button>
+                            <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 9)" class="touch-target min-w-11 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-[11px] text-pink-400 font-bold tap-scale">9</button>
                         </div>
+                        <label for="form-review-dia" class="sr-only">Ulasan Micel</label>
                         <textarea name="review_dia" id="form-review-dia" rows="4" placeholder="Tulis ulasan mendalam dari Micel di sini..." 
                             class="w-full p-3 bg-neutral-950 border border-neutral-800 rounded-xl text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-pink-400 transition shadow-inner leading-relaxed"></textarea>
                     </div>
@@ -803,12 +837,12 @@
     </div>
 
     <!-- Mobile Detail Modal -->
-    <div id="detail-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
+    <div id="detail-modal" role="dialog" aria-modal="true" aria-labelledby="detail-title" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
         <div id="detail-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col transform transition-all pb-[env(safe-area-inset-bottom)]">
             <div class="relative h-48 bg-black overflow-hidden flex-shrink-0">
                 <img id="detail-banner-img" src="" alt="Banner" class="w-full h-full object-cover opacity-40 blur-sm scale-105" onerror="posterFallback(this)">
                 <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/60 to-transparent"></div>
-                <button onclick="triggerHaptic(); closeDetailModal()" class="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-black/80 border border-neutral-800 text-slate-300 flex items-center justify-center tap-scale">
+                <button type="button" onclick="triggerHaptic(); closeDetailModal()" class="absolute top-3 right-3 z-10 touch-target rounded-full bg-black/80 border border-neutral-800 text-slate-300 flex items-center justify-center tap-scale" aria-label="Tutup detail film">
                     <i class="fa-solid fa-xmark text-xs"></i>
                 </button>
 
@@ -816,7 +850,7 @@
                     <i class="fa-regular fa-copy text-[10px]"></i> Salin Ringkasan
                 </button>
 
-                <button onclick="triggerHaptic(); shareMovieDetail()" class="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-black/80 border border-neutral-800 text-amber-300 text-[11px] flex items-center justify-center tap-scale shadow hover:border-amber-400/60 transition" title="Bagikan Film">
+                <button type="button" onclick="triggerHaptic(); shareMovieDetail()" class="absolute top-3 right-16 z-10 touch-target rounded-full bg-black/80 border border-neutral-800 text-amber-300 text-[11px] flex items-center justify-center tap-scale shadow hover:border-amber-400/60 transition" aria-label="Bagikan film">
                     <i class="fa-solid fa-share-nodes"></i>
                 </button>
 
@@ -885,7 +919,7 @@
     </div>
 
     <!-- Toast Container Mobile -->
-    <div id="toast-container" class="fixed top-16 inset-x-0 z-50 flex flex-col items-center gap-2 pointer-events-none px-4"></div>
+    <div id="toast-container" role="status" aria-live="polite" aria-atomic="true" class="fixed top-16 inset-x-0 z-50 flex flex-col items-center gap-2 pointer-events-none px-4"></div>
 
     <script>
         const SUPABASE_URL = 'https://fhpyvnbsreoaiaeqfkvk.supabase.co';
@@ -906,8 +940,45 @@
         let currentViewerFilter = 'all';
         let isTopRatedActive = false;
         let searchDebounceTimer = null;
+        let hasFetchError = false;
         let lastScrollPosition = 0;
-        let lastClickedMovieId = null; 
+        let lastClickedMovieId = null;
+        let activeModal = null;
+        let modalTrigger = null;
+
+        function activateModal(modal, initialFocus) {
+            modalTrigger = document.activeElement;
+            activeModal = modal;
+            document.body.classList.add('modal-lock');
+            requestAnimationFrame(() => (initialFocus || modal.querySelector('button, input, select, textarea, [href]'))?.focus());
+        }
+
+        function deactivateModal(modal) {
+            if (activeModal !== modal) return;
+            activeModal = null;
+            document.body.classList.remove('modal-lock');
+            modalTrigger?.focus();
+            modalTrigger = null;
+        }
+
+        document.addEventListener('keydown', event => {
+            if (!activeModal) return;
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                if (activeModal.id === 'time-calc-modal') closeTimeCalcModal();
+                else if (activeModal.id === 'password-modal') closePasswordModal();
+                else if (activeModal.id === 'add-modal') requestCloseAddModal();
+                else if (activeModal.id === 'detail-modal') closeDetailModal();
+                return;
+            }
+            if (event.key !== 'Tab') return;
+            const focusable = [...activeModal.querySelectorAll('button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]')].filter(el => el.offsetParent !== null);
+            if (!focusable.length) return;
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+            else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+        });
 
         // --- HERO SLIDER LOGIC ---
         let currentSlideIndex = 0;
@@ -922,11 +993,10 @@
             slider.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
 
             dots.forEach((dot, idx) => {
-                if (idx === currentSlideIndex) {
-                    dot.className = "slider-dot w-5 h-2 rounded-full bg-amber-400 transition-all duration-300 cursor-pointer";
-                } else {
-                    dot.className = "slider-dot w-2 h-2 rounded-full bg-white/50 transition-all duration-300 cursor-pointer";
-                }
+                const indicator = dot.firstElementChild;
+                const isActive = idx === currentSlideIndex;
+                dot.setAttribute('aria-current', isActive ? 'true' : 'false');
+                indicator.className = `${isActive ? 'w-5 bg-amber-400' : 'w-2 bg-white/50'} h-2 rounded-full transition-all duration-300`;
             });
         }
 
@@ -942,6 +1012,7 @@
         }
 
         function startSlideTimer() {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
             slideInterval = setInterval(nextSlide, 3500);
         }
 
@@ -1006,14 +1077,20 @@
 
             if (isAdminUnlocked) {
                 if (lockIcon) lockIcon.className = "fa-solid fa-lock-open text-xs text-amber-400";
-                if (lockBtn) lockBtn.className = "w-9 h-9 rounded-xl bg-amber-400/10 border border-amber-500/40 text-amber-400 flex items-center justify-center transition tap-scale shadow-sm";
+                if (lockBtn) {
+                    lockBtn.className = "touch-target rounded-xl bg-amber-400/10 border border-amber-500/40 text-amber-400 flex items-center justify-center transition tap-scale shadow-sm";
+                    lockBtn.setAttribute('aria-label', 'Kunci akses admin');
+                }
                 if (fabContainer) fabContainer.classList.remove('hidden');
                 if (adminActions) adminActions.classList.remove('hidden');
                 if (publicActions) publicActions.classList.add('hidden');
                 if (adminAboutSection) adminAboutSection.classList.remove('hidden');
             } else {
                 if (lockIcon) lockIcon.className = "fa-solid fa-lock text-xs text-slate-400";
-                if (lockBtn) lockBtn.className = "w-9 h-9 rounded-xl bg-neutral-950 border border-neutral-800 text-slate-400 hover:text-amber-400 flex items-center justify-center transition tap-scale shadow-sm";
+                if (lockBtn) {
+                    lockBtn.className = "touch-target rounded-xl bg-neutral-950 border border-neutral-800 text-slate-400 hover:text-amber-400 flex items-center justify-center transition tap-scale shadow-sm";
+                    lockBtn.setAttribute('aria-label', 'Buka akses admin');
+                }
                 if (fabContainer) fabContainer.classList.add('hidden');
                 if (adminActions) adminActions.classList.add('hidden');
                 if (publicActions) publicActions.classList.remove('hidden');
@@ -1039,11 +1116,13 @@
             const passInput = document.getElementById('admin-password-input');
             passInput.value = '';
             modal.classList.remove('hidden');
-            setTimeout(() => passInput.focus(), 100);
+            activateModal(modal, passInput);
         }
 
         function closePasswordModal() {
-            document.getElementById('password-modal').classList.add('hidden');
+            const modal = document.getElementById('password-modal');
+            modal.classList.add('hidden');
+            deactivateModal(modal);
         }
 
         function handlePasswordSubmit(event) {
@@ -1195,18 +1274,18 @@
             currentViewerFilter = filterType;
             localStorage.setItem('bubi_viewer_filter', filterType);
             document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.className = "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-slate-300 tap-scale flex-shrink-0 transition";
+                btn.className = "filter-btn touch-target px-3.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-slate-300 tap-scale flex-shrink-0 transition";
             });
-            btnEl.className = "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-400 text-black tap-scale flex-shrink-0 transition shadow-sm";
+            btnEl.className = "filter-btn touch-target px-3.5 rounded-xl text-xs font-semibold bg-amber-400 text-black tap-scale flex-shrink-0 transition shadow-sm";
             processFilterAndRender();
         }
 
         function toggleTopRatedFilter(btnEl) {
             isTopRatedActive = !isTopRatedActive;
             if (isTopRatedActive) {
-                btnEl.className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-400 text-black tap-scale flex-shrink-0 transition flex items-center gap-1.5 shadow-sm";
+                btnEl.className = "touch-target px-3.5 rounded-xl text-xs font-semibold bg-amber-400 text-black tap-scale flex-shrink-0 transition flex items-center gap-1.5 shadow-sm";
             } else {
-                btnEl.className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-amber-400 tap-scale flex-shrink-0 transition flex items-center gap-1.5 shadow-sm";
+                btnEl.className = "touch-target px-3.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-amber-400 tap-scale flex-shrink-0 transition flex items-center gap-1.5 shadow-sm";
             }
             processFilterAndRender();
         }
@@ -1346,6 +1425,8 @@
 
         async function fetchSupabaseData() {
             try {
+                hasFetchError = false;
+                document.getElementById('error-state')?.classList.add('hidden');
                 if (moviesData.length === 0) renderSkeletonGrid();
                 let { data, error } = await supabaseClient
                     .from(TABLE_NAME)
@@ -1354,6 +1435,7 @@
                 if (error) throw error;
                 if (Array.isArray(data)) moviesData = data;
             } catch (err) {
+                hasFetchError = true;
                 console.warn("Supabase Fetch Failed:", err);
             } finally {
                 processFilterAndRender();
@@ -1406,12 +1488,20 @@
             card.id = `movie-card-${movie.id}`;
             card.style.animationDelay = `${(index % 8) * 0.05}s`;
             card.className = (isCertified 
-                ? "rounded-2xl overflow-hidden flex flex-col certified-card animate-goldGlow tap-scale cursor-pointer relative shadow-xl"
-                : "glass-card rounded-2xl overflow-hidden flex flex-col border border-neutral-800 tap-scale cursor-pointer shadow-lg hover:border-neutral-700 tilt-card") + " animate-popIn";
-            
+                ? "movie-card rounded-2xl overflow-hidden flex flex-col certified-card animate-goldGlow tap-scale cursor-pointer relative shadow-xl"
+                : "movie-card glass-card rounded-2xl overflow-hidden flex flex-col border border-neutral-800 tap-scale cursor-pointer shadow-lg hover:border-neutral-700 tilt-card") + " animate-popIn";
+            card.setAttribute('role', 'button');
+            card.setAttribute('tabindex', '0');
+            card.setAttribute('aria-label', `Buka detail ${movie.judul || 'film tanpa judul'}`);
             card.onclick = () => {
                 triggerHaptic();
                 openDetailModal(movie.id);
+            };
+            card.onkeydown = event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    card.click();
+                }
             };
 
             let watcherBadgeHTML = '';
@@ -1489,10 +1579,15 @@
         function renderMonthsCarousel() {
             const carousel = document.getElementById('months-carousel');
             const emptyState = document.getElementById('empty-state');
+            const errorState = document.getElementById('error-state');
             if (!carousel) return;
 
             carousel.innerHTML = '';
-
+            errorState.classList.toggle('hidden', !hasFetchError);
+            if (hasFetchError) {
+                emptyState.classList.add('hidden');
+                return;
+            }
             if (filteredMoviesCache.length === 0) {
                 emptyState.classList.remove('hidden');
                 return;
@@ -1530,7 +1625,7 @@
                 `;
 
                 const track = document.createElement('div');
-                track.className = "flex gap-3.5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2 -mx-4 px-4";
+                track.className = "flex gap-3.5 overflow-x-auto lg:overflow-visible lg:flex-wrap snap-x snap-mandatory lg:snap-none no-scrollbar pb-2 -mx-4 px-4";
                 monthMovies.forEach((movie, i) => {
                     const card = createMovieCard(movie, i);
                     card.className = card.className.replace("overflow-hidden flex flex-col", "overflow-hidden flex flex-col w-36 flex-shrink-0 snap-start");
@@ -1551,14 +1646,14 @@
             
             const topRatedBtn = document.getElementById('top-rated-btn');
             if (topRatedBtn) {
-                topRatedBtn.className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-amber-400 tap-scale flex-shrink-0 transition flex items-center gap-1.5 shadow-sm";
+                topRatedBtn.className = "touch-target px-3.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-amber-400 tap-scale flex-shrink-0 transition flex items-center gap-1.5 shadow-sm";
             }
 
             document.querySelectorAll('.filter-btn').forEach((btn, idx) => {
                 if (idx === 0) {
-                    btn.className = "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-400 text-black tap-scale flex-shrink-0 transition shadow-sm";
+                    btn.className = "filter-btn touch-target px-3.5 rounded-xl text-xs font-semibold bg-amber-400 text-black tap-scale flex-shrink-0 transition shadow-sm";
                 } else {
-                    btn.className = "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-slate-300 tap-scale flex-shrink-0 transition";
+                    btn.className = "filter-btn touch-target px-3.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-slate-300 tap-scale flex-shrink-0 transition";
                 }
             });
             processFilterAndRender();
@@ -1598,13 +1693,8 @@
             const modal = document.getElementById('add-modal');
             const content = document.getElementById('add-modal-content');
             modal.classList.remove('hidden');
-            document.body.classList.add('modal-lock');
             content.classList.add('animate-slideUp');
-
-            setTimeout(() => {
-                const titleInput = document.getElementById('form-judul');
-                if (titleInput) titleInput.focus();
-            }, 100);
+            activateModal(modal, document.getElementById('form-judul'));
         }
 
         function requestCloseAddModal() {
@@ -1622,7 +1712,7 @@
             const modal = document.getElementById('add-modal');
             modal.classList.add('hidden');
             document.getElementById('add-modal-content').classList.remove('animate-slideUp');
-            document.body.classList.remove('modal-lock');
+            deactivateModal(modal);
             
             window.scrollTo({
                 top: lastScrollPosition,
@@ -1698,15 +1788,15 @@
             const modal = document.getElementById('detail-modal');
             const content = document.getElementById('detail-modal-content');
             modal.classList.remove('hidden');
-            document.body.classList.add('modal-lock');
             content.classList.add('animate-slideUp');
+            activateModal(modal, modal.querySelector('[aria-label="Tutup detail film"]'));
         }
 
         function closeDetailModal() {
             const modal = document.getElementById('detail-modal');
             modal.classList.add('hidden');
             document.getElementById('detail-modal-content').classList.remove('animate-slideUp');
-            document.body.classList.remove('modal-lock');
+            deactivateModal(modal);
             
             if (lastClickedMovieId) {
                 setTimeout(() => {
@@ -1902,36 +1992,12 @@
             const modal = document.getElementById('add-modal');
             const content = document.getElementById('add-modal-content');
             modal.classList.remove('hidden');
-            document.body.classList.add('modal-lock');
             content.classList.add('animate-slideUp');
+            activateModal(modal, document.getElementById('form-judul'));
         }
 
         function confirmAction(message) {
-            return new Promise((resolve) => {
-                const modal = document.createElement('div');
-                modal.className = "fixed inset-0 z-[60] bg-black/90 backdrop-blur-md flex items-center justify-center px-6 animate-fadeIn";
-                modal.innerHTML = `
-                    <div class="bg-neutral-950 border border-neutral-800 rounded-2xl shadow-2xl p-5 w-full max-w-xs space-y-4 animate-popIn">
-                        <div class="text-center space-y-1.5">
-                            <div class="w-11 h-11 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 flex items-center justify-center mx-auto text-base">
-                                <i class="fa-solid fa-circle-exclamation"></i>
-                            </div>
-                            <p class="text-xs text-slate-200 font-semibold leading-relaxed">${message}</p>
-                        </div>
-                        <div class="flex items-center gap-2.5">
-                            <button type="button" data-result="cancel" class="w-1/2 py-2.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-slate-300 tap-scale transition">Batal</button>
-                            <button type="button" data-result="ok" class="w-1/2 py-2.5 rounded-xl bg-red-500/90 hover:bg-red-500 text-xs font-bold text-white tap-scale transition">Ya, Lanjutkan</button>
-                        </div>
-                    </div>
-                `;
-                modal.querySelectorAll('button').forEach(btn => {
-                    btn.onclick = () => {
-                        modal.remove();
-                        resolve(btn.dataset.result === 'ok');
-                    };
-                });
-                document.body.appendChild(modal);
-            });
+            return Promise.resolve(window.confirm(message));
         }
 
         async function deleteCurrentMovie() {
@@ -1991,9 +2057,8 @@
             if (!modal) return;
             
             modal.classList.remove('hidden');
-            document.body.classList.add('modal-lock');
             content.classList.add('animate-slideUp');
-
+            activateModal(modal, document.getElementById('conv-time-input'));
             updateConvertedTime();
         }
 
@@ -2002,7 +2067,7 @@
             if (modal) modal.classList.add('hidden');
             const content = document.getElementById('time-calc-modal-content');
             if (content) content.classList.remove('animate-slideUp');
-            document.body.classList.remove('modal-lock');
+            deactivateModal(modal);
         }
 
         function toggleConverterDirection() {

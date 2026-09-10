@@ -1,0 +1,2 @@
+- Prefers website audits to use Brave in headless mode or via CDP, without opening browser GUI or taking control of the mouse. Confidence: 1.0
+- Prefers faster coding workflows that skip unnecessary work and prioritize high-impact changes. Confidence: 1.0
