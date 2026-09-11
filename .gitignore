@@ -14,3 +14,6 @@ desktop.ini
 # Dependency & log
 node_modules/
 *.log
+
+# Folder sampah yang dibuat otomatis oleh sistem taste (nama kepotong dari catatan)
+.commandcode/taste/--*/
