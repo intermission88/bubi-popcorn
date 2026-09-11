@@ -187,28 +187,6 @@
             animation-play-state: paused;
         }
 
-        /* LIVE "Still Counting" Effects */
-        .live-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 9999px;
-            background: #ef4444;
-            box-shadow: 0 0 6px rgba(239, 68, 68, 0.9);
-            animation: liveBlink 1.2s ease-in-out infinite;
-        }
-        @keyframes liveBlink {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.25; transform: scale(0.75); }
-        }
-        .live-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 1px 6px;
-            border-radius: 9999px;
-            background: rgba(239, 68, 68, 0.12);
-            border: 1px solid rgba(239, 68, 68, 0.35);
-        }
         .counting-glow {
             animation: countingGlow 2.4s ease-in-out infinite;
         }
@@ -337,32 +315,11 @@
                 <div class="text-[11px] text-slate-400 mt-1.5 tracking-[0.25em] uppercase">A Zald &amp; Micel Production</div>
             </div>
 
-            <!-- Ticket: Relationship Days (Still Counting - LIVE) -->
-            <div class="ticket-card projector-glow flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-dashed border-amber-500/40 px-4 py-3.5 shadow-inner">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-lg bg-amber-400/10 border border-amber-500/30 flex items-center justify-center text-amber-400 flex-shrink-0">
-                        <i class="fa-solid fa-heart animate-pulse text-xs"></i>
-                    </div>
-                    <div>
-                        <div class="text-[11px] text-slate-400 font-bold uppercase tracking-[0.2em] flex items-center gap-1.5">
-                            In Theaters Since
-                            <span class="live-badge text-[9px] font-black text-red-400 tracking-widest font-display">
-                                <span class="live-dot"></span> Live
-                            </span>
-                        </div>
-                        <div class="text-[11px] font-semibold text-slate-300 mt-1">5 April 2025 • <span id="relationship-detail-time">Memuat waktu...</span></div>
-                        <div class="text-[11px] font-mono text-amber-300/90 flex items-center gap-1 tabular-nums mt-0.5">
-                            <i class="fa-solid fa-hourglass-half text-[9px]"></i>
-                            <span id="relationship-live-time">--:--:--</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="w-full sm:w-auto">
-                    <div class="flex items-baseline justify-center sm:justify-end gap-2">
-                        <span id="relationship-days" class="font-anton text-5xl sm:text-6xl gold-text counting-glow leading-none">0</span>
-                        <span class="text-[11px] font-bold text-slate-300 uppercase tracking-[0.3em]">Hari Bersama</span>
-                    </div>
-                </div>
+            <!-- Ticket: total hari bersama -->
+            <div class="ticket-card projector-glow flex flex-col items-center gap-1.5 rounded-xl border border-dashed border-amber-500/40 px-4 py-4 shadow-inner">
+                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.3em]">Hari Bersama</div>
+                <div id="relationship-days" class="font-anton text-6xl gold-text counting-glow leading-none">0</div>
+                <div class="text-[11px] font-semibold text-slate-400">Sejak 5 April 2025</div>
             </div>
 
             <!-- Showtimes: Dual Clocks (Clickable to open Time & Alarm Calc) -->
@@ -1226,48 +1183,15 @@
         }
         setInterval(checkPing, 30000);
 
+        let relationshipDaysShown = null;
+
         function updateRelationshipCounter() {
             const startDate = new Date('2025-04-05T00:00:00');
-            const now = new Date();
-            
-            const diffTime = now - startDate;
-            if (diffTime < 0) {
-                document.getElementById('relationship-days').innerText = "0";
-                document.getElementById('relationship-detail-time').innerText = "Menuju 5 April 2025";
-                return;
-            }
-
-            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-            
-            let years = now.getFullYear() - startDate.getFullYear();
-            let months = now.getMonth() - startDate.getMonth();
-            let days = now.getDate() - startDate.getDate();
-
-            if (days < 0) {
-                months--;
-                const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
-                days += prevMonth.getDate();
-            }
-            if (months < 0) {
-                years--;
-                months += 12;
-            }
-
-            document.getElementById('relationship-days').innerText = diffDays.toLocaleString('id-ID');
-
-            const totalSeconds = Math.floor(diffTime / 1000);
-            const hh = String(Math.floor(totalSeconds / 3600) % 24).padStart(2, '0');
-            const mm = String(Math.floor(totalSeconds / 60) % 60).padStart(2, '0');
-            const ss = String(totalSeconds % 60).padStart(2, '0');
-            const liveTimeEl = document.getElementById('relationship-live-time');
-            if (liveTimeEl) liveTimeEl.innerText = `${hh}:${mm}:${ss}`;
-            
-            let detailText = "";
-            if (years > 0) detailText += `${years} Thn `;
-            if (months > 0) detailText += `${months} Bln `;
-            detailText += `${days} Hari`;
-            
-            document.getElementById('relationship-detail-time').innerText = detailText;
+            const diffDays = Math.floor((Date.now() - startDate) / 86400000);
+            const value = diffDays < 0 ? '0' : diffDays.toLocaleString('id-ID');
+            if (value === relationshipDaysShown) return;
+            relationshipDaysShown = value;
+            document.getElementById('relationship-days').innerText = value;
         }
 
         function calculateAgeAndCountdown(birthDateStr, ageElementId, countdownElementId) {
