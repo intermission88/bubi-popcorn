@@ -3,6 +3,12 @@
 Aplikasi web mobile-first, satu file: `index.html` (HTML + CSS + JS inline, ~2240 baris).
 Data film: Supabase (tabel `bubi_popcorn`). Deploy: GitHub Pages.
 
+## Lingkungan (2 mesin, jangan tertukar)
+Repo ini dikerjakan dari dua mesin: macOS (rumah) dan Windows (apartemen).
+
+- **macOS**: `python3` ada dan dipakai untuk verifikasi statis. Brave headless (`--headless=new` + CDP) jalan normal. `node`/`npm` TIDAK ada.
+- **Windows**: kalau Brave headless gagal, pakai Edge headless. Di PowerShell, GUI app harus lewat `Start-Process -Wait`, dan `.ps1` butuh `-ExecutionPolicy Bypass`.
+
 ## Hemat context
 - JANGAN baca `index.html` utuh. Cari baris dengan `grep -n`, lalu `read_file` offset/limit ±40–80 baris.
 - Jangan ulangi baca file yang sudah dibaca di sesi ini.
