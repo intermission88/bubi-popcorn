@@ -235,11 +235,6 @@
             input, select, textarea { font-size: 16px !important; }
         }
 
-        @media (min-width: 1024px) {
-            .app-shell { max-width: 72rem !important; }
-            .movie-card { width: 11rem !important; }
-        }
-
         /* QoL: Respect reduced motion preference */
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
@@ -255,7 +250,7 @@
 
     <!-- Header App Bar -->
     <header class="fixed top-0 inset-x-0 z-40 bg-black/90 backdrop-blur-xl border-b border-neutral-900 px-4 py-3">
-        <div class="app-shell max-w-md mx-auto flex items-center justify-between">
+        <div class="max-w-md mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl popcorn-gradient flex items-center justify-center text-black text-base shadow-lg flex-shrink-0 font-bold">
                     <i class="fa-solid fa-bowl-food"></i>
@@ -286,7 +281,7 @@
     </header>
 
     <!-- Main Container -->
-    <main id="main-content" class="app-shell max-w-md mx-auto px-4 space-y-4 mt-3">
+    <main id="main-content" class="max-w-md mx-auto px-4 space-y-4 mt-3">
 
         <!-- SECTION: AUTO SLIDE INFINITE (1000x324 Aspect Ratio) -->
         <section class="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-neutral-800 bg-neutral-950 group">
@@ -1541,8 +1536,8 @@
             card.id = `movie-card-${movie.id}`;
             card.style.animationDelay = `${(index % 8) * 0.05}s`;
             card.className = (isCertified 
-                ? "movie-card rounded-2xl overflow-hidden flex flex-col certified-card tap-scale cursor-pointer relative shadow-xl"
-                : "movie-card glass-card rounded-2xl overflow-hidden flex flex-col border border-neutral-800 tap-scale cursor-pointer shadow-lg hover:border-neutral-700 tilt-card") + " animate-popIn";
+                ? "rounded-2xl overflow-hidden flex flex-col certified-card tap-scale cursor-pointer relative shadow-xl"
+                : "glass-card rounded-2xl overflow-hidden flex flex-col border border-neutral-800 tap-scale cursor-pointer shadow-lg hover:border-neutral-700 tilt-card") + " animate-popIn";
             card.setAttribute('role', 'button');
             card.setAttribute('tabindex', '0');
             card.setAttribute('aria-label', `Buka detail ${movie.judul || 'film tanpa judul'}`);
@@ -1665,7 +1660,7 @@
                 `;
 
                 const track = document.createElement('div');
-                track.className = "flex gap-3.5 overflow-x-auto lg:overflow-visible lg:flex-wrap snap-x snap-mandatory lg:snap-none no-scrollbar pb-2 -mx-4 px-4";
+                track.className = "flex gap-3.5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2 -mx-4 px-4";
                 monthMovies.forEach((movie, i) => {
                     const card = createMovieCard(movie, i);
                     card.className = card.className.replace("overflow-hidden flex flex-col", "overflow-hidden flex flex-col w-36 flex-shrink-0 snap-start");
