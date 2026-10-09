@@ -10,6 +10,7 @@ Repo ini dikerjakan dari dua mesin: macOS (rumah) dan Windows (apartemen).
 - **Windows**: kalau Brave headless gagal, pakai Edge headless. Di PowerShell, GUI app harus lewat `Start-Process -Wait`, dan `.ps1` butuh `-ExecutionPolicy Bypass`.
 
 ## Hemat context
+- Guide debug cepat: lihat `DEBUG.md` (peta kode, resep per gejala, jebakan).
 - JANGAN baca `index.html` utuh. Cari baris dengan `grep -n`, lalu `read_file` offset/limit ±40–80 baris.
 - Jangan ulangi baca file yang sudah dibaca di sesi ini.
 - Jangan kirim field filter kosong ke `grep` (bikin error "unrecognized file type"). Cukup `path` + `pattern`.

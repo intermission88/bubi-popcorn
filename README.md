@@ -42,6 +42,7 @@ Seluruh aplikasi berada dalam satu file: [`index.html`](index.html) (HTML, CSS, 
 | `manifest.json` | Metadata PWA (standalone, portrait, theme `#000000`). |
 | `assets/` | Gambar slider dan foto profil. |
 | `push.bat` | Skrip commit + push ke GitHub. |
+| `DEBUG.md` | Guide debug: peta kode, resep per gejala, dan jebakan yang pernah terjadi. |
 | `AGENTS.md` | Catatan konvensi kerja di repositori ini. |
 
 ## 🗄️ Skema Data
