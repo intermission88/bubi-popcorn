@@ -17,8 +17,8 @@ Seluruh aplikasi berada dalam satu file: [`index.html`](index.html) (HTML, CSS, 
 
 ### Fitur Khusus
 
-- **Hero Slider:** 5 slide otomatis (interval 3,5 detik) dengan title card "A Love Story in Films" dan indikator yang bisa dipilih.
-- **Relationship Tracker:** penghitung hari sejak 5 April 2025, diperbarui tiap detik, ditampilkan besar dengan gaya angka emas di atas tiket bercahaya proyektor.
+- **Hero Slider:** 5 slide otomatis (interval 3,5 detik) dengan indikator yang bisa dipilih.
+- **Relationship Tracker:** penghitung hari sejak 5 April 2025, ditampilkan besar dengan gaya angka emas di atas tiket bercahaya proyektor.
 - **Dual Timezone Clock:** waktu Zald (`Asia/Colombo`) dan Micel (`Asia/Tokyo`).
 - **Konverter Waktu:** modal konversi waktu dua arah antara JST dan waktu Zald.
 - **Certified Fresh:** badge khusus untuk film favorit dengan treatment emas statis.
@@ -128,18 +128,18 @@ Ganti password kapan saja lewat dashboard (Authentication → Users), tanpa meng
 - Modal memakai `role="dialog"` + `aria-modal`, menahan fokus (Tab), menutup dengan **Escape**, dan mengembalikan fokus ke pemicunya.
 - Target sentuh minimal 44×44 px, ada focus ring `:focus-visible`, dan zoom halaman tidak dikunci.
 - Menghormati `prefers-reduced-motion`: animasi dimatikan dan autoplay hero berhenti.
-- Layout: kolom tunggal `max-w-md` di mobile; mulai lebar 1024 px shell melebar (72rem) dan kartu film membungkus ke beberapa baris.
+- Layout: kolom tunggal `max-w-md` di semua ukuran layar.
 - Ada `loading` (skeleton), `empty state`, dan `error state` terpisah dengan tombol *Coba lagi*.
 
 ## 🚢 Deploy
 
-Repositori ini dideploy sebagai situs statis melalui **GitHub Pages**, jadi cukup push perubahan:
+Repositori ini dideploy otomatis ke **[Vercel](https://bubi-popcorn.vercel.app)** setiap push ke `main`. Cukup:
 
 ```bash
-./push.bat
+git push origin main
 ```
 
-Skrip itu melakukan `git add .`, commit (dengan pesan dari input, default `Update`), lalu `git push origin main`.
+`push.bat` (untuk Windows) tersedia sebagai alternatif commit + push interaktif.
 
 ## 📝 Catatan Pengembangan
 

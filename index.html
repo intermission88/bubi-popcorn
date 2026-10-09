@@ -582,7 +582,7 @@
                         Waktu Jepang (JST):
                     </span>
                     <button type="button" onclick="toggleConverterDirection()" class="px-2.5 py-1 rounded-lg bg-black hover:bg-neutral-800 border border-neutral-800 text-amber-300 text-[10px] font-bold tap-scale transition flex items-center gap-1">
-                        <span id="conv-dir-btn-text">Ke Waktu Jepang</span>
+                        <span id="conv-dir-btn-text">Tukar Arah</span>
                         <i class="fa-solid fa-arrows-rotate text-[9px]"></i>
                     </button>
                 </div>
@@ -873,6 +873,15 @@
         function posterFallback(img) {
             img.onerror = null;
             img.src = POSTER_FALLBACK;
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
         }
         
         let moviesData = [];
@@ -1448,7 +1457,7 @@
                     <div class="flex items-center justify-center gap-2 rounded-xl bg-sky-400/10 border border-sky-400/20 py-1.5 shadow-inner">
                         <img src="assets/pfp_zald.png" class="w-4 h-4 rounded-full object-cover shadow-sm">
                         <span class="text-[11px] font-bold text-sky-400 uppercase">Zald</span>
-                        <span class="font-black text-slate-100 text-sm leading-none">${dispZ}</span>
+                        <span class="font-black text-slate-100 text-sm leading-none">${escapeHtml(dispZ)}</span>
                     </div>
                 `;
             } else if (watcher === 'micel') {
@@ -1456,7 +1465,7 @@
                     <div class="flex items-center justify-center gap-2 rounded-xl bg-pink-400/10 border border-pink-400/20 py-1.5 shadow-inner">
                         <img src="assets/pfp_micel.png" class="w-4 h-4 rounded-full object-cover shadow-sm">
                         <span class="text-[11px] font-bold text-pink-400 uppercase">Micel</span>
-                        <span class="font-black text-slate-100 text-sm leading-none">${dispM}</span>
+                        <span class="font-black text-slate-100 text-sm leading-none">${escapeHtml(dispM)}</span>
                     </div>
                 `;
             } else {
@@ -1464,12 +1473,12 @@
                     <div class="flex items-stretch rounded-xl bg-neutral-900/60 border border-neutral-800 shadow-inner overflow-hidden">
                         <div class="flex-1 flex items-center justify-center gap-1.5 py-1.5">
                             <img src="assets/pfp_zald.png" class="w-4 h-4 rounded-full ring-1 ring-sky-400/60 object-cover">
-                            <span class="font-black text-slate-100 text-sm leading-none">${dispZ}</span>
+                            <span class="font-black text-slate-100 text-sm leading-none">${escapeHtml(dispZ)}</span>
                         </div>
                         <div class="w-[1px] bg-neutral-800"></div>
                         <div class="flex-1 flex items-center justify-center gap-1.5 py-1.5">
                             <img src="assets/pfp_micel.png" class="w-4 h-4 rounded-full ring-1 ring-pink-400/60 object-cover">
-                            <span class="font-black text-slate-100 text-sm leading-none">${dispM}</span>
+                            <span class="font-black text-slate-100 text-sm leading-none">${escapeHtml(dispM)}</span>
                         </div>
                     </div>
                 `;
@@ -1477,14 +1486,14 @@
 
             card.innerHTML = `
                 <div class="relative aspect-[3/4] w-full overflow-hidden bg-black">
-                    <img src="${posterUrl}" alt="${movie.judul}" loading="lazy" decoding="async" class="w-full h-full object-cover transform hover:scale-110 transition duration-500" onerror="posterFallback(this)">
-                    <span class="absolute top-2.5 right-2.5 bg-black/85 backdrop-blur px-2 py-0.5 rounded-lg text-[10px] font-bold text-slate-300 border border-neutral-800 shadow">${movie.tahun || ''}</span>
+                    <img src="${escapeHtml(posterUrl)}" alt="${escapeHtml(movie.judul)}" loading="lazy" decoding="async" class="w-full h-full object-cover transform hover:scale-110 transition duration-500" onerror="posterFallback(this)">
+                    <span class="absolute top-2.5 right-2.5 bg-black/85 backdrop-blur px-2 py-0.5 rounded-lg text-[10px] font-bold text-slate-300 border border-neutral-800 shadow">${escapeHtml(movie.tahun || '')}</span>
                     ${watcherBadgeHTML}
                 </div>
                 <div class="p-3 flex flex-col justify-between flex-grow space-y-2.5">
                     <div>
-                        <h3 class="font-display text-base ${isCertified ? 'text-amber-200' : 'text-slate-100'} line-clamp-1 tracking-wide uppercase">${movie.judul || 'Tanpa Judul'}</h3>
-                        <p class="text-[11px] text-slate-400 line-clamp-1 mt-0.5">${formatMonthDisplay(movie.bulan) || '-'}</p>
+                        <h3 class="font-display text-base ${isCertified ? 'text-amber-200' : 'text-slate-100'} line-clamp-1 tracking-wide uppercase">${escapeHtml(movie.judul) || 'Tanpa Judul'}</h3>
+                        <p class="text-[11px] text-slate-400 line-clamp-1 mt-0.5">${escapeHtml(formatMonthDisplay(movie.bulan)) || '-'}</p>
                     </div>
                     ${ratingsHTML}
                 </div>
@@ -1531,7 +1540,7 @@
                     <div class="flex items-end gap-2.5 mb-3 px-0.5">
                         <span class="font-display text-5xl leading-[0.8] stroke-number">${String(panelNumber).padStart(2, '0')}</span>
                         <div class="pb-0.5">
-                            <div class="font-display text-lg text-amber-300 uppercase tracking-[0.15em] leading-none">${formatMonthDisplay(key)}</div>
+                            <div class="font-display text-lg text-amber-300 uppercase tracking-[0.15em] leading-none">${escapeHtml(formatMonthDisplay(key))}</div>
                             <div class="text-[11px] text-slate-400 mt-1">${monthMovies.length} film • Chapter ${panelNumber}/${totalMonths}</div>
                         </div>
                         <span class="ml-auto text-[11px] text-slate-400 flex items-center gap-1.5 pb-1">
@@ -1837,13 +1846,14 @@
             const submitBtn = document.getElementById('submit-btn');
             submitBtn.disabled = true;
 
+            let saved = false;
             try {
                 if (editingId) {
                     const { error } = await supabaseClient
                         .from(TABLE_NAME)
                         .update(payload)
                         .eq('id', editingId);
-                    
+
                     if (error) throw error;
                     showToast("Ulasan diperbarui!", "success");
                 } else {
@@ -1851,15 +1861,18 @@
                     const { error } = await supabaseClient
                         .from(TABLE_NAME)
                         .insert([payload]);
-                    
+
                     if (error) throw error;
                     showToast("Ulasan berhasil ditambah!", "success");
                 }
+                saved = true;
             } catch (err) {
                 console.error(err);
-                showToast("Gagal menyimpan ke server.", "warning");
+                showToast("Gagal menyimpan ke server. Ulasanmu masih ada di formulir.", "warning");
             } finally {
                 submitBtn.disabled = false;
+            }
+            if (saved) {
                 closeAddModal();
                 await fetchSupabaseData();
             }
@@ -1992,16 +2005,13 @@
             
             const inputLabel = document.getElementById('conv-input-label');
             const targetLabel = document.getElementById('conv-target-label');
-            const dirBtnText = document.getElementById('conv-dir-btn-text');
 
             if (convDirection === 'jp_to_sl') {
                 if (inputLabel) inputLabel.innerHTML = `Waktu Jepang (JST):`;
                 if (targetLabel) targetLabel.innerText = "HASIL WAKTU ZALD:";
-                if (dirBtnText) dirBtnText.innerText = "Ke Waktu Jepang";
             } else {
                 if (inputLabel) inputLabel.innerHTML = `Waktu Zald:`;
                 if (targetLabel) targetLabel.innerText = "HASIL WAKTU JEPANG (JST):";
-                if (dirBtnText) dirBtnText.innerText = "Ke Waktu Zald";
             }
 
             updateConvertedTime();

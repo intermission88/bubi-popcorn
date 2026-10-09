@@ -1,7 +1,7 @@
 # bubi-popcorn
 
-Aplikasi web mobile-first, satu file: `index.html` (HTML + CSS + JS inline, ~2240 baris).
-Data film: Supabase (tabel `bubi_popcorn`). Deploy: GitHub Pages.
+Aplikasi web mobile-first, satu file: `index.html` (HTML + CSS + JS inline, ~2130 baris).
+Data film: Supabase (tabel `bubi_popcorn`). Deploy: Vercel, otomatis tiap push ke `main`.
 
 ## Lingkungan (2 mesin, jangan tertukar)
 Repo ini dikerjakan dari dua mesin: macOS (rumah) dan Windows (apartemen).
