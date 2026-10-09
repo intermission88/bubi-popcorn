@@ -44,6 +44,29 @@ Baris bergeser setiap edit. Anchor yang stabil:
 - **Slider:** `updateSlider`, `startSlideTimer` (hormati reduced motion), `currentSlide`.
 - **Bootstrap:** satu `DOMContentLoaded` di akhir file — semuanya dipasang di sini.
 
+## Cek Kesehatan 30 Detik (mulai dari sini kalau "website rusak")
+
+```bash
+# 1) commit terakhir yang ter-deploy (bandingkan dengan HEAD lokal)
+curl -s "https://api.github.com/repos/intermission88/bubi-popcorn/deployments?per_page=1" \
+  | grep '"sha"'
+
+# 2) konten live terbaru? CACHE_NAME harus sama dengan lokal
+curl -s https://bubi-popcorn.vercel.app/sw.js | grep CACHE_NAME
+
+# 3) tulis anonim harus ditolak 401 (RLS aktif)
+curl -s -o /dev/null -w '%{http_code}\n' -X DELETE \
+  "https://<project>.supabase.co/rest/v1/bubi_popcorn?id=eq.__probe__" \
+  -H "apikey: <publishable-key>" -H "Authorization: Bearer <publishable-key>"
+
+# 4) pendaftaran publik harus tertutup (disable_signup = true)
+curl -s https://<project>.supabase.co/auth/v1/settings -H "apikey: <publishable-key>" \
+  | grep disable_signup
+```
+
+Keempatnya normal → masalahnya di kode/perangkat, lanjut ke tabel resep di bawah.
+Status sukses/gagal detail: `.../deployments/<id>/statuses` (ikuti `statuses_url` dari langkah 1).
+
 ## Resep Debug (gejala → ke mana)
 
 | Gejala | Cek dulu | Seringnya penyebab |

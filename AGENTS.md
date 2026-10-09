@@ -28,6 +28,8 @@ Repo ini dikerjakan dari dua mesin: macOS (rumah) dan Windows (apartemen).
 - DILARANG menaruh password/secret di `index.html` atau `README.md` (bisa dibaca via Inspect Element).
 - Auth admin lewat Supabase (`signInWithPassword`). Email admin di-hardcode (`ADMIN_EMAIL`); UI hanya minta password.
 - Tulis data dilindungi RLS + akun auth. Jangan pernah kirim `service_role` key ke klien.
+- Semua data dari database yang masuk `innerHTML` wajib lewat `escapeHtml()` — judul bisa berisi `"` atau `<` dan merusak markup.
+- Modal buka/tutup wajib lewat `activateModal()`/`deactivateModal()` supaya fokus, trap Tab, dan Escape tetap jalan.
 - Layout mobile-first kolom tunggal (`max-w-md`) di semua ukuran layar.
 - `sw.js`: naikkan `CACHE_NAME` saat aset berubah; jangan cache respons Supabase.
 

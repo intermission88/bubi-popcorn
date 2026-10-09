@@ -40,7 +40,7 @@ Seluruh aplikasi berada dalam satu file: [`index.html`](index.html) (HTML, CSS, 
 | `index.html` | Seluruh aplikasi: markup, gaya, dan logika. |
 | `sw.js` | Service worker: network-first untuk HTML, cache-first untuk aset, Supabase selalu langsung ke jaringan. |
 | `manifest.json` | Metadata PWA (standalone, portrait, theme `#000000`). |
-| `assets/` | Gambar slider dan foto profil. |
+| `assets/` | Gambar slider, foto profil, dan ikon PWA (SVG + PNG). |
 | `push.bat` | Skrip commit + push ke GitHub. |
 | `DEBUG.md` | Guide debug: peta kode, resep per gejala, dan jebakan yang pernah terjadi. |
 | `AGENTS.md` | Catatan konvensi kerja di repositori ini. |
