@@ -9,10 +9,10 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "assets/Slider_1.webp",
-      "sizes": "512x512",
-      "type": "image/webp",
-      "purpose": "any"
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ]
 }

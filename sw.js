@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bubi-popcorn-v3';
+const CACHE_NAME = 'bubi-popcorn-v4';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -9,6 +9,7 @@ const CORE_ASSETS = [
   './assets/Slider_5.webp',
   './assets/pfp_zald.png',
   './assets/pfp_micel.png',
+  './assets/icon.svg',
   './manifest.json'
 ];
 
