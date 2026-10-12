@@ -95,36 +95,28 @@ print('ok')
 PY
 ```
 
-**Perubahan perilaku (JS, modal, form, fetch):** verifikasi SEKALI dengan Brave headless + CDP, satu skrip gabungan untuk semua assertion.
+**Perubahan perilaku (JS, modal, form, fetch):** verifikasi SEKALI dengan browser pane bawaan Claude, satu skrip gabungan untuk semua assertion.
 
 ```bash
 # 1) server (stop setelah selesai)
 python3 -m http.server 4173 --bind 127.0.0.1
-
-# 2) Brave headless terisolasi
-'/Applications/Brave Browser.app/Contents/MacOS/Brave Browser' --headless=new \
-  --remote-debugging-port=9229 --user-data-dir=/tmp/bubi-debug --no-first-run --disable-gpu about:blank
-
-# 3) screenshot cepat (cukup untuk cek visual, satu instance saja)
-'/Applications/Brave Browser.app/Contents/MacOS/Brave Browser' --headless=new \
-  --window-size=375,900 --screenshot=/tmp/cek.png --virtual-time-budget=5000 http://127.0.0.1:4173
-
-# 4) assertion DOM/JS lewat CDP: buka tab via PUT /json/new, kirim
-#    Runtime.evaluate (returnByValue), kumpulkan Runtime.exceptionThrown
-#    untuk menangkap error JS. Simpan trigger fokus dulu sebelum cek.
 ```
+
+2. Buka `http://127.0.0.1:4173` dengan `preview_start` (parameter `url`) atau `navigate`.
+3. Assertion DOM/JS: `javascript_tool` (REPL, `await` boleh). Error JS: `read_console_messages` dengan `onlyErrors`.
+4. Cek visual: `resize_window` preset `mobile`, lalu `screenshot`. Kembalikan ke `desktop` setelah selesai.
 
 Pola assertion yang sudah terbukti: render kartu uji via `createMovieCard({...})` langsung di halaman; simulasi gagal dengan menimpa `supabaseClient.from` sementara; bandingkan posisi tombol dengan `getBoundingClientRect`.
 
 ## Jebakan yang Sudah Pernah Terjadi
 
 1. **`space-y-*` tetap menghitung elemen tersembunyi.** Footer dulu punya `space-y-4` sambil memuat panel admin yang tersembunyi → jarak 16 px bayangan. Solusi: jangan pakai `space-y` di wadah yang memuat elemen `hidden`; beri margin di elemennya sendiri.
-2. **Nama `let`/`const` bukan properti `window`.** `let isAdminUnlocked` di scope atas script bisa diakses dari CDP, tapi tidak lewat `window.isAdminUnlocked`.
-3. **Skrip CDP tanpa `awaitPromise: true`** mengembalikan `{}` untuk fungsi async — bukan hasilnya.
+2. **Nama `let`/`const` bukan properti `window`.** `let isAdminUnlocked` di scope atas script bisa diakses dari `javascript_tool`, tapi tidak lewat `window.isAdminUnlocked`.
+3. **Fungsi async di `javascript_tool`** harus di-`await` di ekspresi akhir; kalau tidak, yang kembali hanya Promise.
 4. **Toast umur ~2,8 detik.** Membaca isi toast setelah itu kosong. Kalau butuh, pasang `MutationObserver` sebelum memicu.
 5. **Edit paralel di file yang sama** bisa saling menimpa snippet — baca ulang area hasil edit sebelum yakin.
 6. **`grep` tool: jangan kirim field `type`/filter kosong** → error "unrecognized file type". Cukup `path` + `pattern`.
-7. **macOS meneruskan argumen ke instance Brave yang sudah jalan.** Kalau `--screenshot` tidak menghasilkan file, matikan dulu instance lain atau pakai CDP.
+7. **Brave headless tidak dipakai lagi.** Di macOS ia menggantung (izin Crashpad); jangan dicoba ulang.
 8. **iOS butuh PNG.** Ikon SVG di manifest tidak dibaca iPhone; wajib ada `apple-touch-icon.png`.
 9. **Jangan taruh password/secret di `index.html` atau README** — bisa dibaca via Inspect Element. Auth lewat `signInWithPassword`, email di `ADMIN_EMAIL`.
 10. **Host adalah Vercel, bukan GitHub Pages.** Jangan ikuti klaim lama.

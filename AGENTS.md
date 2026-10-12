@@ -6,8 +6,8 @@ Data film: Supabase (tabel `bubi_popcorn`). Deploy: Vercel, otomatis tiap push k
 ## Lingkungan (2 mesin, jangan tertukar)
 Repo ini dikerjakan dari dua mesin: macOS (rumah) dan Windows (apartemen).
 
-- **macOS**: `python3` ada dan dipakai untuk verifikasi statis. Brave headless (`--headless=new` + CDP) jalan normal. `node`/`npm` TIDAK ada.
-- **Windows**: kalau Brave headless gagal, pakai Edge headless. Di PowerShell, GUI app harus lewat `Start-Process -Wait`, dan `.ps1` butuh `-ExecutionPolicy Bypass`.
+- **macOS**: `python3` ada dan dipakai untuk verifikasi statis. Uji perilaku lewat browser pane bawaan Claude (tool `mcp__Claude_Browser__*`). Brave headless tidak dipakai lagi (Crashpad/izin macOS bikin menggantung). `node`/`npm` TIDAK ada.
+- **Windows**: uji perilaku juga lewat browser pane bawaan Claude. Di PowerShell, GUI app harus lewat `Start-Process -Wait`, dan `.ps1` butuh `-ExecutionPolicy Bypass`.
 
 ## Hemat context
 - Guide debug cepat: lihat `DEBUG.md` (peta kode, resep per gejala, jebakan).
@@ -20,8 +20,8 @@ Repo ini dikerjakan dari dua mesin: macOS (rumah) dan Windows (apartemen).
 
 ## Verifikasi hemat
 - Perubahan sepele (teks, warna, spasi, label): cukup cek statis (`grep`/python assert). Jangan buka browser.
-- Perubahan perilaku (JS, modal, form, auth, fetch): verifikasi SEKALI dengan Brave **headless** via CDP, satu skrip gabungan untuk semua assertion. Jangan ulang per kasus.
-- JANGAN buka browser GUI atau rebut mouse/keyboard. Hanya headless.
+- Perubahan perilaku (JS, modal, form, auth, fetch): verifikasi SEKALI dengan browser pane bawaan Claude (`preview_start`/`navigate` ke server lokal, assertion lewat `javascript_tool`, error lewat `read_console_messages`), satu skrip gabungan. Jangan ulang per kasus.
+- JANGAN buka browser GUI di luar aplikasi atau rebut mouse/keyboard. Hanya browser pane bawaan Claude.
 - Bersihkan server/proses latar setelah selesai.
 
 ## Aturan produk (jangan dilanggar)

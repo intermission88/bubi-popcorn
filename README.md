@@ -13,6 +13,9 @@ Seluruh aplikasi berada dalam satu file: [`index.html`](index.html) (HTML, CSS, 
 - **Arsip per Bulan:** film dikelompokkan per bulan, bulan terbaru di atas, bisa digeser horizontal di mobile dan membungkus di desktop.
 - **Mode Admin:** tambah, edit, dan hapus film di balik password, dengan konfirmasi untuk aksi hapus.
 - **Detail Film:** modal detail berisi banner, rating kedua pihak, ulasan, salin ringkasan ke clipboard, dan tombol bagikan (`navigator.share`, fallback ke clipboard).
+- **Statistik Kita:** tombol grafik di sisi kanan bawah. Total film, rata-rata rating Zald dan Micel, film favorit berdua, selera paling beda, dan bulan tersibuk.
+- **Roulette Nobar:** di modal statistik, memilih acak dari film yang baru ditonton salah satu pihak untuk ditonton berdua.
+- **Isi Otomatis dari TMDB:** di form admin, tombol "TMDB" mencari judul (film dan series) lalu mengisi judul, tahun, dan poster. Memakai API Key v3 di konstanta `TMDB_API_KEY` (hanya-baca, aman di klien). Jangan pernah memakai Read Access Token v4. Atribusi TMDB ada di bagian bawah halaman.
 - **Ping Indicator:** indikator latensi ke Supabase, bisa ditekan untuk cek ulang.
 
 ### Fitur Khusus

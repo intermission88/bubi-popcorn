@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bubi-popcorn-v4';
+const CACHE_NAME = 'bubi-popcorn-v5';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -33,7 +33,7 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
   // Supabase & API: selalu network (jangan cache data dinamis)
-  if (url.hostname.includes('supabase.co')) {
+  if (url.hostname.includes('supabase.co') || url.hostname === 'api.themoviedb.org') {
     return;
   }
 

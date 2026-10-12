@@ -461,6 +461,7 @@
                 <div class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.3em]">Total Movies Watched</div>
                 <div id="total-movies-count" class="font-display text-5xl text-slate-100 leading-none tracking-wider">0</div>
                 <p class="text-[11px] text-slate-500 italic">"Every film is a memory we keep forever."</p>
+                <p class="text-[10px] text-slate-600 pt-2">Pencarian film memakai TMDB API. Produk ini tidak didukung atau disertifikasi oleh TMDB.</p>
             </div>
         </section>
 
@@ -543,6 +544,10 @@
 
     <!-- Floating Action Buttons (Right Bottom) -->
     <div class="fixed bottom-8 right-6 z-40 flex flex-col gap-3 pb-[env(safe-area-inset-bottom)]">
+        <!-- Floating Stats Button -->
+        <button type="button" onclick="triggerHaptic(); openStatsModal()" class="w-12 h-12 rounded-full bg-neutral-900 border border-neutral-700 text-amber-400 flex items-center justify-center shadow-2xl tap-scale transition hover:bg-neutral-800 hover:border-amber-400" title="Statistik Kita" aria-label="Statistik Kita">
+            <i class="fa-solid fa-chart-simple text-base"></i>
+        </button>
         <!-- Floating Time Converter Button -->
         <button onclick="triggerHaptic(); openTimeCalcModal()" class="w-12 h-12 rounded-full bg-neutral-900 border border-neutral-700 text-amber-400 flex items-center justify-center shadow-2xl tap-scale transition hover:bg-neutral-800 hover:border-amber-400" title="Konverter Waktu">
             <i class="fa-solid fa-clock text-base"></i>
@@ -560,6 +565,31 @@
         <button onclick="triggerHaptic(); scrollToTop()" class="w-11 h-11 rounded-full bg-neutral-900 border border-neutral-700 text-amber-400 flex items-center justify-center shadow-2xl tap-scale transition hover:bg-neutral-800" title="Kembali ke Atas">
             <i class="fa-solid fa-arrow-up text-sm"></i>
         </button>
+    </div>
+
+    <!-- Modal Statistik Kita + Roulette -->
+    <div id="stats-modal" role="dialog" aria-modal="true" aria-labelledby="stats-title" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
+        <div id="stats-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] pb-[env(safe-area-inset-bottom)]">
+            <div class="px-4 py-3 border-b border-neutral-900 flex items-center justify-between bg-neutral-950">
+                <h3 id="stats-title" class="font-bold text-xs text-slate-200 font-display flex items-center gap-1.5">
+                    <i class="fa-solid fa-chart-simple text-amber-400"></i> Statistik Kita
+                </h3>
+                <button type="button" onclick="triggerHaptic(); closeStatsModal()" class="touch-target text-slate-400 hover:text-white tap-scale rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center" aria-label="Tutup">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            </div>
+            <div class="p-4 space-y-4 overflow-y-auto">
+                <div id="stats-grid" class="grid grid-cols-2 gap-2.5"></div>
+                <div class="p-3.5 rounded-2xl bg-neutral-900/60 border border-neutral-800 space-y-3 text-center">
+                    <div class="text-[11px] font-bold text-amber-400 uppercase tracking-[0.2em]">Roulette Nobar</div>
+                    <p class="text-[11px] text-slate-500">Film yang baru ditonton salah satu dari kalian. Putar untuk pilih tontonan berdua.</p>
+                    <div id="roulette-result" class="min-h-[4rem] flex items-center justify-center text-sm font-bold text-slate-200" aria-live="polite">-</div>
+                    <button type="button" id="roulette-btn" onclick="triggerHaptic(); spinRoulette()" class="w-full py-2.5 rounded-xl popcorn-gradient text-black text-xs font-bold tap-scale">
+                        <i class="fa-solid fa-shuffle mr-1"></i> Putar!
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Modal Konverter Waktu Ultra Clean -->
@@ -646,8 +676,14 @@
                 
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 mb-1.5">Judul Film *</label>
-                    <input type="text" name="judul" id="form-judul" required placeholder="Judul film..." 
-                        class="w-full px-3.5 py-3 bg-black border border-neutral-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-slate-200 transition shadow-inner">
+                    <div class="flex gap-2">
+                        <input type="text" name="judul" id="form-judul" required placeholder="Judul film..." 
+                            class="w-full px-3.5 py-3 bg-black border border-neutral-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-slate-200 transition shadow-inner">
+                        <button type="button" onclick="searchTmdb()" class="shrink-0 px-3 rounded-xl bg-neutral-900 border border-neutral-800 text-amber-400 text-[11px] font-bold tap-scale hover:border-amber-400" title="Isi otomatis dari TMDB">
+                            <i class="fa-solid fa-magnifying-glass mr-1"></i>TMDB
+                        </button>
+                    </div>
+                    <div id="tmdb-results" class="mt-2 space-y-1.5 hidden" aria-live="polite"></div>
                 </div>
 
                 <div>
@@ -921,6 +957,7 @@
                 else if (activeModal.id === 'password-modal') closePasswordModal();
                 else if (activeModal.id === 'add-modal') requestCloseAddModal();
                 else if (activeModal.id === 'detail-modal') closeDetailModal();
+                else if (activeModal.id === 'stats-modal') closeStatsModal();
                 return;
             }
             if (event.key !== 'Tab') return;
@@ -1980,6 +2017,128 @@
 
         // --- ULTRA CLEAN TIME CONVERTER LOGIC ---
         let convDirection = 'jp_to_sl'; // 'jp_to_sl' (Jepang -> Zald) or 'sl_to_jp' (Zald -> Jepang)
+
+        // --- STATISTIK KITA + ROULETTE ---
+        function openStatsModal() {
+            const modal = document.getElementById('stats-modal');
+            if (!modal) return;
+            renderStats();
+            document.getElementById('roulette-result').textContent = '-';
+            modal.classList.remove('hidden');
+            document.getElementById('stats-modal-content').classList.add('animate-slideUp');
+            activateModal(modal);
+        }
+
+        function closeStatsModal() {
+            const modal = document.getElementById('stats-modal');
+            if (modal) modal.classList.add('hidden');
+            document.getElementById('stats-modal-content')?.classList.remove('animate-slideUp');
+            deactivateModal(modal);
+        }
+
+        function getSoloMovies() {
+            return moviesData.filter(m => m.watched_by === 'zald' || m.watched_by === 'micel');
+        }
+
+        function renderStats() {
+            const grid = document.getElementById('stats-grid');
+            if (!grid) return;
+            const mean = arr => arr.length ? (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(1) : '-';
+            const rZ = moviesData.map(m => parseRating(m.rating_aku)).filter(v => v !== null);
+            const rM = moviesData.map(m => parseRating(m.rating_dia)).filter(v => v !== null);
+            const both = moviesData.filter(m => parseRating(m.rating_aku) !== null && parseRating(m.rating_dia) !== null);
+
+            let topMovie = null, topAvg = -1, gapMovie = null, gapMax = -1;
+            both.forEach(m => {
+                const z = parseRating(m.rating_aku), d = parseRating(m.rating_dia);
+                if ((z + d) / 2 > topAvg) { topAvg = (z + d) / 2; topMovie = m; }
+                if (Math.abs(z - d) > gapMax) { gapMax = Math.abs(z - d); gapMovie = m; }
+            });
+
+            const perMonth = {};
+            moviesData.forEach(m => { if (m.bulan) perMonth[m.bulan] = (perMonth[m.bulan] || 0) + 1; });
+            const bestMonth = Object.entries(perMonth).sort((a, b) => b[1] - a[1])[0];
+
+            const cards = [
+                ['Total film', moviesData.length],
+                ['Ditonton berdua', moviesData.filter(m => (m.watched_by || 'both') === 'both').length],
+                ['Rata-rata Zald', mean(rZ)],
+                ['Rata-rata Micel', mean(rM)],
+                ['Favorit berdua', topMovie ? `${topMovie.judul} (${topAvg.toFixed(1)})` : '-'],
+                ['Paling beda selera', gapMovie && gapMax > 0 ? `${gapMovie.judul} (selisih ${gapMax.toFixed(1)})` : '-'],
+                ['Bulan tersibuk', bestMonth ? `${formatMonthDisplay(bestMonth[0])} (${bestMonth[1]} film)` : '-'],
+                ['Antre ditonton berdua', getSoloMovies().length]
+            ];
+            grid.innerHTML = cards.map(([label, value]) => `
+                <div class="p-3 rounded-xl bg-neutral-900/60 border border-neutral-800">
+                    <div class="text-[10px] text-slate-500 uppercase tracking-wider">${escapeHtml(label)}</div>
+                    <div class="mt-1 text-xs font-bold text-slate-100 break-words">${escapeHtml(String(value))}</div>
+                </div>`).join('');
+        }
+
+        let rouletteTimer = null;
+        function spinRoulette() {
+            const pool = getSoloMovies();
+            const out = document.getElementById('roulette-result');
+            const btn = document.getElementById('roulette-btn');
+            if (!pool.length) { out.textContent = 'Semua film sudah ditonton berdua!'; return; }
+            clearInterval(rouletteTimer);
+            const pick = pool[Math.floor(Math.random() * pool.length)];
+            const show = m => { out.textContent = m.judul || 'Tanpa Judul'; };
+            const finish = () => {
+                const by = pick.watched_by === 'zald' ? 'Zald' : 'Micel';
+                out.innerHTML = `<div><div class="text-base text-amber-300">${escapeHtml(pick.judul || 'Tanpa Judul')}</div><div class="text-[11px] text-slate-500 font-normal mt-1">${escapeHtml(String(pick.tahun || ''))} • sudah ditonton ${escapeHtml(by)}</div></div>`;
+                btn.disabled = false;
+            };
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { finish(); return; }
+            btn.disabled = true;
+            let ticks = 0;
+            rouletteTimer = setInterval(() => {
+                show(pool[Math.floor(Math.random() * pool.length)]);
+                if (++ticks >= 14) { clearInterval(rouletteTimer); finish(); }
+            }, 90);
+        }
+
+        // --- AUTOFILL TMDB ---
+        const TMDB_API_KEY = '70e49fe58166973b49c4649822f0b5e9'; // API Key v3 (hanya baca, aman di klien). Kosong = fitur nonaktif.
+        const TMDB_IMG = 'https://image.tmdb.org/t/p/w500';
+
+        async function searchTmdb() {
+            const box = document.getElementById('tmdb-results');
+            const query = document.getElementById('form-judul').value.trim();
+            const note = msg => { box.classList.remove('hidden'); box.innerHTML = `<p class="text-[11px] text-slate-500">${escapeHtml(msg)}</p>`; };
+            if (!TMDB_API_KEY) return note('TMDB belum dikonfigurasi. Isi form secara manual.');
+            if (!query) return note('Ketik judul dulu, lalu tekan TMDB.');
+            note('Mencari...');
+            try {
+                const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${encodeURIComponent(TMDB_API_KEY)}&query=${encodeURIComponent(query)}&include_adult=false`);
+                if (!res.ok) throw new Error(res.status);
+                const items = (await res.json()).results.filter(r => r.media_type === 'movie' || r.media_type === 'tv').slice(0, 5);
+                if (!items.length) return note('Tidak ada hasil.');
+                tmdbItems = items;
+                box.innerHTML = items.map((r, i) => {
+                    const title = r.title || r.name || '';
+                    const year = (r.release_date || r.first_air_date || '').slice(0, 4);
+                    const thumb = r.poster_path ? `<img src="${TMDB_IMG}${escapeHtml(r.poster_path)}" alt="" class="w-8 h-12 rounded object-cover">` : '<div class="w-8 h-12 rounded bg-neutral-800"></div>';
+                    return `<button type="button" onclick="applyTmdbResult(${i})" class="w-full flex items-center gap-2.5 p-2 rounded-xl bg-black border border-neutral-800 hover:border-amber-400 text-left tap-scale">${thumb}<span class="text-xs text-slate-200">${escapeHtml(title)} <span class="text-slate-500">${escapeHtml(year)} • ${r.media_type === 'tv' ? 'Series' : 'Film'}</span></span></button>`;
+                }).join('');
+                box.classList.remove('hidden');
+            } catch (err) {
+                console.warn('TMDB gagal:', err);
+                note('Gagal menghubungi TMDB. Isi form secara manual.');
+            }
+        }
+
+        let tmdbItems = [];
+        function applyTmdbResult(i) {
+            const r = tmdbItems[i];
+            if (!r) return;
+            document.getElementById('form-judul').value = r.title || r.name || '';
+            const year = (r.release_date || r.first_air_date || '').slice(0, 4);
+            if (year) document.getElementById('form-tahun').value = year;
+            document.getElementById('form-poster').value = r.poster_path ? TMDB_IMG + r.poster_path : '';
+            document.getElementById('tmdb-results').classList.add('hidden');
+        }
 
         function openTimeCalcModal() {
             const modal = document.getElementById('time-calc-modal');
