@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 340" width="1200" height="340" role="img" aria-label="Arsitektur: git push ke Vercel menyajikan index.html; browser membaca dan menulis Supabase, mengambil data dari TMDB, dan menyematkan trailer YouTube">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#facc15"/></marker>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff7c2"/><stop offset=".5" stop-color="#eab308"/><stop offset="1" stop-color="#fde68a"/></linearGradient>
+  </defs>
+  <rect width="1200" height="340" rx="20" fill="#0a0a0a"/>
+  <g font-family="'Helvetica Neue', Arial, sans-serif">
+    <!-- Deploy -->
+    <rect x="70" y="24" width="300" height="64" rx="14" fill="#111" stroke="#3f3f46"/>
+    <text x="220" y="52" text-anchor="middle" font-size="17" font-weight="700" fill="#fafafa">git push ke main</text>
+    <text x="220" y="73" text-anchor="middle" font-size="13" fill="#a3a3a3">deploy otomatis oleh Vercel</text>
+    <line x1="220" y1="88" x2="220" y2="128" stroke="#facc15" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="236" y="114" font-size="12" fill="#d4d4d4">menyajikan</text>
+
+    <!-- Browser -->
+    <rect x="70" y="132" width="300" height="108" rx="16" fill="#111" stroke="url(#gold)" stroke-width="2"/>
+    <text x="220" y="172" text-anchor="middle" font-size="22" font-weight="800" fill="#facc15">Browser / PWA</text>
+    <text x="220" y="198" text-anchor="middle" font-size="14" fill="#fafafa">index.html + sw.js</text>
+    <text x="220" y="220" text-anchor="middle" font-size="12" fill="#a3a3a3">satu file, tanpa build</text>
+
+    <!-- Supabase -->
+    <line x1="370" y1="168" x2="760" y2="60" stroke="#facc15" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="520" y="96" font-size="12" fill="#d4d4d4" transform="rotate(-15 520 96)">baca publik · tulis admin</text>
+    <rect x="770" y="24" width="360" height="72" rx="14" fill="#111" stroke="#3f3f46"/>
+    <text x="950" y="55" text-anchor="middle" font-size="18" font-weight="700" fill="#fafafa">Supabase</text>
+    <text x="950" y="77" text-anchor="middle" font-size="13" fill="#a3a3a3">bubi_popcorn · bubi_watchlist · Auth + RLS</text>
+
+    <!-- TMDB -->
+    <line x1="370" y1="186" x2="760" y2="186" stroke="#facc15" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="565" y="176" text-anchor="middle" font-size="12" fill="#d4d4d4">poster · sinopsis · genre</text>
+    <rect x="770" y="150" width="360" height="72" rx="14" fill="#111" stroke="#3f3f46"/>
+    <text x="950" y="181" text-anchor="middle" font-size="18" font-weight="700" fill="#fafafa">TMDB API v3</text>
+    <text x="950" y="203" text-anchor="middle" font-size="13" fill="#a3a3a3">hanya baca · JustWatch untuk streaming</text>
+
+    <!-- YouTube -->
+    <line x1="370" y1="204" x2="760" y2="296" stroke="#facc15" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="545" y="270" font-size="12" fill="#d4d4d4" transform="rotate(13 545 270)">embed trailer</text>
+    <rect x="770" y="260" width="360" height="72" rx="14" fill="#111" stroke="#3f3f46"/>
+    <text x="950" y="291" text-anchor="middle" font-size="18" font-weight="700" fill="#fafafa">YouTube</text>
+    <text x="950" y="313" text-anchor="middle" font-size="13" fill="#a3a3a3">youtube-nocookie · dimuat saat detail dibuka</text>
+  </g>
+</svg>

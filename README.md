@@ -123,13 +123,7 @@ Font: **Anton** (judul), **Outfit** (display), **Inter** (isi).
 
 ## Arsitektur
 
-```mermaid
-flowchart LR
-    A["📱 Browser / PWA<br/>index.html"] -->|baca publik, tulis admin| B[("Supabase<br/>bubi_popcorn<br/>bubi_watchlist")]
-    A -->|poster, sinopsis, trailer| C["TMDB API v3"]
-    A -->|embed trailer| D["YouTube<br/>nocookie"]
-    E["git push ke main"] --> F["Vercel"] --> A
-```
+<img src="assets/readme/architecture.svg" alt="Arsitektur: git push ke Vercel menyajikan index.html; browser membaca dan menulis Supabase, mengambil data dari TMDB, dan menyematkan trailer YouTube" width="100%">
 
 ## Mulai Cepat
 
