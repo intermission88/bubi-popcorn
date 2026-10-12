@@ -38,7 +38,9 @@ Seluruh aplikasi berada dalam satu file: [`index.html`](index.html) (HTML, CSS, 
 
 - **Frontend:** HTML5 + [Tailwind CSS](https://tailwindcss.com/) (CDN), tanpa build step.
 - **Interaksi:** Vanilla JavaScript.
-- **Backend/Data:** [Supabase](https://supabase.com/) (`@supabase/supabase-js` v2 via CDN), tabel `bubi_popcorn`.
+- **Backend/Data:** [Supabase](https://supabase.com/) (`@supabase/supabase-js` v2 via CDN), tabel `bubi_popcorn` dan `bubi_watchlist`.
+- **Data film:** [TMDB API](https://www.themoviedb.org/) (v3, hanya baca) untuk poster, sinopsis, genre, pemeran, trailer, dan tempat streaming (data streaming dari JustWatch lewat TMDB).
+- **Trailer:** pemutar embed `youtube-nocookie`.
 - **Ikon & Font:** Font Awesome 6.5.1, Google Fonts (Anton, Inter, Outfit).
 
 ## 📁 Struktur Proyek
@@ -50,6 +52,7 @@ Seluruh aplikasi berada dalam satu file: [`index.html`](index.html) (HTML, CSS, 
 | `sw.js` | Service worker: network-first untuk HTML, cache-first untuk aset, Supabase selalu langsung ke jaringan. |
 | `manifest.json` | Metadata PWA (standalone, portrait, theme `#000000`). |
 | `assets/` | Gambar slider, foto profil, dan ikon PWA (SVG + PNG). |
+| `LICENSE` | Lisensi MIT untuk kode (isi arsip pribadi dan foto dikecualikan). |
 | `push.bat` | Skrip commit + push ke GitHub. |
 | `DEBUG.md` | Guide debug: peta kode, resep per gejala, dan jebakan yang pernah terjadi. |
 | `AGENTS.md` | Catatan konvensi kerja di repositori ini. |
@@ -70,6 +73,18 @@ Tabel Supabase: **`bubi_popcorn`**. Rating `*_aku` milik Zald, `*_dia` milik Mic
 | `rating_aku` / `rating_dia` | text | Rating Zald / Micel (0–10). |
 | `review_aku` / `review_dia` | text | Ulasan Zald / Micel. |
 
+Tabel **`bubi_watchlist`** (antrean "Mau Ditonton"), dibuat lewat [`supabase/watchlist.sql`](supabase/watchlist.sql):
+
+| Kolom | Tipe | Keterangan |
+|---|---|---|
+| `id` | text | Primary key, `w_<timestamp>`. |
+| `judul` | text | Judul film atau series. |
+| `tahun` | int | Tahun rilis (opsional). |
+| `poster` | text | URL poster (opsional). |
+| `created_at` | timestamptz | Waktu ditambahkan, default `now()`. |
+
+RLS: baca publik, tulis hanya akun yang login (admin).
+
 ## ⚙️ Menjalankan Secara Lokal
 
 Aplikasi ini murni *client-side* dan tidak butuh proses build. Karena memakai service worker, jalankan lewat server lokal (bukan `file://`):
@@ -80,13 +95,25 @@ python3 -m http.server 4173
 
 Lalu buka <http://localhost:4173>.
 
-Konfigurasi Supabase ada di bagian `<script>` paling bawah `index.html`:
+Konfigurasi Supabase ada di bagian `<script>` `index.html` (cari `SUPABASE_URL`):
 
 ```js
 const SUPABASE_URL = 'https://<project>.supabase.co';
 const SUPABASE_KEY = '<publishable-key>';
 const TABLE_NAME = 'bubi_popcorn';
 ```
+
+## 🎞️ Setup TMDB & Watchlist
+
+1. **API Key TMDB (gratis):** daftar di [themoviedb.org](https://www.themoviedb.org/signup), lalu buka **Settings → API** dan buat aplikasi bertipe Developer. Pakai **API Key (v3)**, yaitu string pendek 32 karakter. **Jangan** memakai *API Read Access Token* (v4) yang panjang berawalan `eyJ`.
+2. Isi konstanta di `index.html` (cari `TMDB_API_KEY`):
+
+```js
+const TMDB_API_KEY = '<api-key-v3>';
+```
+
+   Key v3 hanya bisa membaca data publik dan memang terlihat di klien. Kalau bocor atau disalahgunakan, buat ulang di halaman API TMDB lalu ganti nilainya. Dikosongkan = semua fitur TMDB nonaktif dan form manual tetap jalan.
+3. **Watchlist:** jalankan isi [`supabase/watchlist.sql`](supabase/watchlist.sql) sekali di Supabase SQL Editor. Tanpa tabel ini bagian "Mau Ditonton" tersembunyi dan fitur lain tetap normal.
 
 ## 🔐 Mode Admin (satu password, tanpa email)
 
@@ -95,7 +122,7 @@ const TABLE_NAME = 'bubi_popcorn';
 - Password **tidak ada** di dalam `index.html`, jadi tidak bisa dibaca lewat Inspect Element.
 - Sesi disimpan otomatis oleh Supabase, jadi admin tetap masuk setelah reload.
 - Klik gembok lagi saat sedang masuk untuk **keluar** (*sign out*).
-- Setelah masuk: FAB tambah film, tombol edit, dan tombol hapus muncul.
+- Setelah masuk: FAB tambah film, tombol edit dan hapus, pengelolaan antrean "Mau Ditonton", impor CSV, dan sinkron poster TMDB muncul.
 
 ### Setup (sekali saja)
 
@@ -153,6 +180,15 @@ git push origin main
 
 ## 📝 Catatan Pengembangan
 
-- Konvensi di repositori ini (lihat [`AGENTS.md`](AGENTS.md)): baca `index.html` hanya dengan pencarian + `offset`/`limit`, jangan dibaca utuh.
+- Konvensi di repositori ini (lihat [`AGENTS.md`](AGENTS.md)): baca `index.html` hanya dengan pencarian + `offset`/`limit`, jangan dibaca utuh. Uji perilaku dilakukan lewat browser pane bawaan Claude (lihat [`DEBUG.md`](DEBUG.md)).
 - Setelah menambah atau mengubah aset yang di-cache, naikkan `CACHE_NAME` di `sw.js` supaya pengguna lama menerima versi baru.
 - Data film selalu diambil langsung dari Supabase; jangan cache respons Supabase di service worker.
+
+## 📜 Lisensi & Kredit
+
+- **Kode** dilisensikan di bawah [MIT](LICENSE). Isi arsip pribadi (judul yang dicatat, rating, ulasan) dan foto di `assets/` **tidak** termasuk dan tetap menjadi hak pemiliknya.
+- **TMDB:** produk ini memakai TMDB API tetapi tidak didukung atau disertifikasi oleh TMDB. Data ketersediaan streaming berasal dari JustWatch lewat TMDB.
+- **Poster, gambar, dan trailer** film adalah hak cipta pemilik masing-masing, ditampilkan untuk arsip pribadi nonkomersial. Pemutar trailer memakai YouTube dan tunduk pada Ketentuan Layanannya.
+- **Pustaka:** [Tailwind CSS](https://tailwindcss.com/) (MIT), [Font Awesome Free](https://fontawesome.com/license/free) (ikon CC BY 4.0, font SIL OFL 1.1, kode MIT), [Google Fonts](https://fonts.google.com/) Anton, Inter, Outfit (SIL OFL 1.1), dan [Supabase JS](https://github.com/supabase/supabase-js) (MIT).
+
+Daftar yang sama tampil di footer situs, bagian **Kredit & Lisensi**.
