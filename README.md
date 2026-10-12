@@ -7,7 +7,8 @@ Aplikasi web mobile-first untuk mengarsipkan film yang ditonton bersama oleh Zal
 ## 🚀 Fitur
 
 **Arsip film**
-- Catat judul, tahun, poster, bulan menonton, rating dan ulasan terpisah untuk Zald dan Micel, serta badge *Certified Fresh*.
+- Catat judul, tahun, poster, bulan menonton, serta rating dan ulasan terpisah untuk Zald dan Micel.
+- **Certified Fresh:** film favorit tampil dalam **emas metalik** (bingkai gradien, kilau yang menyapu pelan, judul emas, lencana logam, modal detail bercahaya emas). Kilau mati bila pengguna memilih kurangi gerakan.
 - Filter `Semua`, `Nonton Bareng`, `Zald Picks`, `Micel Picks`, `Top 9+`, dan pencarian judul atau bulan (mendukung nama bulan Indonesia).
 - Film dikelompokkan per bulan, bulan terbaru di atas.
 - Dua tampilan: karusel per bulan, atau **grid poster** 3 kolom (ala Letterboxd) lewat tombol di samping "Bulan Tayang"; pilihan diingat.
