@@ -42,6 +42,7 @@ Repo ini dikerjakan dari dua mesin: macOS (rumah) dan Windows (apartemen).
 - Semua data dari database atau TMDB yang masuk `innerHTML` wajib lewat `escapeHtml()` — judul bisa berisi `"` atau `<` dan merusak markup.
 - Modal buka/tutup wajib lewat `activateModal()`/`deactivateModal()` supaya fokus, trap Tab, dan Escape tetap jalan. Modal baru: daftarkan juga di handler Escape.
 - Layout mobile-first kolom tunggal (`max-w-md`) di semua ukuran layar.
+- **Tipografi (target utama iPhone):** pakai hanya skala di `tailwind.config` (`fontSize`): `text-micro` 11px (overline/label), `text-caption` 12px, `text-xs` 13px (sekunder), `text-sm` 15px (isi/ulasan), `text-base` 16px (judul modal, input), lalu `lg`/`xl`/dst bawaan. DILARANG `text-[Npx]` dan ukuran di bawah 11px. Input mobile tetap 16px (cegah zoom otomatis iOS).
 - `sw.js`: naikkan `CACHE_NAME` saat `index.html` atau aset berubah; jangan cache respons Supabase maupun `api.themoviedb.org`.
 - Menambah pustaka atau aset pihak ketiga: tambahkan ke "Kredit & Lisensi" di footer dan bagian Lisensi di `README.md`.
 

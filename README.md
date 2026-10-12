@@ -137,7 +137,7 @@ Key v3 hanya bisa membaca data publik dan memang terlihat di klien. Kalau bocor,
 
 ## ♿ Aksesibilitas
 
-Kontrol memakai elemen native, kartu film bisa dibuka dengan Enter/Space, modal menahan fokus dan menutup dengan Escape, target sentuh minimal 44×44 px, dan `prefers-reduced-motion` dihormati. Layout kolom tunggal `max-w-md` di semua ukuran layar.
+Skala tipografi tunggal untuk iPhone (teks terkecil 11px, isi 15px, input 16px agar tidak memicu zoom otomatis iOS). Kontrol memakai elemen native, kartu film bisa dibuka dengan Enter/Space, modal menahan fokus dan menutup dengan Escape, target sentuh minimal 44×44 px, dan `prefers-reduced-motion` dihormati. Layout kolom tunggal `max-w-md` di semua ukuran layar.
 
 ## 📜 Lisensi dan Kredit
 

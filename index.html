@@ -24,6 +24,13 @@
             darkMode: 'class',
             theme: {
                 extend: {
+                    // Skala tipografi iPhone: micro 11 (overline/label), caption 12, xs 13 (sekunder), sm 15 (isi), base 16+ bawaan
+                    fontSize: {
+                        micro: ['11px', { lineHeight: '1.35' }],
+                        caption: ['12px', { lineHeight: '1.4' }],
+                        xs: ['13px', { lineHeight: '1.45' }],
+                        sm: ['15px', { lineHeight: '1.5' }]
+                    },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
                         display: ['Anton', 'sans-serif'],
@@ -81,7 +88,7 @@
             background-color: #000000; 
             color: #f8fafc; 
             font-family: 'Inter', sans-serif;
-            font-size: 14px;
+            font-size: 15px;
             -webkit-tap-highlight-color: transparent;
         }
         .font-display { font-family: 'Outfit', sans-serif; }
@@ -242,7 +249,7 @@
             <!-- Bagian Kanan Atas: Ping Indicator & Tombol Gembok -->
             <div class="flex items-center gap-1.5 sm:gap-2">
                 <!-- Ping Indicator -->
-                <button type="button" id="ping-indicator" onclick="triggerHaptic(); checkPing()" class="touch-target px-2.5 rounded-xl bg-neutral-950 border border-neutral-800 text-[11px] text-slate-300 flex items-center gap-1.5 tap-scale shadow-sm transition hover:border-neutral-700" aria-label="Cek koneksi server">
+                <button type="button" id="ping-indicator" onclick="triggerHaptic(); checkPing()" class="touch-target px-2.5 rounded-xl bg-neutral-950 border border-neutral-800 text-caption text-slate-300 flex items-center gap-1.5 tap-scale shadow-sm transition hover:border-neutral-700" aria-label="Cek koneksi server">
                     <span id="ping-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true"></span>
                     <span id="ping-text" class="font-mono font-medium">-- ms</span>
                 </button>
@@ -302,14 +309,14 @@
             <!-- NOW SHOWING Header -->
             <div class="text-center pb-0.5">
                 <div class="marquee-label justify-center font-anton text-xl tracking-[0.2em] text-amber-400 uppercase leading-none">Now Showing</div>
-                <div class="text-[11px] text-slate-400 mt-1.5 tracking-[0.25em] uppercase">A Zald &amp; Micel Production</div>
+                <div class="text-caption text-slate-400 mt-1.5 tracking-[0.25em] uppercase">A Zald &amp; Micel Production</div>
             </div>
 
             <!-- Ticket: total hari bersama -->
             <div class="ticket-card projector-glow flex flex-col items-center gap-1.5 rounded-xl border border-dashed border-amber-500/40 px-4 py-4 shadow-inner">
-                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.3em]">Hari Bersama</div>
+                <div class="text-caption font-bold text-slate-400 uppercase tracking-[0.3em]">Hari Bersama</div>
                 <div id="relationship-days" class="font-anton text-6xl gold-text counting-glow leading-none">0</div>
-                <div class="text-[11px] font-semibold text-slate-400">Sejak 5 April 2025</div>
+                <div class="text-caption font-semibold text-slate-400">Sejak 5 April 2025</div>
             </div>
 
             <!-- Showtimes: Dual Clocks (Clickable to open Time & Alarm Calc) -->
@@ -321,13 +328,13 @@
                         <div class="flex items-center justify-between mb-1.5">
                             <div class="flex items-center gap-1.5">
                                 <img src="assets/pfp_zald.png" alt="Zald" class="w-5 h-5 rounded-md object-cover shadow-sm">
-                                <span class="text-[11px] font-bold text-sky-400 uppercase tracking-wider">Zald</span>
+                                <span class="text-caption font-bold text-sky-400 uppercase tracking-wider">Zald</span>
                             </div>
-                            <span class="text-[10px] font-semibold text-sky-200 bg-sky-900/60 px-1 py-0.5 rounded">UTC+5:30</span>
+                            <span class="text-micro font-semibold text-sky-200 bg-sky-900/60 px-1 py-0.5 rounded">UTC+5:30</span>
                         </div>
                         <div class="flex items-baseline justify-between">
                             <div id="zald-clock" class="font-display text-lg text-sky-200 tracking-wide leading-none">--:-- --</div>
-                            <span id="zald-date" class="text-[10px] text-slate-300">-- ---</span>
+                            <span id="zald-date" class="text-micro text-slate-300">-- ---</span>
                         </div>
                     </div>
 
@@ -336,13 +343,13 @@
                         <div class="flex items-center justify-between mb-1.5">
                             <div class="flex items-center gap-1.5">
                                 <img src="assets/pfp_micel.png" alt="Micel" class="w-5 h-5 rounded-md object-cover shadow-sm">
-                                <span class="text-[11px] font-bold text-pink-400 uppercase tracking-wider">Micel</span>
+                                <span class="text-caption font-bold text-pink-400 uppercase tracking-wider">Micel</span>
                             </div>
-                            <span class="text-[10px] font-semibold text-pink-200 bg-pink-900/60 px-1 py-0.5 rounded">UTC+9:00</span>
+                            <span class="text-micro font-semibold text-pink-200 bg-pink-900/60 px-1 py-0.5 rounded">UTC+9:00</span>
                         </div>
                         <div class="flex items-baseline justify-between">
                             <div id="micel-clock" class="font-display text-lg text-pink-200 tracking-wide leading-none">--:-- --</div>
-                            <span id="micel-date" class="text-[10px] text-slate-300">-- ---</span>
+                            <span id="micel-date" class="text-micro text-slate-300">-- ---</span>
                         </div>
                     </div>
                 </div>
@@ -356,34 +363,34 @@
 
                 <div class="flex whitespace-nowrap overflow-hidden">
                     <div class="flex items-center gap-6 marquee-track animate-marquee py-1">
-                        <span class="inline-flex items-center gap-1.5 text-[11px] text-amber-400 font-semibold flex-shrink-0">
+                        <span class="inline-flex items-center gap-1.5 text-caption text-amber-400 font-semibold flex-shrink-0">
                             <i class="fa-solid fa-scroll"></i> "I lack in nothing but thy sight." — Shakespeare
                         </span>
-                        <span class="text-slate-500 text-[10px]">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 italic flex-shrink-0">
+                        <span class="text-slate-500 text-micro">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-caption text-slate-300 italic flex-shrink-0">
                             "Love is not love which alters when it alteration finds." — Sonnet 116
                         </span>
-                        <span class="text-slate-500 text-[10px]">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-[11px] text-pink-400 font-semibold flex-shrink-0">
-                            <i class="fa-solid fa-heart text-[9px]"></i> "Absence is to love what wind is to fire; it extinguishes the small, it inflames the great."
+                        <span class="text-slate-500 text-micro">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-caption text-pink-400 font-semibold flex-shrink-0">
+                            <i class="fa-solid fa-heart text-micro"></i> "Absence is to love what wind is to fire; it extinguishes the small, it inflames the great."
                         </span>
-                        <span class="text-slate-500 text-[10px]">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 italic flex-shrink-0">
+                        <span class="text-slate-500 text-micro">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-caption text-slate-300 italic flex-shrink-0">
                             "Doubt thou the stars are fire; doubt that the sun doth move... But never doubt I love." — Hamlet
                         </span>
-                        <span class="text-slate-500 text-[10px]">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-[11px] text-amber-400 font-semibold flex-shrink-0">
-                            <i class="fa-solid fa-feather text-[9px]"></i> "Parting is such sweet sorrow." — Romeo & Juliet
+                        <span class="text-slate-500 text-micro">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-caption text-amber-400 font-semibold flex-shrink-0">
+                            <i class="fa-solid fa-feather text-micro"></i> "Parting is such sweet sorrow." — Romeo & Juliet
                         </span>
-                        <span class="text-slate-500 text-[10px]">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-[11px] text-slate-300 italic flex-shrink-0">
+                        <span class="text-slate-500 text-micro">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-caption text-slate-300 italic flex-shrink-0">
                             "Love looks not with the eyes, but with the mind, and therefore is winged Cupid painted blind." — A Midsummer Night's Dream
                         </span>
-                        <span class="text-slate-500 text-[10px]">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-[11px] text-pink-400 font-semibold flex-shrink-0">
-                            <i class="fa-solid fa-moon text-[9px]"></i> "The iron tongue of midnight hath told twelve. Lovers, to bed." — A Midsummer Night's Dream
+                        <span class="text-slate-500 text-micro">•</span>
+                        <span class="inline-flex items-center gap-1.5 text-caption text-pink-400 font-semibold flex-shrink-0">
+                            <i class="fa-solid fa-moon text-micro"></i> "The iron tongue of midnight hath told twelve. Lovers, to bed." — A Midsummer Night's Dream
                         </span>
-                        <span class="text-slate-500 text-[10px]">•</span>
+                        <span class="text-slate-500 text-micro">•</span>
                     </div>
                 </div>
             </div>
@@ -398,8 +405,8 @@
             <div id="watchlist-add" class="hidden mb-3">
                 <div class="flex gap-2">
                     <input type="text" id="wl-judul" placeholder="Judul film atau series..." maxlength="150" class="w-full px-3.5 py-2.5 bg-black border border-neutral-800 rounded-xl text-xs focus:outline-none focus:border-amber-400 text-slate-200 transition" onkeydown="if(event.key==='Enter'){event.preventDefault();addWatchlistFromInput();}">
-                    <button type="button" onclick="searchTmdb('wl-judul','wl-tmdb-results','applyTmdbToWatchlist')" class="shrink-0 px-3 rounded-xl bg-neutral-900 border border-neutral-800 text-amber-400 text-[11px] font-bold tap-scale hover:border-amber-400" aria-label="Cari di TMDB"><i class="fa-solid fa-magnifying-glass mr-1"></i>TMDB</button>
-                    <button type="button" onclick="addWatchlistFromInput()" class="shrink-0 px-3 rounded-xl popcorn-gradient text-black text-[11px] font-bold tap-scale">Tambah</button>
+                    <button type="button" onclick="searchTmdb('wl-judul','wl-tmdb-results','applyTmdbToWatchlist')" class="shrink-0 px-3 rounded-xl bg-neutral-900 border border-neutral-800 text-amber-400 text-caption font-bold tap-scale hover:border-amber-400" aria-label="Cari di TMDB"><i class="fa-solid fa-magnifying-glass mr-1"></i>TMDB</button>
+                    <button type="button" onclick="addWatchlistFromInput()" class="shrink-0 px-3 rounded-xl popcorn-gradient text-black text-caption font-bold tap-scale">Tambah</button>
                 </div>
                 <div id="wl-tmdb-results" class="mt-2 space-y-1.5 hidden" aria-live="polite"></div>
             </div>
@@ -432,7 +439,7 @@
                 <button onclick="triggerHaptic(); setViewerFilter('micel', this)" class="filter-btn touch-target px-3.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-slate-300 tap-scale flex-shrink-0 transition">Micel Picks</button>
                 <div class="h-4 w-[1px] bg-neutral-800 mx-1 flex-shrink-0"></div>
                 <button onclick="triggerHaptic(); toggleTopRatedFilter(this)" id="top-rated-btn" class="touch-target px-3.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-amber-400 tap-scale flex-shrink-0 transition flex items-center gap-1.5 shadow-sm">
-                    <i class="fa-solid fa-star text-[10px]"></i> Top 9+
+                    <i class="fa-solid fa-star text-micro"></i> Top 9+
                 </button>
             </div>
         </section>
@@ -441,8 +448,8 @@
         <section class="space-y-3">
             <div class="flex items-center justify-between px-1">
                 <h2 class="marquee-label font-display text-sm text-slate-400 uppercase tracking-[0.25em] leading-none pt-1">Bulan Tayang</h2>
-                <span class="text-[11px] text-slate-400 flex items-center gap-1.5">
-                    <i class="fa-solid fa-arrows-left-right text-amber-400/70 text-[9px]"></i> Geser antar bulan
+                <span class="text-caption text-slate-400 flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrows-left-right text-amber-400/70 text-micro"></i> Geser antar bulan
                 </span>
             </div>
 
@@ -475,9 +482,9 @@
         <section class="pt-6 text-center">
             <div class="film-strip -mx-4"></div>
             <div class="mt-5 space-y-1.5">
-                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.3em]">Total Movies Watched</div>
+                <div class="text-caption font-bold text-slate-400 uppercase tracking-[0.3em]">Total Movies Watched</div>
                 <div id="total-movies-count" class="font-display text-5xl text-slate-100 leading-none tracking-wider">0</div>
-                <p class="text-[11px] text-slate-500 italic">"Every film is a memory we keep forever."</p>
+                <p class="text-caption text-slate-500 italic">"Every film is a memory we keep forever."</p>
             </div>
         </section>
 
@@ -498,21 +505,21 @@
                             <img src="assets/pfp_zald.png" alt="Zald" class="w-5 h-5 rounded-md object-cover">
                             <span class="text-xs font-bold text-sky-400">Zald</span>
                         </div>
-                        <div class="space-y-1 text-[11px] text-slate-300">
+                        <div class="space-y-1 text-caption text-slate-300">
                             <p class="flex items-center gap-1.5">
-                                <i class="fa-solid fa-cake-candles text-sky-400 text-[10px]"></i> 
+                                <i class="fa-solid fa-cake-candles text-sky-400 text-micro"></i> 
                                 <span>Lahir: <strong class="text-white">17 Okt 1999</strong></span>
                             </p>
                             <p class="flex items-center gap-1.5">
-                                <i class="fa-solid fa-star text-sky-400 text-[10px]"></i> 
+                                <i class="fa-solid fa-star text-sky-400 text-micro"></i> 
                                 <span>Zodiak: <strong class="text-white">Libra</strong> | Shio: <strong class="text-white">Kelinci (Tanah)</strong></span>
                             </p>
                             <p class="flex items-center gap-1.5">
-                                <i class="fa-solid fa-clock text-sky-400 text-[10px]"></i> 
+                                <i class="fa-solid fa-clock text-sky-400 text-micro"></i> 
                                 <span>Usia: <strong id="zald-age" class="text-white">--</strong></span>
                             </p>
                             <p class="flex items-center gap-1.5">
-                                <i class="fa-solid fa-gift text-sky-400 text-[10px]"></i> 
+                                <i class="fa-solid fa-gift text-sky-400 text-micro"></i> 
                                 <span>Ultah Berikutnya: <strong id="zald-countdown" class="text-amber-300">--</strong></span>
                             </p>
                         </div>
@@ -524,21 +531,21 @@
                             <img src="assets/pfp_micel.png" alt="Micel" class="w-5 h-5 rounded-md object-cover">
                             <span class="text-xs font-bold text-pink-400">Micel</span>
                         </div>
-                        <div class="space-y-1 text-[11px] text-slate-300">
+                        <div class="space-y-1 text-caption text-slate-300">
                             <p class="flex items-center gap-1.5">
-                                <i class="fa-solid fa-cake-candles text-pink-400 text-[10px]"></i> 
+                                <i class="fa-solid fa-cake-candles text-pink-400 text-micro"></i> 
                                 <span>Lahir: <strong class="text-white">29 Mei 2003</strong></span>
                             </p>
                             <p class="flex items-center gap-1.5">
-                                <i class="fa-solid fa-star text-pink-400 text-[10px]"></i> 
+                                <i class="fa-solid fa-star text-pink-400 text-micro"></i> 
                                 <span>Zodiak: <strong class="text-white">Gemini</strong> | Shio: <strong class="text-white">Kambing (Air)</strong></span>
                             </p>
                             <p class="flex items-center gap-1.5">
-                                <i class="fa-solid fa-clock text-pink-400 text-[10px]"></i> 
+                                <i class="fa-solid fa-clock text-pink-400 text-micro"></i> 
                                 <span>Usia: <strong id="micel-age" class="text-white">--</strong></span>
                             </p>
                             <p class="flex items-center gap-1.5">
-                                <i class="fa-solid fa-gift text-pink-400 text-[10px]"></i> 
+                                <i class="fa-solid fa-gift text-pink-400 text-micro"></i> 
                                 <span>Ultah Berikutnya: <strong id="micel-countdown" class="text-amber-300">--</strong></span>
                             </p>
                         </div>
@@ -548,19 +555,19 @@
 
             <div class="space-y-1.5">
                 <div class="font-anton text-xs tracking-[0.45em] text-slate-500 uppercase pl-[0.45em]">The End</div>
-                <p class="text-[11px] text-slate-400">
+                <p class="text-caption text-slate-400">
                     Cinema log archive by <span class="text-pink-400 font-semibold">Zald &amp; Micel</span>
                 </p>
-                <p class="text-[10px] text-slate-600 tracking-wide">
+                <p class="text-micro text-slate-600 tracking-wide">
                     &copy; 2026 Bubi's Popcorn
                 </p>
                 <a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer" class="mt-3 flex flex-col items-center gap-1.5">
                     <img src="assets/tmdb-logo.svg" alt="TMDB" width="273" height="36" class="h-3 w-auto opacity-90">
-                    <span class="max-w-[16rem] text-[10px] leading-snug text-slate-500">This product uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.</span>
+                    <span class="max-w-[16rem] text-micro leading-snug text-slate-500">This product uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.</span>
                 </a>
                 <details class="group mx-auto max-w-xs text-left pt-2 pb-16">
-                    <summary class="cursor-pointer list-none text-center text-[10px] text-slate-500 hover:text-slate-300 underline decoration-dotted underline-offset-2">Kredit &amp; Lisensi</summary>
-                    <div class="mt-2.5 p-3 rounded-xl bg-neutral-950 border border-neutral-900 space-y-2 text-[10px] leading-relaxed text-slate-500">
+                    <summary class="cursor-pointer list-none text-center text-micro text-slate-500 hover:text-slate-300 underline decoration-dotted underline-offset-2">Kredit &amp; Lisensi</summary>
+                    <div class="mt-2.5 p-3 rounded-xl bg-neutral-950 border border-neutral-900 space-y-2 text-micro leading-relaxed text-slate-500">
                         <p><a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer" class="text-slate-300 underline">TMDB</a>: data film (judul, poster, sinopsis, genre, pemeran, trailer).</p>
                         <p><a href="https://www.justwatch.com/" target="_blank" rel="noopener noreferrer" class="text-slate-300 underline">JustWatch</a>: data ketersediaan streaming, lewat TMDB.</p>
                         <p><a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener noreferrer" class="text-slate-300 underline">YouTube</a>: pemutar trailer, tunduk pada Ketentuan Layanan YouTube.</p>
@@ -606,7 +613,7 @@
     <div id="stats-modal" role="dialog" aria-modal="true" aria-labelledby="stats-title" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
         <div id="stats-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] pb-[env(safe-area-inset-bottom)]">
             <div class="px-4 py-3 border-b border-neutral-900 flex items-center justify-between bg-neutral-950">
-                <h3 id="stats-title" class="font-bold text-xs text-slate-200 font-display flex items-center gap-1.5">
+                <h3 id="stats-title" class="font-bold text-base text-slate-100 font-display flex items-center gap-1.5">
                     <i class="fa-solid fa-chart-simple text-amber-400"></i> Statistik Kita
                 </h3>
                 <button type="button" onclick="triggerHaptic(); closeStatsModal()" class="touch-target text-slate-400 hover:text-white tap-scale rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center" aria-label="Tutup">
@@ -616,8 +623,8 @@
             <div class="p-4 space-y-4 overflow-y-auto">
                 <div id="stats-grid" class="grid grid-cols-2 gap-2.5"></div>
                 <div class="p-3.5 rounded-2xl bg-neutral-900/60 border border-neutral-800 space-y-3 text-center">
-                    <div class="text-[11px] font-bold text-amber-400 uppercase tracking-[0.2em]">Roulette Nobar</div>
-                    <p class="text-[11px] text-slate-500">Dari daftar Mau Ditonton dan film yang baru ditonton salah satu dari kalian.</p>
+                    <div class="text-caption font-bold text-amber-400 uppercase tracking-[0.2em]">Roulette Nobar</div>
+                    <p class="text-caption text-slate-500">Dari daftar Mau Ditonton dan film yang baru ditonton salah satu dari kalian.</p>
                     <div id="roulette-result" class="min-h-[4rem] flex items-center justify-center text-sm font-bold text-slate-200" aria-live="polite">-</div>
                     <button type="button" id="roulette-btn" onclick="triggerHaptic(); spinRoulette()" class="w-full py-2.5 rounded-xl popcorn-gradient text-black text-xs font-bold tap-scale">
                         <i class="fa-solid fa-shuffle mr-1"></i> Putar!
@@ -625,7 +632,7 @@
                 </div>
                 <div class="p-3.5 rounded-2xl bg-neutral-900/60 border border-neutral-800 space-y-3">
                     <div class="flex items-center justify-between gap-2">
-                        <div class="text-[11px] font-bold text-amber-400 uppercase tracking-[0.2em]">Tahun dalam Film</div>
+                        <div class="text-caption font-bold text-amber-400 uppercase tracking-[0.2em]">Tahun dalam Film</div>
                         <select id="recap-year" onchange="renderRecap()" class="px-2 py-1 bg-black border border-neutral-800 rounded-lg text-xs text-slate-200" aria-label="Pilih tahun"></select>
                     </div>
                     <div id="recap-box" class="space-y-2 text-xs text-slate-300"></div>
@@ -634,7 +641,7 @@
                     </button>
                 </div>
                 <div class="p-3.5 rounded-2xl bg-neutral-900/60 border border-neutral-800 space-y-2">
-                    <div class="text-[11px] font-bold text-amber-400 uppercase tracking-[0.2em]">Cadangan Data</div>
+                    <div class="text-caption font-bold text-amber-400 uppercase tracking-[0.2em]">Cadangan Data</div>
                     <button type="button" onclick="triggerHaptic(); exportCsv()" class="w-full py-2 rounded-xl bg-neutral-900 border border-neutral-800 text-slate-200 text-xs font-bold tap-scale hover:border-amber-400">
                         <i class="fa-solid fa-file-arrow-down mr-1"></i> Ekspor CSV
                     </button>
@@ -643,7 +650,7 @@
                             <i class="fa-solid fa-file-arrow-up mr-1"></i> Impor CSV (admin)
                             <input type="file" accept=".csv,text/csv" class="sr-only" onchange="importCsv(this)">
                         </label>
-                        <p class="mt-1.5 text-[10px] text-slate-600">Format sendiri atau ekspor diary Letterboxd. Film dengan judul dan bulan yang sama dilewati.</p>
+                        <p class="mt-1.5 text-micro text-slate-600">Format sendiri atau ekspor diary Letterboxd. Film dengan judul dan bulan yang sama dilewati.</p>
                     </div>
                     <div id="tmdb-sync-wrap" class="hidden pt-1">
                         <button type="button" id="tmdb-sync-btn" onclick="triggerHaptic(); planTmdbSync()" class="w-full py-2 rounded-xl bg-neutral-900 border border-neutral-800 text-slate-200 text-xs font-bold tap-scale hover:border-amber-400">
@@ -662,7 +669,7 @@
         <div id="time-calc-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-xs rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col transform transition-all pb-[env(safe-area-inset-bottom)]">
             <!-- Header Modal Clean -->
             <div class="px-4 py-3 border-b border-neutral-900 flex items-center justify-between bg-neutral-950">
-                <h3 id="time-calc-title" class="font-bold text-xs text-slate-200 font-display flex items-center gap-1.5">
+                <h3 id="time-calc-title" class="font-bold text-base text-slate-100 font-display flex items-center gap-1.5">
                     <i class="fa-solid fa-clock text-amber-400"></i> Konverter Waktu
                 </h3>
                 <button type="button" onclick="triggerHaptic(); closeTimeCalcModal()" class="touch-target text-slate-400 hover:text-white tap-scale rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center" aria-label="Tutup konverter waktu">
@@ -677,9 +684,9 @@
                     <span id="conv-input-label" class="text-xs font-bold text-pink-400">
                         Waktu Jepang (JST):
                     </span>
-                    <button type="button" onclick="toggleConverterDirection()" class="px-2.5 py-1 rounded-lg bg-black hover:bg-neutral-800 border border-neutral-800 text-amber-300 text-[10px] font-bold tap-scale transition flex items-center gap-1">
+                    <button type="button" onclick="toggleConverterDirection()" class="px-2.5 py-1 rounded-lg bg-black hover:bg-neutral-800 border border-neutral-800 text-amber-300 text-micro font-bold tap-scale transition flex items-center gap-1">
                         <span id="conv-dir-btn-text">Tukar Arah</span>
-                        <i class="fa-solid fa-arrows-rotate text-[9px]"></i>
+                        <i class="fa-solid fa-arrows-rotate text-micro"></i>
                     </button>
                 </div>
 
@@ -689,7 +696,7 @@
 
                 <!-- Output Hasil Perbedaan Jam Clean -->
                 <div class="p-4 rounded-2xl bg-black border border-neutral-800 text-center space-y-1 shadow-md">
-                    <span id="conv-target-label" class="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">Hasil Waktu Zald:</span>
+                    <span id="conv-target-label" class="text-micro font-semibold text-slate-400 block uppercase tracking-wider">Hasil Waktu Zald:</span>
                     <div id="conv-target-result" class="text-3xl font-black font-display text-amber-300 tracking-tight">
                         06:00 AM
                     </div>
@@ -705,8 +712,8 @@
                 <div class="w-12 h-12 rounded-2xl bg-amber-400/10 border border-amber-400/20 text-amber-400 flex items-center justify-center mx-auto text-lg mb-2 shadow-inner">
                     <i class="fa-solid fa-lock" id="modal-lock-icon"></i>
                 </div>
-                <h3 id="password-modal-title" class="font-bold text-sm text-slate-100 font-display">Akses Admin Terkunci</h3>
-                <p class="text-[11px] text-slate-400 leading-relaxed">Masukkan password untuk membuka mode admin.</p>
+                <h3 id="password-modal-title" class="font-bold text-base text-slate-100 font-display">Akses Admin Terkunci</h3>
+                <p class="text-caption text-slate-400 leading-relaxed">Masukkan password untuk membuka mode admin.</p>
             </div>
 
             <form onsubmit="handlePasswordSubmit(event)" class="space-y-3">
@@ -729,7 +736,7 @@
             <div class="px-5 py-3.5 border-b border-neutral-900 flex items-center justify-between flex-shrink-0 bg-neutral-950">
                 <div class="flex items-center gap-2.5">
                     <div class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></div>
-                    <h3 id="modal-form-title" class="font-bold text-sm text-slate-100 font-display">Tambah Ulasan Baru</h3>
+                    <h3 id="modal-form-title" class="font-bold text-base text-slate-100 font-display">Tambah Ulasan Baru</h3>
                 </div>
                 <button type="button" onclick="triggerHaptic(); requestCloseAddModal()" class="touch-target text-slate-400 hover:text-white tap-scale rounded-xl bg-black border border-neutral-800 flex items-center justify-center" aria-label="Tutup formulir ulasan">
                     <i class="fa-solid fa-xmark text-sm"></i>
@@ -744,7 +751,7 @@
                     <div class="flex gap-2">
                         <input type="text" name="judul" id="form-judul" required placeholder="Judul film..." 
                             class="w-full px-3.5 py-3 bg-black border border-neutral-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-slate-200 transition shadow-inner">
-                        <button type="button" onclick="searchTmdb()" class="shrink-0 px-3 rounded-xl bg-neutral-900 border border-neutral-800 text-amber-400 text-[11px] font-bold tap-scale hover:border-amber-400" title="Isi otomatis dari TMDB">
+                        <button type="button" onclick="searchTmdb()" class="shrink-0 px-3 rounded-xl bg-neutral-900 border border-neutral-800 text-amber-400 text-caption font-bold tap-scale hover:border-amber-400" title="Isi otomatis dari TMDB">
                             <i class="fa-solid fa-magnifying-glass mr-1"></i>TMDB
                         </button>
                     </div>
@@ -801,7 +808,7 @@
                         </div>
                         <div>
                             <span class="block text-xs font-bold text-amber-300 font-display">Certified Fresh</span>
-                            <span class="block text-[10px] text-slate-400">Penghargaan khusus film terbaik</span>
+                            <span class="block text-micro text-slate-400">Penghargaan khusus film terbaik</span>
                         </div>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
@@ -819,7 +826,7 @@
                                 <span class="text-xs font-bold text-sky-400 tracking-wide">ZALD REVIEW</span>
                             </div>
                             <div class="flex items-center gap-1.5">
-                                <span id="err-hint-aku" class="hidden text-[10px] font-bold text-red-400 animate-pulse">Max 10!</span>
+                                <span id="err-hint-aku" class="hidden text-micro font-bold text-red-400 animate-pulse">Max 10!</span>
                                 <label for="form-rating-aku" class="sr-only">Rating Zald dari 0 sampai 10</label>
                                 <input type="number" step="0.1" name="rating_aku" id="form-rating-aku" aria-describedby="err-hint-aku" placeholder="0 - 10" 
                                     oninput="validateRatingInput(this, 'err-hint-aku', 'sky')"
@@ -828,11 +835,11 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-1.5 pt-1">
-                            <span class="text-[11px] text-slate-400">Quick:</span>
-                            <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 7)" class="touch-target min-w-11 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-[11px] text-sky-400 font-bold tap-scale">7</button>
-                            <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 8)" class="touch-target min-w-11 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-[11px] text-sky-400 font-bold tap-scale">8</button>
-                            <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 8.5)" class="touch-target min-w-11 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-[11px] text-sky-400 font-bold tap-scale">8.5</button>
-                            <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 9)" class="touch-target min-w-11 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-[11px] text-sky-400 font-bold tap-scale">9</button>
+                            <span class="text-caption text-slate-400">Quick:</span>
+                            <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 7)" class="touch-target min-w-11 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-caption text-sky-400 font-bold tap-scale">7</button>
+                            <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 8)" class="touch-target min-w-11 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-caption text-sky-400 font-bold tap-scale">8</button>
+                            <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 8.5)" class="touch-target min-w-11 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-caption text-sky-400 font-bold tap-scale">8.5</button>
+                            <button type="button" onclick="setQuickRating('form-rating-aku', 'err-hint-aku', 'sky', 9)" class="touch-target min-w-11 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-caption text-sky-400 font-bold tap-scale">9</button>
                         </div>
                         <label for="form-review-aku" class="sr-only">Ulasan Zald</label>
                         <textarea name="review_aku" id="form-review-aku" rows="4" placeholder="Tulis ulasan mendalam dari Zald di sini..." 
@@ -847,7 +854,7 @@
                                 <span class="text-xs font-bold text-pink-400 tracking-wide">MICEL REVIEW</span>
                             </div>
                             <div class="flex items-center gap-1.5">
-                                <span id="err-hint-dia" class="hidden text-[10px] font-bold text-red-400 animate-pulse">Max 10!</span>
+                                <span id="err-hint-dia" class="hidden text-micro font-bold text-red-400 animate-pulse">Max 10!</span>
                                 <label for="form-rating-dia" class="sr-only">Rating Micel dari 0 sampai 10</label>
                                 <input type="number" step="0.1" name="rating_dia" id="form-rating-dia" aria-describedby="err-hint-dia" placeholder="0 - 10" 
                                     oninput="validateRatingInput(this, 'err-hint-dia', 'pink')"
@@ -856,11 +863,11 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-1.5 pt-1">
-                            <span class="text-[11px] text-slate-400">Quick:</span>
-                            <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 7)" class="touch-target min-w-11 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-[11px] text-pink-400 font-bold tap-scale">7</button>
-                            <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 8)" class="touch-target min-w-11 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-[11px] text-pink-400 font-bold tap-scale">8</button>
-                            <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 8.5)" class="touch-target min-w-11 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-[11px] text-pink-400 font-bold tap-scale">8.5</button>
-                            <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 9)" class="touch-target min-w-11 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-[11px] text-pink-400 font-bold tap-scale">9</button>
+                            <span class="text-caption text-slate-400">Quick:</span>
+                            <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 7)" class="touch-target min-w-11 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-caption text-pink-400 font-bold tap-scale">7</button>
+                            <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 8)" class="touch-target min-w-11 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-caption text-pink-400 font-bold tap-scale">8</button>
+                            <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 8.5)" class="touch-target min-w-11 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-caption text-pink-400 font-bold tap-scale">8.5</button>
+                            <button type="button" onclick="setQuickRating('form-rating-dia', 'err-hint-dia', 'pink', 9)" class="touch-target min-w-11 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-caption text-pink-400 font-bold tap-scale">9</button>
                         </div>
                         <label for="form-review-dia" class="sr-only">Ulasan Micel</label>
                         <textarea name="review_dia" id="form-review-dia" rows="4" placeholder="Tulis ulasan mendalam dari Micel di sini..." 
@@ -888,11 +895,11 @@
                     <i class="fa-solid fa-xmark text-xs"></i>
                 </button>
 
-                <button onclick="triggerHaptic(); copyMovieDetailSummary()" class="absolute top-3 left-3 z-10 px-3 py-1.5 rounded-full bg-black/80 border border-neutral-800 text-amber-300 text-[10px] font-bold flex items-center gap-1.5 tap-scale shadow" title="Salin Ringkasan Ulasan">
-                    <i class="fa-regular fa-copy text-[10px]"></i> Salin Ringkasan
+                <button onclick="triggerHaptic(); copyMovieDetailSummary()" class="absolute top-3 left-3 z-10 px-3 py-1.5 rounded-full bg-black/80 border border-neutral-800 text-amber-300 text-micro font-bold flex items-center gap-1.5 tap-scale shadow" title="Salin Ringkasan Ulasan">
+                    <i class="fa-regular fa-copy text-micro"></i> Salin Ringkasan
                 </button>
 
-                <button type="button" onclick="triggerHaptic(); shareMovieDetail()" class="absolute top-3 right-16 z-10 touch-target rounded-full bg-black/80 border border-neutral-800 text-amber-300 text-[11px] flex items-center justify-center tap-scale shadow hover:border-amber-400/60 transition" aria-label="Bagikan film">
+                <button type="button" onclick="triggerHaptic(); shareMovieDetail()" class="absolute top-3 right-16 z-10 touch-target rounded-full bg-black/80 border border-neutral-800 text-amber-300 text-caption flex items-center justify-center tap-scale shadow hover:border-amber-400/60 transition" aria-label="Bagikan film">
                     <i class="fa-solid fa-share-nodes"></i>
                 </button>
 
@@ -900,13 +907,13 @@
                     <div>
                         <div class="flex items-center gap-1.5 mb-1 flex-wrap">
                             <span id="detail-year" class="text-xs text-slate-300 font-semibold">2026</span>
-                            <span id="detail-watch-month" class="px-2 py-0.5 rounded-lg bg-neutral-900 text-amber-300 text-[10px] font-semibold">Januari 2026</span>
-                            <span id="detail-viewer-badge" class="px-2 py-0.5 rounded-lg bg-neutral-900 text-slate-300 text-[10px] font-bold">Nonton Bareng</span>
-                            <span id="detail-badge-wrapper" class="hidden px-2 py-0.5 rounded-lg gold-gradient text-black text-[10px] font-extrabold flex items-center gap-1 shadow-md">
-                                <i class="fa-solid fa-award text-[9px]"></i> Certified Fresh
+                            <span id="detail-watch-month" class="px-2 py-0.5 rounded-lg bg-neutral-900 text-amber-300 text-micro font-semibold">Januari 2026</span>
+                            <span id="detail-viewer-badge" class="px-2 py-0.5 rounded-lg bg-neutral-900 text-slate-300 text-micro font-bold">Nonton Bareng</span>
+                            <span id="detail-badge-wrapper" class="hidden px-2 py-0.5 rounded-lg gold-gradient text-black text-micro font-extrabold flex items-center gap-1 shadow-md">
+                                <i class="fa-solid fa-award text-micro"></i> Certified Fresh
                             </span>
                         </div>
-                        <h2 id="detail-title" class="text-lg font-black font-display text-white tracking-tight line-clamp-1">Title</h2>
+                        <h2 id="detail-title" class="text-2xl font-black font-display text-white tracking-tight line-clamp-1">Title</h2>
                     </div>
                 </div>
             </div>
@@ -916,14 +923,14 @@
                     <div id="detail-box-zald" class="flex items-center gap-2.5">
                         <img src="assets/pfp_zald.png" alt="Zald" class="w-8 h-8 rounded-xl object-cover shadow-sm">
                         <div>
-                            <div class="text-[10px] font-semibold text-slate-400">Rating Zald</div>
+                            <div class="text-micro font-semibold text-slate-400">Rating Zald</div>
                             <div id="detail-zald-score" class="text-xs sm:text-sm font-bold text-sky-400">8.0</div>
                         </div>
                     </div>
                     <div id="detail-box-micel" class="flex items-center gap-2.5 border-l border-neutral-800 pl-3">
                         <img src="assets/pfp_micel.png" alt="Micel" class="w-8 h-8 rounded-xl object-cover shadow-sm">
                         <div>
-                            <div class="text-[10px] font-semibold text-slate-400">Rating Micel</div>
+                            <div class="text-micro font-semibold text-slate-400">Rating Micel</div>
                             <div id="detail-micel-score" class="text-xs sm:text-sm font-bold text-pink-400">8.5</div>
                         </div>
                     </div>
@@ -950,13 +957,13 @@
                     <div id="detail-tmdb-meta" class="flex flex-wrap gap-1.5"></div>
                     <div>
                         <p id="detail-tmdb-overview" class="text-xs text-slate-300 leading-relaxed line-clamp-3"></p>
-                        <button type="button" id="detail-tmdb-more" onclick="toggleOverview()" aria-expanded="false" class="hidden mt-1 text-[11px] font-semibold text-amber-400 hover:text-amber-300">Selengkapnya</button>
+                        <button type="button" id="detail-tmdb-more" onclick="toggleOverview()" aria-expanded="false" class="hidden mt-1 text-caption font-semibold text-amber-400 hover:text-amber-300">Selengkapnya</button>
                     </div>
-                    <p id="detail-tmdb-crew" class="text-[11px] text-slate-500"></p>
-                    <p id="detail-tmdb-stream" class="text-[11px] text-slate-500"></p>
+                    <p id="detail-tmdb-crew" class="text-caption text-slate-500"></p>
+                    <p id="detail-tmdb-stream" class="text-caption text-slate-500"></p>
                     <div id="detail-tmdb-player" class="hidden space-y-1.5">
                         <div id="detail-tmdb-frame" class="aspect-video w-full rounded-xl overflow-hidden bg-black border border-neutral-800"></div>
-                        <a id="detail-tmdb-yt-link" href="#" target="_blank" rel="noopener noreferrer" class="text-[10px] text-slate-500 hover:text-slate-300 underline">Video tidak muncul? Buka di YouTube</a>
+                        <a id="detail-tmdb-yt-link" href="#" target="_blank" rel="noopener noreferrer" class="text-micro text-slate-500 hover:text-slate-300 underline">Video tidak muncul? Buka di YouTube</a>
                     </div>
                 </div>
 
@@ -1568,11 +1575,11 @@
 
             let watcherBadgeHTML = '';
             if (watcher === 'zald') {
-                watcherBadgeHTML = `<span class="absolute top-2.5 left-2.5 bg-black/90 border border-sky-500/40 text-sky-400 px-2 py-0.5 rounded-lg text-[11px] font-bold shadow">Zald Picks</span>`;
+                watcherBadgeHTML = `<span class="absolute top-2.5 left-2.5 bg-black/90 border border-sky-500/40 text-sky-400 px-2 py-0.5 rounded-lg text-caption font-bold shadow">Zald Picks</span>`;
             } else if (watcher === 'micel') {
-                watcherBadgeHTML = `<span class="absolute top-2.5 left-2.5 bg-black/90 border border-pink-500/40 text-pink-400 px-2 py-0.5 rounded-lg text-[11px] font-bold shadow">Micel Picks</span>`;
+                watcherBadgeHTML = `<span class="absolute top-2.5 left-2.5 bg-black/90 border border-pink-500/40 text-pink-400 px-2 py-0.5 rounded-lg text-caption font-bold shadow">Micel Picks</span>`;
             } else if (isCertified) {
-                watcherBadgeHTML = `<span class="absolute top-2.5 left-2.5 gold-gradient px-2 py-0.5 rounded-lg text-[10px] font-extrabold text-black flex items-center gap-1 shadow-lg"><i class="fa-solid fa-award text-[8px]"></i> FRESH</span>`;
+                watcherBadgeHTML = `<span class="absolute top-2.5 left-2.5 gold-gradient px-2 py-0.5 rounded-lg text-micro font-extrabold text-black flex items-center gap-1 shadow-lg"><i class="fa-solid fa-award text-micro"></i> FRESH</span>`;
             }
 
             let ratingsHTML = '';
@@ -1580,7 +1587,7 @@
                 ratingsHTML = `
                     <div class="flex items-center justify-center gap-2 rounded-xl bg-sky-400/10 border border-sky-400/20 py-1.5 shadow-inner">
                         <img src="assets/pfp_zald.png" class="w-4 h-4 rounded-full object-cover shadow-sm">
-                        <span class="text-[11px] font-bold text-sky-400 uppercase">Zald</span>
+                        <span class="text-caption font-bold text-sky-400 uppercase">Zald</span>
                         <span class="font-black text-slate-100 text-sm leading-none">${escapeHtml(dispZ)}</span>
                     </div>
                 `;
@@ -1588,7 +1595,7 @@
                 ratingsHTML = `
                     <div class="flex items-center justify-center gap-2 rounded-xl bg-pink-400/10 border border-pink-400/20 py-1.5 shadow-inner">
                         <img src="assets/pfp_micel.png" class="w-4 h-4 rounded-full object-cover shadow-sm">
-                        <span class="text-[11px] font-bold text-pink-400 uppercase">Micel</span>
+                        <span class="text-caption font-bold text-pink-400 uppercase">Micel</span>
                         <span class="font-black text-slate-100 text-sm leading-none">${escapeHtml(dispM)}</span>
                     </div>
                 `;
@@ -1611,13 +1618,13 @@
             card.innerHTML = `
                 <div class="relative aspect-[3/4] w-full overflow-hidden bg-black">
                     <img src="${escapeHtml(posterUrl)}" alt="${escapeHtml(movie.judul)}" loading="lazy" decoding="async" class="w-full h-full object-cover transform hover:scale-110 transition duration-500" onerror="posterFallback(this)">
-                    <span class="absolute top-2.5 right-2.5 bg-black/85 backdrop-blur px-2 py-0.5 rounded-lg text-[10px] font-bold text-slate-300 border border-neutral-800 shadow">${escapeHtml(movie.tahun || '')}</span>
+                    <span class="absolute top-2.5 right-2.5 bg-black/85 backdrop-blur px-2 py-0.5 rounded-lg text-micro font-bold text-slate-300 border border-neutral-800 shadow">${escapeHtml(movie.tahun || '')}</span>
                     ${watcherBadgeHTML}
                 </div>
                 <div class="p-3 flex flex-col justify-between flex-grow space-y-2.5">
                     <div>
                         <h3 class="font-display text-base ${isCertified ? 'text-amber-200' : 'text-slate-100'} line-clamp-1 tracking-wide uppercase">${escapeHtml(movie.judul) || 'Tanpa Judul'}</h3>
-                        <p class="text-[11px] text-slate-400 line-clamp-1 mt-0.5">${escapeHtml(formatMonthDisplay(movie.bulan)) || '-'}</p>
+                        <p class="text-caption text-slate-400 line-clamp-1 mt-0.5">${escapeHtml(formatMonthDisplay(movie.bulan)) || '-'}</p>
                     </div>
                     ${ratingsHTML}
                 </div>
@@ -1665,10 +1672,10 @@
                         <span class="font-display text-5xl leading-[0.8] stroke-number">${String(panelNumber).padStart(2, '0')}</span>
                         <div class="pb-0.5">
                             <div class="font-display text-lg text-amber-300 uppercase tracking-[0.15em] leading-none">${escapeHtml(formatMonthDisplay(key))}</div>
-                            <div class="text-[11px] text-slate-400 mt-1">${monthMovies.length} film • Chapter ${panelNumber}/${totalMonths}</div>
+                            <div class="text-caption text-slate-400 mt-1">${monthMovies.length} film • Chapter ${panelNumber}/${totalMonths}</div>
                         </div>
-                        <span class="ml-auto text-[11px] text-slate-400 flex items-center gap-1.5 pb-1">
-                            <i class="fa-solid fa-arrows-left-right text-amber-400/70 text-[9px]"></i> Geser
+                        <span class="ml-auto text-caption text-slate-400 flex items-center gap-1.5 pb-1">
+                            <i class="fa-solid fa-arrows-left-right text-amber-400/70 text-micro"></i> Geser
                         </span>
                     </div>
                 `;
@@ -1792,7 +1799,7 @@
 
             if (watcher === 'zald') {
                 viewerBadge.innerText = "Zald Picks";
-                viewerBadge.className = "px-2 py-0.5 rounded-lg bg-black border border-sky-500/40 text-sky-400 text-[10px] font-bold";
+                viewerBadge.className = "px-2 py-0.5 rounded-lg bg-black border border-sky-500/40 text-sky-400 text-micro font-bold";
                 boxZald.style.display = 'flex';
                 boxMicel.style.display = 'none';
                 scoresContainer.className = "grid grid-cols-1 gap-2.5 bg-black border border-neutral-800 p-3 rounded-2xl shadow-inner";
@@ -1800,7 +1807,7 @@
                 wrapMicel.style.display = 'none';
             } else if (watcher === 'micel') {
                 viewerBadge.innerText = "Micel Picks";
-                viewerBadge.className = "px-2 py-0.5 rounded-lg bg-black border border-pink-500/40 text-pink-400 text-[10px] font-bold";
+                viewerBadge.className = "px-2 py-0.5 rounded-lg bg-black border border-pink-500/40 text-pink-400 text-micro font-bold";
                 boxZald.style.display = 'none';
                 boxMicel.style.display = 'flex';
                 scoresContainer.className = "grid grid-cols-1 gap-2.5 bg-black border border-neutral-800 p-3 rounded-2xl shadow-inner";
@@ -1808,7 +1815,7 @@
                 wrapMicel.style.display = 'block';
             } else {
                 viewerBadge.innerText = "Nonton Bareng";
-                viewerBadge.className = "px-2 py-0.5 rounded-lg bg-neutral-900 text-amber-300 text-[10px] font-bold";
+                viewerBadge.className = "px-2 py-0.5 rounded-lg bg-neutral-900 text-amber-300 text-micro font-bold";
                 boxZald.style.display = 'flex';
                 boxMicel.style.display = 'flex';
                 scoresContainer.className = "grid grid-cols-2 gap-2.5 bg-black border border-neutral-800 p-3 rounded-2xl shadow-inner";
@@ -2169,7 +2176,7 @@
             ];
             grid.innerHTML = cards.map(([label, value]) => `
                 <div class="p-3 rounded-xl bg-neutral-900/60 border border-neutral-800">
-                    <div class="text-[10px] text-slate-500 uppercase tracking-wider">${escapeHtml(label)}</div>
+                    <div class="text-micro text-slate-500 uppercase tracking-wider">${escapeHtml(label)}</div>
                     <div class="mt-1 text-xs font-bold text-slate-100 break-words">${escapeHtml(String(value))}</div>
                 </div>`).join('');
         }
@@ -2184,7 +2191,7 @@
             const pick = pool[Math.floor(Math.random() * pool.length)];
             const show = m => { out.textContent = m.judul || 'Tanpa Judul'; };
             const finish = () => {
-                out.innerHTML = `<div><div class="text-base text-amber-300">${escapeHtml(pick.judul || 'Tanpa Judul')}</div><div class="text-[11px] text-slate-500 font-normal mt-1">${escapeHtml(String(pick.tahun || ''))} • ${escapeHtml(pick.note)}</div></div>`;
+                out.innerHTML = `<div><div class="text-base text-amber-300">${escapeHtml(pick.judul || 'Tanpa Judul')}</div><div class="text-caption text-slate-500 font-normal mt-1">${escapeHtml(String(pick.tahun || ''))} • ${escapeHtml(pick.note)}</div></div>`;
                 btn.disabled = false;
             };
             if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { finish(); return; }
@@ -2203,7 +2210,7 @@
         async function searchTmdb(inputId = 'form-judul', boxId = 'tmdb-results', handler = 'applyTmdbResult') {
             const box = document.getElementById(boxId);
             const query = document.getElementById(inputId).value.trim();
-            const note = msg => { box.classList.remove('hidden'); box.innerHTML = `<p class="text-[11px] text-slate-500">${escapeHtml(msg)}</p>`; };
+            const note = msg => { box.classList.remove('hidden'); box.innerHTML = `<p class="text-caption text-slate-500">${escapeHtml(msg)}</p>`; };
             if (!TMDB_API_KEY) return note('TMDB belum dikonfigurasi. Isi form secara manual.');
             if (!query) return note('Ketik judul dulu, lalu tekan TMDB.');
             note('Mencari...');
@@ -2281,7 +2288,7 @@
         function renderTmdbExtra(x) {
             const box = document.getElementById('detail-tmdb');
             if (!x) { box.classList.add('hidden'); return; }
-            const chip = t => `<span class="px-2 py-0.5 rounded-lg bg-neutral-900 text-slate-300 text-[10px] font-semibold">${escapeHtml(t)}</span>`;
+            const chip = t => `<span class="px-2 py-0.5 rounded-lg bg-neutral-900 text-slate-300 text-micro font-semibold">${escapeHtml(t)}</span>`;
             const meta = [x.type, ...x.genres];
             if (x.runtime) meta.push(`${x.runtime} mnt`);
             if (x.tmdbRating) meta.push(`TMDB ${x.tmdbRating}`);
@@ -2358,7 +2365,7 @@
             const applyBtn = document.getElementById('tmdb-sync-apply');
             applyBtn.classList.add('hidden');
             if (!isAdminUnlocked) { showToast('Akses ditolak!', 'warning'); return; }
-            if (!TMDB_API_KEY) { list.innerHTML = '<p class="text-[11px] text-slate-500">TMDB belum dikonfigurasi.</p>'; return; }
+            if (!TMDB_API_KEY) { list.innerHTML = '<p class="text-caption text-slate-500">TMDB belum dikonfigurasi.</p>'; return; }
             btn.disabled = true;
             tmdbSyncPlan = [];
             const skipped = [];
@@ -2378,7 +2385,7 @@
                 }
             };
             for (let i = 0; i < moviesData.length; i += 5) {
-                list.innerHTML = `<p class="text-[11px] text-slate-500">Mencari ${Math.min(i + 5, moviesData.length)}/${moviesData.length}...</p>`;
+                list.innerHTML = `<p class="text-caption text-slate-500">Mencari ${Math.min(i + 5, moviesData.length)}/${moviesData.length}...</p>`;
                 await Promise.all(moviesData.slice(i, i + 5).map(lookup));
             }
             btn.disabled = false;
@@ -2386,11 +2393,11 @@
             const rows = tmdbSyncPlan.map((x, i) => `
                 <label class="flex items-center gap-2 p-1.5 rounded-lg bg-black border border-neutral-800 cursor-pointer">
                     <input type="checkbox" data-sync="${i}" checked class="accent-amber-400">
-                    ${img(x.old)}<i class="fa-solid fa-arrow-right text-[9px] text-slate-600"></i>${img(x.next)}
-                    <span class="text-[11px] text-slate-300 min-w-0 flex-1 truncate">${escapeHtml(x.judul)}<span class="block text-[10px] text-slate-600 truncate">TMDB: ${escapeHtml(x.tmdbTitle)}</span></span>
+                    ${img(x.old)}<i class="fa-solid fa-arrow-right text-micro text-slate-600"></i>${img(x.next)}
+                    <span class="text-caption text-slate-300 min-w-0 flex-1 truncate">${escapeHtml(x.judul)}<span class="block text-micro text-slate-600 truncate">TMDB: ${escapeHtml(x.tmdbTitle)}</span></span>
                 </label>`).join('');
-            const skipNote = skipped.length ? `<p class="text-[10px] text-slate-600">Dilewati (${skipped.length}): ${escapeHtml(skipped.join('; '))}</p>` : '';
-            list.innerHTML = (rows || '<p class="text-[11px] text-slate-500">Semua poster sudah sama dengan TMDB.</p>') + skipNote;
+            const skipNote = skipped.length ? `<p class="text-micro text-slate-600">Dilewati (${skipped.length}): ${escapeHtml(skipped.join('; '))}</p>` : '';
+            list.innerHTML = (rows || '<p class="text-caption text-slate-500">Semua poster sudah sama dengan TMDB.</p>') + skipNote;
             applyBtn.classList.toggle('hidden', !tmdbSyncPlan.length);
         }
 
@@ -2435,17 +2442,17 @@
             document.getElementById('watchlist-add').classList.toggle('hidden', !isAdminUnlocked);
             const list = document.getElementById('watchlist-list');
             if (!watchlistData.length) {
-                list.innerHTML = '<p class="text-[11px] text-slate-500 italic">Belum ada film di antrean.</p>';
+                list.innerHTML = '<p class="text-caption text-slate-500 italic">Belum ada film di antrean.</p>';
                 return;
             }
             list.innerHTML = watchlistData.map(w => {
                 const id = escapeHtml(w.id);
                 const thumb = w.poster ? `<img src="${escapeHtml(w.poster)}" alt="" loading="lazy" class="w-9 h-14 rounded object-cover">` : '<div class="w-9 h-14 rounded bg-neutral-800"></div>';
                 const actions = isAdminUnlocked ? `
-                    <button type="button" onclick="markWatchlistWatched('${id}')" class="px-2.5 py-1.5 rounded-lg bg-amber-400/10 border border-amber-500/40 text-amber-400 text-[10px] font-bold tap-scale">Sudah ditonton</button>
-                    <button type="button" onclick="deleteWatchlistItem('${id}')" class="px-2 py-1.5 rounded-lg bg-neutral-900 border border-neutral-800 text-slate-400 hover:text-red-400 text-[10px] tap-scale" aria-label="Hapus dari antrean"><i class="fa-solid fa-trash"></i></button>` : '';
+                    <button type="button" onclick="markWatchlistWatched('${id}')" class="px-2.5 py-1.5 rounded-lg bg-amber-400/10 border border-amber-500/40 text-amber-400 text-micro font-bold tap-scale">Sudah ditonton</button>
+                    <button type="button" onclick="deleteWatchlistItem('${id}')" class="px-2 py-1.5 rounded-lg bg-neutral-900 border border-neutral-800 text-slate-400 hover:text-red-400 text-micro tap-scale" aria-label="Hapus dari antrean"><i class="fa-solid fa-trash"></i></button>` : '';
                 return `<div class="flex items-center gap-3 p-2 rounded-xl bg-neutral-950 border border-neutral-800">${thumb}
-                    <div class="min-w-0 flex-1"><div class="text-xs font-bold text-slate-100 truncate">${escapeHtml(w.judul)}</div><div class="text-[11px] text-slate-500">${escapeHtml(String(w.tahun || ''))}</div></div>
+                    <div class="min-w-0 flex-1"><div class="text-xs font-bold text-slate-100 truncate">${escapeHtml(w.judul)}</div><div class="text-caption text-slate-500">${escapeHtml(String(w.tahun || ''))}</div></div>
                     <div class="flex items-center gap-1.5 shrink-0">${actions}</div></div>`;
             }).join('');
         }
