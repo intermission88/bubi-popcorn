@@ -20,7 +20,7 @@ Seluruh aplikasi berada dalam satu file: [`index.html`](index.html) (HTML, CSS, 
 - **Tahun dalam Film:** recap per tahun di modal statistik (total, rata-rata rating, bulan tersibuk, top 3), bisa dibagikan.
 - **Ekspor/Impor CSV:** ekspor untuk semua orang, impor khusus admin (format sendiri atau diary Letterboxd; duplikat judul + bulan dilewati).
 - **Sinkron Poster TMDB (admin):** di modal statistik, mencocokkan semua film dengan TMDB (judul + tahun), menampilkan pratinjau poster lama dan baru dengan centang per film, lalu memperbarui hanya kolom `poster` setelah dikonfirmasi.
-- **Detail Tambahan TMDB + Trailer:** modal detail film menampilkan genre, durasi, rating TMDB, sinopsis, sutradara, pemeran, tempat streaming di Indonesia, dan tombol trailer YouTube. Diambil langsung dari TMDB saat detail dibuka (tidak disimpan di database). Film yang tidak ditemukan di TMDB tidak menampilkan blok ini.
+- **Detail Tambahan TMDB + Trailer:** modal detail film menampilkan genre, durasi, rating TMDB, sinopsis, sutradara, pemeran, tempat streaming di Indonesia, dan trailer yang diputar langsung di dalam modal (embed `youtube-nocookie`, baru dimuat saat tombol ditekan, berhenti saat modal ditutup; ada tautan cadangan ke YouTube). Diambil langsung dari TMDB saat detail dibuka (tidak disimpan di database). Film yang tidak ditemukan di TMDB tidak menampilkan blok ini.
 - **Ping Indicator:** indikator latensi ke Supabase, bisa ditekan untuk cek ulang.
 
 ### Fitur Khusus

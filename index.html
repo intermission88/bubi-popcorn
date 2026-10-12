@@ -916,9 +916,13 @@
                     <p id="detail-tmdb-overview" class="text-xs text-slate-300 leading-relaxed"></p>
                     <p id="detail-tmdb-crew" class="text-[11px] text-slate-500"></p>
                     <p id="detail-tmdb-stream" class="text-[11px] text-slate-500"></p>
-                    <a id="detail-tmdb-trailer" href="#" target="_blank" rel="noopener noreferrer" class="hidden inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold tap-scale">
-                        <i class="fa-brands fa-youtube"></i> Tonton trailer
-                    </a>
+                    <button type="button" id="detail-tmdb-trailer" onclick="triggerHaptic(); toggleTrailer()" aria-expanded="false" class="hidden inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold tap-scale">
+                        <i class="fa-brands fa-youtube"></i> <span id="detail-tmdb-trailer-label">Tonton trailer</span>
+                    </button>
+                    <div id="detail-tmdb-player" class="hidden space-y-1.5">
+                        <div id="detail-tmdb-frame" class="aspect-video w-full rounded-xl overflow-hidden bg-black border border-neutral-800"></div>
+                        <a id="detail-tmdb-yt-link" href="#" target="_blank" rel="noopener noreferrer" class="text-[10px] text-slate-500 hover:text-slate-300 underline">Video tidak muncul? Buka di YouTube</a>
+                    </div>
                 </div>
 
                 <div class="space-y-3">
@@ -1822,6 +1826,7 @@
         }
 
         function closeDetailModal() {
+            stopTrailer();
             const modal = document.getElementById('detail-modal');
             modal.classList.add('hidden');
             document.getElementById('detail-modal-content').classList.remove('animate-slideUp');
@@ -2251,7 +2256,7 @@
                 tmdbRating: d.vote_average && d.vote_count > 20 ? d.vote_average.toFixed(1) : '',
                 type: hit.media_type === 'tv' ? 'Series' : 'Film',
                 director, cast, stream,
-                trailer: trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : ''
+                trailerKey: trailer ? trailer.key : ''
             };
         }
 
@@ -2272,12 +2277,48 @@
             st.textContent = x.stream ? `Streaming di Indonesia: ${x.stream}` : '';
             st.classList.toggle('hidden', !x.stream);
             const tr = document.getElementById('detail-tmdb-trailer');
-            if (x.trailer) { tr.href = x.trailer; tr.classList.remove('hidden'); } else tr.classList.add('hidden');
+            currentTrailerKey = x.trailerKey || '';
+            tr.classList.toggle('hidden', !currentTrailerKey);
             box.classList.remove('hidden');
+        }
+
+        let currentTrailerKey = '';
+        function stopTrailer() {
+            const frame = document.getElementById('detail-tmdb-frame');
+            if (frame) frame.innerHTML = '';
+            document.getElementById('detail-tmdb-player')?.classList.add('hidden');
+            const btn = document.getElementById('detail-tmdb-trailer');
+            if (btn) {
+                btn.setAttribute('aria-expanded', 'false');
+                document.getElementById('detail-tmdb-trailer-label').textContent = 'Tonton trailer';
+            }
+        }
+
+        function toggleTrailer() {
+            const player = document.getElementById('detail-tmdb-player');
+            if (!player.classList.contains('hidden')) { stopTrailer(); return; }
+            if (!/^[\w-]{6,20}$/.test(currentTrailerKey)) return;
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://www.youtube-nocookie.com/embed/${currentTrailerKey}?autoplay=1&rel=0&playsinline=1`;
+            iframe.title = 'Trailer film';
+            iframe.className = 'w-full h-full';
+            iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+            iframe.allowFullscreen = true;
+            iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+            const frame = document.getElementById('detail-tmdb-frame');
+            frame.innerHTML = '';
+            frame.appendChild(iframe);
+            document.getElementById('detail-tmdb-yt-link').href = `https://www.youtube.com/watch?v=${currentTrailerKey}`;
+            player.classList.remove('hidden');
+            const btn = document.getElementById('detail-tmdb-trailer');
+            btn.setAttribute('aria-expanded', 'true');
+            document.getElementById('detail-tmdb-trailer-label').textContent = 'Tutup trailer';
         }
 
         async function loadTmdbExtra(movie) {
             const box = document.getElementById('detail-tmdb');
+            stopTrailer();
+            currentTrailerKey = '';
             box.classList.add('hidden');
             if (!TMDB_API_KEY || !movie.judul) return;
             const cacheKey = `${movie.judul}|${movie.tahun}`;
