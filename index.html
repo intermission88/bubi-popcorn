@@ -389,6 +389,23 @@
             </div>
         </section>
 
+        <!-- Watchlist: Mau Ditonton -->
+        <section id="watchlist-section" class="pt-6 hidden">
+            <div class="film-strip -mx-4"></div>
+            <h2 class="mt-5 mb-3 text-xs font-bold text-amber-400 uppercase tracking-[0.25em] font-display flex items-center gap-2">
+                <i class="fa-solid fa-ticket"></i> Mau Ditonton
+            </h2>
+            <div id="watchlist-add" class="hidden mb-3">
+                <div class="flex gap-2">
+                    <input type="text" id="wl-judul" placeholder="Judul film atau series..." maxlength="150" class="w-full px-3.5 py-2.5 bg-black border border-neutral-800 rounded-xl text-xs focus:outline-none focus:border-amber-400 text-slate-200 transition" onkeydown="if(event.key==='Enter'){event.preventDefault();addWatchlistFromInput();}">
+                    <button type="button" onclick="searchTmdb('wl-judul','wl-tmdb-results','applyTmdbToWatchlist')" class="shrink-0 px-3 rounded-xl bg-neutral-900 border border-neutral-800 text-amber-400 text-[11px] font-bold tap-scale hover:border-amber-400" aria-label="Cari di TMDB"><i class="fa-solid fa-magnifying-glass mr-1"></i>TMDB</button>
+                    <button type="button" onclick="addWatchlistFromInput()" class="shrink-0 px-3 rounded-xl popcorn-gradient text-black text-[11px] font-bold tap-scale">Tambah</button>
+                </div>
+                <div id="wl-tmdb-results" class="mt-2 space-y-1.5 hidden" aria-live="polite"></div>
+            </div>
+            <div id="watchlist-list" class="space-y-2"></div>
+        </section>
+
         <!-- SECTION SEARCH & VIEWER FILTER -->
         <section id="search-section" class="space-y-3">
             <div class="flex items-center gap-2.5">
@@ -452,23 +469,6 @@
                 </div>
                 <button onclick="triggerHaptic(); resetSearch()" class="px-4 py-2 bg-neutral-900 hover:bg-neutral-800 text-amber-400 text-xs font-bold rounded-xl tap-scale shadow-md transition">Reset Pencarian</button>
             </div>
-        </section>
-
-        <!-- Watchlist: Mau Ditonton -->
-        <section id="watchlist-section" class="pt-6 hidden">
-            <div class="film-strip -mx-4"></div>
-            <h2 class="mt-5 mb-3 text-xs font-bold text-amber-400 uppercase tracking-[0.25em] font-display flex items-center gap-2">
-                <i class="fa-solid fa-ticket"></i> Mau Ditonton
-            </h2>
-            <div id="watchlist-add" class="hidden mb-3">
-                <div class="flex gap-2">
-                    <input type="text" id="wl-judul" placeholder="Judul film atau series..." maxlength="150" class="w-full px-3.5 py-2.5 bg-black border border-neutral-800 rounded-xl text-xs focus:outline-none focus:border-amber-400 text-slate-200 transition" onkeydown="if(event.key==='Enter'){event.preventDefault();addWatchlistFromInput();}">
-                    <button type="button" onclick="searchTmdb('wl-judul','wl-tmdb-results','applyTmdbToWatchlist')" class="shrink-0 px-3 rounded-xl bg-neutral-900 border border-neutral-800 text-amber-400 text-[11px] font-bold tap-scale hover:border-amber-400" aria-label="Cari di TMDB"><i class="fa-solid fa-magnifying-glass mr-1"></i>TMDB</button>
-                    <button type="button" onclick="addWatchlistFromInput()" class="shrink-0 px-3 rounded-xl popcorn-gradient text-black text-[11px] font-bold tap-scale">Tambah</button>
-                </div>
-                <div id="wl-tmdb-results" class="mt-2 space-y-1.5 hidden" aria-live="polite"></div>
-            </div>
-            <div id="watchlist-list" class="space-y-2"></div>
         </section>
 
         <!-- Penutup: total film ditonton -->

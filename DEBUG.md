@@ -23,6 +23,7 @@ Baris bergeser setiap edit. Anchor yang stabil:
 | Header app bar | `grep -n 'Header App Bar'` |
 | Hero slider (5 slide) | `grep -n 'hero-slider'` |
 | Kartu "Now Showing" + Hari Bersama + jam ganda | `grep -n 'ticket-card'` |
+| Mau Ditonton (watchlist, di atas pencarian) | `grep -n 'watchlist-section'` |
 | Search + filter viewer + Top 9+ | `grep -n 'search-section'` |
 | Karusel film per bulan | `grep -n 'months-carousel'` |
 | Empty state / error state | `grep -n 'empty-state\|error-state'` |
