@@ -16,6 +16,9 @@ Seluruh aplikasi berada dalam satu file: [`index.html`](index.html) (HTML, CSS, 
 - **Statistik Kita:** tombol grafik di sisi kanan bawah. Total film, rata-rata rating Zald dan Micel, film favorit berdua, selera paling beda, dan bulan tersibuk.
 - **Roulette Nobar:** di modal statistik, memilih acak dari film yang baru ditonton salah satu pihak untuk ditonton berdua.
 - **Isi Otomatis dari TMDB:** di form admin, tombol "TMDB" mencari judul (film dan series) lalu mengisi judul, tahun, dan poster. Memakai API Key v3 di konstanta `TMDB_API_KEY` (hanya-baca, aman di klien). Jangan pernah memakai Read Access Token v4. Atribusi TMDB ada di bagian bawah halaman.
+- **Mau Ditonton (Watchlist):** antrean film yang belum ditonton, tambah lewat judul atau pencarian TMDB (admin). Tombol "Sudah ditonton" membuka form ulasan terisi dan menghapus item dari antrean setelah disimpan. Roulette ikut memilih dari antrean. Butuh tabel `bubi_watchlist`: jalankan [`supabase/watchlist.sql`](supabase/watchlist.sql) sekali di SQL Editor Supabase. Tanpa tabel ini, bagian watchlist tersembunyi.
+- **Tahun dalam Film:** recap per tahun di modal statistik (total, rata-rata rating, bulan tersibuk, top 3), bisa dibagikan.
+- **Ekspor/Impor CSV:** ekspor untuk semua orang, impor khusus admin (format sendiri atau diary Letterboxd; duplikat judul + bulan dilewati).
 - **Ping Indicator:** indikator latensi ke Supabase, bisa ditekan untuk cek ulang.
 
 ### Fitur Khusus
@@ -41,6 +44,7 @@ Seluruh aplikasi berada dalam satu file: [`index.html`](index.html) (HTML, CSS, 
 | Path | Fungsi |
 |---|---|
 | `index.html` | Seluruh aplikasi: markup, gaya, dan logika. |
+| `supabase/watchlist.sql` | Skema tabel watchlist + kebijakan RLS (jalankan manual sekali). |
 | `sw.js` | Service worker: network-first untuk HTML, cache-first untuk aset, Supabase selalu langsung ke jaringan. |
 | `manifest.json` | Metadata PWA (standalone, portrait, theme `#000000`). |
 | `assets/` | Gambar slider, foto profil, dan ikon PWA (SVG + PNG). |

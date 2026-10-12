@@ -454,6 +454,23 @@
             </div>
         </section>
 
+        <!-- Watchlist: Mau Ditonton -->
+        <section id="watchlist-section" class="pt-6 hidden">
+            <div class="film-strip -mx-4"></div>
+            <h2 class="mt-5 mb-3 text-xs font-bold text-amber-400 uppercase tracking-[0.25em] font-display flex items-center gap-2">
+                <i class="fa-solid fa-ticket"></i> Mau Ditonton
+            </h2>
+            <div id="watchlist-add" class="hidden mb-3">
+                <div class="flex gap-2">
+                    <input type="text" id="wl-judul" placeholder="Judul film atau series..." maxlength="150" class="w-full px-3.5 py-2.5 bg-black border border-neutral-800 rounded-xl text-xs focus:outline-none focus:border-amber-400 text-slate-200 transition" onkeydown="if(event.key==='Enter'){event.preventDefault();addWatchlistFromInput();}">
+                    <button type="button" onclick="searchTmdb('wl-judul','wl-tmdb-results','applyTmdbToWatchlist')" class="shrink-0 px-3 rounded-xl bg-neutral-900 border border-neutral-800 text-amber-400 text-[11px] font-bold tap-scale hover:border-amber-400" aria-label="Cari di TMDB"><i class="fa-solid fa-magnifying-glass mr-1"></i>TMDB</button>
+                    <button type="button" onclick="addWatchlistFromInput()" class="shrink-0 px-3 rounded-xl popcorn-gradient text-black text-[11px] font-bold tap-scale">Tambah</button>
+                </div>
+                <div id="wl-tmdb-results" class="mt-2 space-y-1.5 hidden" aria-live="polite"></div>
+            </div>
+            <div id="watchlist-list" class="space-y-2"></div>
+        </section>
+
         <!-- Penutup: total film ditonton -->
         <section class="pt-6 text-center">
             <div class="film-strip -mx-4"></div>
@@ -582,11 +599,34 @@
                 <div id="stats-grid" class="grid grid-cols-2 gap-2.5"></div>
                 <div class="p-3.5 rounded-2xl bg-neutral-900/60 border border-neutral-800 space-y-3 text-center">
                     <div class="text-[11px] font-bold text-amber-400 uppercase tracking-[0.2em]">Roulette Nobar</div>
-                    <p class="text-[11px] text-slate-500">Film yang baru ditonton salah satu dari kalian. Putar untuk pilih tontonan berdua.</p>
+                    <p class="text-[11px] text-slate-500">Dari daftar Mau Ditonton dan film yang baru ditonton salah satu dari kalian.</p>
                     <div id="roulette-result" class="min-h-[4rem] flex items-center justify-center text-sm font-bold text-slate-200" aria-live="polite">-</div>
                     <button type="button" id="roulette-btn" onclick="triggerHaptic(); spinRoulette()" class="w-full py-2.5 rounded-xl popcorn-gradient text-black text-xs font-bold tap-scale">
                         <i class="fa-solid fa-shuffle mr-1"></i> Putar!
                     </button>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-neutral-900/60 border border-neutral-800 space-y-3">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="text-[11px] font-bold text-amber-400 uppercase tracking-[0.2em]">Tahun dalam Film</div>
+                        <select id="recap-year" onchange="renderRecap()" class="px-2 py-1 bg-black border border-neutral-800 rounded-lg text-xs text-slate-200" aria-label="Pilih tahun"></select>
+                    </div>
+                    <div id="recap-box" class="space-y-2 text-xs text-slate-300"></div>
+                    <button type="button" onclick="triggerHaptic(); shareRecap()" class="w-full py-2 rounded-xl bg-neutral-900 border border-neutral-800 text-amber-400 text-xs font-bold tap-scale hover:border-amber-400">
+                        <i class="fa-solid fa-share-nodes mr-1"></i> Bagikan Recap
+                    </button>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-neutral-900/60 border border-neutral-800 space-y-2">
+                    <div class="text-[11px] font-bold text-amber-400 uppercase tracking-[0.2em]">Cadangan Data</div>
+                    <button type="button" onclick="triggerHaptic(); exportCsv()" class="w-full py-2 rounded-xl bg-neutral-900 border border-neutral-800 text-slate-200 text-xs font-bold tap-scale hover:border-amber-400">
+                        <i class="fa-solid fa-file-arrow-down mr-1"></i> Ekspor CSV
+                    </button>
+                    <div id="csv-import-wrap" class="hidden">
+                        <label class="block w-full py-2 text-center rounded-xl bg-neutral-900 border border-neutral-800 text-slate-200 text-xs font-bold tap-scale hover:border-amber-400 cursor-pointer">
+                            <i class="fa-solid fa-file-arrow-up mr-1"></i> Impor CSV (admin)
+                            <input type="file" accept=".csv,text/csv" class="sr-only" onchange="importCsv(this)">
+                        </label>
+                        <p class="mt-1.5 text-[10px] text-slate-600">Format sendiri atau ekspor diary Letterboxd. Film dengan judul dan bulan yang sama dilewati.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -929,6 +969,10 @@
         let isTopRatedActive = false;
         let searchDebounceTimer = null;
         let hasFetchError = false;
+        const WATCHLIST_TABLE = 'bubi_watchlist';
+        let watchlistData = [];
+        let watchlistAvailable = false;
+        let pendingWatchlistId = null;
         let lastScrollPosition = 0;
         let lastClickedMovieId = null;
         let activeModal = null;
@@ -1095,6 +1139,8 @@
                 if (publicActions) publicActions.classList.remove('hidden');
                 if (adminAboutSection) adminAboutSection.classList.add('hidden');
             }
+            renderWatchlist();
+            document.getElementById('csv-import-wrap')?.classList.toggle('hidden', !isAdminUnlocked);
         }
 
         async function handleLockClick() {
@@ -1416,6 +1462,7 @@
             } finally {
                 processFilterAndRender();
                 checkPing();
+                fetchWatchlist();
             }
         }
 
@@ -1631,6 +1678,7 @@
 
             lastScrollPosition = window.pageYOffset || document.documentElement.scrollTop;
 
+            pendingWatchlistId = null;
             document.getElementById('editing_id').value = '';
             document.getElementById('add-movie-form').reset();
             
@@ -1911,6 +1959,10 @@
                 submitBtn.disabled = false;
             }
             if (saved) {
+                if (pendingWatchlistId && !editingId) {
+                    await supabaseClient.from(WATCHLIST_TABLE).delete().eq('id', pendingWatchlistId);
+                }
+                pendingWatchlistId = null;
                 closeAddModal();
                 await fetchSupabaseData();
             }
@@ -2023,6 +2075,7 @@
             const modal = document.getElementById('stats-modal');
             if (!modal) return;
             renderStats();
+            initRecap();
             document.getElementById('roulette-result').textContent = '-';
             modal.classList.remove('hidden');
             document.getElementById('stats-modal-content').classList.add('animate-slideUp');
@@ -2036,8 +2089,12 @@
             deactivateModal(modal);
         }
 
-        function getSoloMovies() {
-            return moviesData.filter(m => m.watched_by === 'zald' || m.watched_by === 'micel');
+        function getRoulettePool() {
+            const solo = moviesData
+                .filter(m => m.watched_by === 'zald' || m.watched_by === 'micel')
+                .map(m => ({ judul: m.judul, tahun: m.tahun, note: `sudah ditonton ${m.watched_by === 'zald' ? 'Zald' : 'Micel'}` }));
+            const queue = watchlistData.map(w => ({ judul: w.judul, tahun: w.tahun, note: 'belum ditonton siapa pun' }));
+            return [...queue, ...solo];
         }
 
         function renderStats() {
@@ -2067,7 +2124,7 @@
                 ['Favorit berdua', topMovie ? `${topMovie.judul} (${topAvg.toFixed(1)})` : '-'],
                 ['Paling beda selera', gapMovie && gapMax > 0 ? `${gapMovie.judul} (selisih ${gapMax.toFixed(1)})` : '-'],
                 ['Bulan tersibuk', bestMonth ? `${formatMonthDisplay(bestMonth[0])} (${bestMonth[1]} film)` : '-'],
-                ['Antre ditonton berdua', getSoloMovies().length]
+                ['Antre ditonton berdua', getRoulettePool().length]
             ];
             grid.innerHTML = cards.map(([label, value]) => `
                 <div class="p-3 rounded-xl bg-neutral-900/60 border border-neutral-800">
@@ -2078,7 +2135,7 @@
 
         let rouletteTimer = null;
         function spinRoulette() {
-            const pool = getSoloMovies();
+            const pool = getRoulettePool();
             const out = document.getElementById('roulette-result');
             const btn = document.getElementById('roulette-btn');
             if (!pool.length) { out.textContent = 'Semua film sudah ditonton berdua!'; return; }
@@ -2086,8 +2143,7 @@
             const pick = pool[Math.floor(Math.random() * pool.length)];
             const show = m => { out.textContent = m.judul || 'Tanpa Judul'; };
             const finish = () => {
-                const by = pick.watched_by === 'zald' ? 'Zald' : 'Micel';
-                out.innerHTML = `<div><div class="text-base text-amber-300">${escapeHtml(pick.judul || 'Tanpa Judul')}</div><div class="text-[11px] text-slate-500 font-normal mt-1">${escapeHtml(String(pick.tahun || ''))} • sudah ditonton ${escapeHtml(by)}</div></div>`;
+                out.innerHTML = `<div><div class="text-base text-amber-300">${escapeHtml(pick.judul || 'Tanpa Judul')}</div><div class="text-[11px] text-slate-500 font-normal mt-1">${escapeHtml(String(pick.tahun || ''))} • ${escapeHtml(pick.note)}</div></div>`;
                 btn.disabled = false;
             };
             if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { finish(); return; }
@@ -2103,9 +2159,9 @@
         const TMDB_API_KEY = '70e49fe58166973b49c4649822f0b5e9'; // API Key v3 (hanya baca, aman di klien). Kosong = fitur nonaktif.
         const TMDB_IMG = 'https://image.tmdb.org/t/p/w500';
 
-        async function searchTmdb() {
-            const box = document.getElementById('tmdb-results');
-            const query = document.getElementById('form-judul').value.trim();
+        async function searchTmdb(inputId = 'form-judul', boxId = 'tmdb-results', handler = 'applyTmdbResult') {
+            const box = document.getElementById(boxId);
+            const query = document.getElementById(inputId).value.trim();
             const note = msg => { box.classList.remove('hidden'); box.innerHTML = `<p class="text-[11px] text-slate-500">${escapeHtml(msg)}</p>`; };
             if (!TMDB_API_KEY) return note('TMDB belum dikonfigurasi. Isi form secara manual.');
             if (!query) return note('Ketik judul dulu, lalu tekan TMDB.');
@@ -2120,7 +2176,7 @@
                     const title = r.title || r.name || '';
                     const year = (r.release_date || r.first_air_date || '').slice(0, 4);
                     const thumb = r.poster_path ? `<img src="${TMDB_IMG}${escapeHtml(r.poster_path)}" alt="" class="w-8 h-12 rounded object-cover">` : '<div class="w-8 h-12 rounded bg-neutral-800"></div>';
-                    return `<button type="button" onclick="applyTmdbResult(${i})" class="w-full flex items-center gap-2.5 p-2 rounded-xl bg-black border border-neutral-800 hover:border-amber-400 text-left tap-scale">${thumb}<span class="text-xs text-slate-200">${escapeHtml(title)} <span class="text-slate-500">${escapeHtml(year)} • ${r.media_type === 'tv' ? 'Series' : 'Film'}</span></span></button>`;
+                    return `<button type="button" onclick="${handler}(${i})" class="w-full flex items-center gap-2.5 p-2 rounded-xl bg-black border border-neutral-800 hover:border-amber-400 text-left tap-scale">${thumb}<span class="text-xs text-slate-200">${escapeHtml(title)} <span class="text-slate-500">${escapeHtml(year)} • ${r.media_type === 'tv' ? 'Series' : 'Film'}</span></span></button>`;
                 }).join('');
                 box.classList.remove('hidden');
             } catch (err) {
@@ -2138,6 +2194,253 @@
             if (year) document.getElementById('form-tahun').value = year;
             document.getElementById('form-poster').value = r.poster_path ? TMDB_IMG + r.poster_path : '';
             document.getElementById('tmdb-results').classList.add('hidden');
+        }
+
+        // --- WATCHLIST ---
+        async function fetchWatchlist() {
+            try {
+                const { data, error } = await supabaseClient.from(WATCHLIST_TABLE).select('*').order('created_at', { ascending: false });
+                if (error) throw error;
+                watchlistData = Array.isArray(data) ? data : [];
+                watchlistAvailable = true;
+            } catch (err) {
+                watchlistData = [];
+                watchlistAvailable = false;
+                console.warn('Watchlist tidak tersedia:', err);
+            }
+            renderWatchlist();
+        }
+
+        function renderWatchlist() {
+            const section = document.getElementById('watchlist-section');
+            if (!section) return;
+            section.classList.toggle('hidden', !watchlistAvailable || (!watchlistData.length && !isAdminUnlocked));
+            document.getElementById('watchlist-add').classList.toggle('hidden', !isAdminUnlocked);
+            const list = document.getElementById('watchlist-list');
+            if (!watchlistData.length) {
+                list.innerHTML = '<p class="text-[11px] text-slate-500 italic">Belum ada film di antrean.</p>';
+                return;
+            }
+            list.innerHTML = watchlistData.map(w => {
+                const id = escapeHtml(w.id);
+                const thumb = w.poster ? `<img src="${escapeHtml(w.poster)}" alt="" loading="lazy" class="w-9 h-14 rounded object-cover">` : '<div class="w-9 h-14 rounded bg-neutral-800"></div>';
+                const actions = isAdminUnlocked ? `
+                    <button type="button" onclick="markWatchlistWatched('${id}')" class="px-2.5 py-1.5 rounded-lg bg-amber-400/10 border border-amber-500/40 text-amber-400 text-[10px] font-bold tap-scale">Sudah ditonton</button>
+                    <button type="button" onclick="deleteWatchlistItem('${id}')" class="px-2 py-1.5 rounded-lg bg-neutral-900 border border-neutral-800 text-slate-400 hover:text-red-400 text-[10px] tap-scale" aria-label="Hapus dari antrean"><i class="fa-solid fa-trash"></i></button>` : '';
+                return `<div class="flex items-center gap-3 p-2 rounded-xl bg-neutral-950 border border-neutral-800">${thumb}
+                    <div class="min-w-0 flex-1"><div class="text-xs font-bold text-slate-100 truncate">${escapeHtml(w.judul)}</div><div class="text-[11px] text-slate-500">${escapeHtml(String(w.tahun || ''))}</div></div>
+                    <div class="flex items-center gap-1.5 shrink-0">${actions}</div></div>`;
+            }).join('');
+        }
+
+        async function insertWatchlist(item) {
+            if (!isAdminUnlocked) { showToast('Akses ditolak!', 'warning'); return false; }
+            const { error } = await supabaseClient.from(WATCHLIST_TABLE).insert([{
+                id: `w_${Date.now()}`,
+                judul: item.judul,
+                tahun: item.tahun || null,
+                poster: item.poster || null
+            }]);
+            if (error) { console.error(error); showToast('Gagal menambah ke antrean.', 'warning'); return false; }
+            showToast('Ditambah ke antrean!', 'success');
+            await fetchWatchlist();
+            return true;
+        }
+
+        async function addWatchlistFromInput() {
+            const input = document.getElementById('wl-judul');
+            const judul = input.value.trim();
+            if (!judul) { showToast('Ketik judulnya dulu.', 'warning'); return; }
+            if (await insertWatchlist({ judul })) {
+                input.value = '';
+                document.getElementById('wl-tmdb-results').classList.add('hidden');
+            }
+        }
+
+        async function applyTmdbToWatchlist(i) {
+            const r = tmdbItems[i];
+            if (!r) return;
+            const ok = await insertWatchlist({
+                judul: r.title || r.name || '',
+                tahun: parseInt((r.release_date || r.first_air_date || '').slice(0, 4)) || null,
+                poster: r.poster_path ? TMDB_IMG + r.poster_path : ''
+            });
+            if (ok) {
+                document.getElementById('wl-judul').value = '';
+                document.getElementById('wl-tmdb-results').classList.add('hidden');
+            }
+        }
+
+        async function deleteWatchlistItem(id) {
+            if (!isAdminUnlocked) return;
+            const item = watchlistData.find(w => w.id == id);
+            if (!item || !confirm(`Hapus "${item.judul}" dari antrean?`)) return;
+            const { error } = await supabaseClient.from(WATCHLIST_TABLE).delete().eq('id', id);
+            if (error) { console.error(error); showToast('Gagal menghapus.', 'warning'); return; }
+            await fetchWatchlist();
+        }
+
+        function markWatchlistWatched(id) {
+            const item = watchlistData.find(w => w.id == id);
+            if (!item) return;
+            openAddModal();
+            if (!isAdminUnlocked) return;
+            pendingWatchlistId = id;
+            document.getElementById('form-judul').value = item.judul || '';
+            document.getElementById('form-tahun').value = item.tahun || new Date().getFullYear();
+            document.getElementById('form-poster').value = item.poster || '';
+        }
+
+        // --- RECAP TAHUNAN ---
+        let lastRecapText = '';
+        function initRecap() {
+            const sel = document.getElementById('recap-year');
+            const years = [...new Set(moviesData.map(m => (m.bulan || '').slice(0, 4)).filter(y => /^\d{4}$/.test(y)))].sort().reverse();
+            sel.innerHTML = years.map(y => `<option value="${escapeHtml(y)}">${escapeHtml(y)}</option>`).join('');
+            renderRecap();
+        }
+
+        function renderRecap() {
+            const box = document.getElementById('recap-box');
+            const year = document.getElementById('recap-year').value;
+            const list = moviesData.filter(m => (m.bulan || '').startsWith(year + '-'));
+            if (!list.length) { box.textContent = 'Belum ada data.'; lastRecapText = ''; return; }
+            const mean = arr => arr.length ? (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(1) : '-';
+            const rZ = list.map(m => parseRating(m.rating_aku)).filter(v => v !== null);
+            const rM = list.map(m => parseRating(m.rating_dia)).filter(v => v !== null);
+            const together = list.filter(m => (m.watched_by || 'both') === 'both');
+            const certified = list.filter(m => m.is_certified);
+            const scored = list.map(m => {
+                const v = [parseRating(m.rating_aku), parseRating(m.rating_dia)].filter(x => x !== null);
+                return { m, avg: v.length ? v.reduce((a, b) => a + b, 0) / v.length : -1 };
+            }).filter(x => x.avg >= 0).sort((a, b) => b.avg - a.avg).slice(0, 3);
+            const perMonth = {};
+            list.forEach(m => { perMonth[m.bulan] = (perMonth[m.bulan] || 0) + 1; });
+            const best = Object.entries(perMonth).sort((a, b) => b[1] - a[1])[0];
+
+            const lines = [
+                `${list.length} film, ${together.length} ditonton berdua`,
+                `Rata-rata rating: Zald ${mean(rZ)}, Micel ${mean(rM)}`,
+                `Bulan tersibuk: ${formatMonthDisplay(best[0])} (${best[1]} film)`,
+                `Certified Fresh: ${certified.length} film`
+            ];
+            if (scored.length) lines.push('Top film: ' + scored.map((x, i) => `${i + 1}. ${x.m.judul} (${x.avg.toFixed(1)})`).join(', '));
+            lastRecapText = `Bubi's Popcorn ${year}\n` + lines.join('\n');
+            box.innerHTML = lines.map(l => `<p>${escapeHtml(l)}</p>`).join('');
+        }
+
+        async function shareRecap() {
+            if (!lastRecapText) { showToast('Belum ada recap.', 'warning'); return; }
+            try {
+                if (navigator.share) await navigator.share({ title: "Bubi's Popcorn", text: lastRecapText });
+                else { await navigator.clipboard.writeText(lastRecapText); showToast('Recap disalin!', 'success'); }
+            } catch (err) {
+                if (err && err.name === 'AbortError') return;
+                try { await navigator.clipboard.writeText(lastRecapText); showToast('Recap disalin!', 'success'); }
+                catch (e) { showToast('Gagal membagikan.', 'warning'); }
+            }
+        }
+
+        // --- CSV ---
+        const CSV_COLUMNS = ['id', 'judul', 'tahun', 'bulan', 'watched_by', 'is_certified', 'rating_aku', 'review_aku', 'rating_dia', 'review_dia', 'poster'];
+
+        function csvCell(v) {
+            let t = v === null || v === undefined ? '' : String(v);
+            if (/^[=+\-@\t\r]/.test(t)) t = "'" + t;
+            return /[",\n\r]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t;
+        }
+
+        function exportCsv() {
+            const rows = [CSV_COLUMNS.join(',')].concat(moviesData.map(m => CSV_COLUMNS.map(c => csvCell(m[c])).join(',')));
+            const blob = new Blob(['\ufeff' + rows.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `bubi-popcorn-${new Date().toISOString().slice(0, 10)}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+            showToast('CSV diunduh.', 'success');
+        }
+
+        function parseCsv(text) {
+            const rows = []; let row = [], cell = '', q = false;
+            text = text.replace(/^\ufeff/, '');
+            for (let i = 0; i < text.length; i++) {
+                const ch = text[i];
+                if (q) {
+                    if (ch === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; }
+                    else cell += ch;
+                } else if (ch === '"') q = true;
+                else if (ch === ',') { row.push(cell); cell = ''; }
+                else if (ch === '\n' || ch === '\r') {
+                    if (ch === '\r' && text[i + 1] === '\n') i++;
+                    row.push(cell); cell = '';
+                    if (row.some(c => c !== '')) rows.push(row);
+                    row = [];
+                } else cell += ch;
+            }
+            row.push(cell);
+            if (row.some(c => c !== '')) rows.push(row);
+            return rows;
+        }
+
+        function csvRating(v) {
+            const n = parseFloat(v);
+            return (!isNaN(n) && n >= 0 && n <= 10) ? String(n) : null;
+        }
+
+        async function importCsv(input) {
+            const file = input.files && input.files[0];
+            input.value = '';
+            if (!file) return;
+            if (!isAdminUnlocked) { showToast('Akses ditolak!', 'warning'); return; }
+            if (file.size > 2 * 1024 * 1024) { showToast('File terlalu besar (maks 2 MB).', 'warning'); return; }
+            try {
+                const rows = parseCsv(await file.text());
+                if (rows.length < 2) throw new Error('kosong');
+                const head = rows[0].map(h => h.trim());
+                const idx = name => head.indexOf(name);
+                const letterboxd = idx('Name') >= 0 && idx('Year') >= 0;
+                if (!letterboxd && idx('judul') < 0) throw new Error('format');
+                const get = (r, name) => { const i = idx(name); return i >= 0 ? (r[i] || '').trim() : ''; };
+                const unq = t => t.replace(/^'(?=[=+\-@\t\r])/, '');
+                const existing = new Set(moviesData.map(m => `${(m.judul || '').toLowerCase()}|${m.bulan}`));
+                const out = [];
+                let skipped = 0;
+                rows.slice(1).forEach(r => {
+                    let m;
+                    if (letterboxd) {
+                        const d = get(r, 'Watched Date') || get(r, 'Date');
+                        m = { judul: get(r, 'Name'), tahun: parseInt(get(r, 'Year')) || null, bulan: d.slice(0, 7), watched_by: 'both', is_certified: false };
+                    } else {
+                        m = {
+                            judul: unq(get(r, 'judul')), tahun: parseInt(get(r, 'tahun')) || null, bulan: get(r, 'bulan'),
+                            watched_by: ['both', 'zald', 'micel'].includes(get(r, 'watched_by')) ? get(r, 'watched_by') : 'both',
+                            is_certified: get(r, 'is_certified') === 'true',
+                            rating_aku: csvRating(get(r, 'rating_aku')), review_aku: unq(get(r, 'review_aku')) || null,
+                            rating_dia: csvRating(get(r, 'rating_dia')), review_dia: unq(get(r, 'review_dia')) || null,
+                            poster: /^https?:\/\//.test(get(r, 'poster')) ? get(r, 'poster') : ''
+                        };
+                    }
+                    const key = `${m.judul.toLowerCase()}|${m.bulan}`;
+                    if (!m.judul || !/^\d{4}-\d{2}$/.test(m.bulan) || existing.has(key)) { skipped++; return; }
+                    existing.add(key);
+                    m.id = `m_${Date.now()}_${out.length}`;
+                    out.push(m);
+                });
+                if (!out.length) { showToast(`Tidak ada data baru (${skipped} dilewati).`, 'warning'); return; }
+                if (!confirm(`Impor ${out.length} film baru? (${skipped} dilewati karena duplikat atau tidak valid)`)) return;
+                const { error } = await supabaseClient.from(TABLE_NAME).insert(out);
+                if (error) throw error;
+                showToast(`${out.length} film diimpor!`, 'success');
+                await fetchSupabaseData();
+                renderStats();
+                initRecap();
+            } catch (err) {
+                console.error(err);
+                showToast('Gagal impor. Periksa format CSV.', 'warning');
+            }
         }
 
         function openTimeCalcModal() {
