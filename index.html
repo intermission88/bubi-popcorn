@@ -911,6 +911,16 @@
                     </div>
                 </div>
 
+                <div id="detail-tmdb" class="hidden bg-black/80 border border-neutral-800 rounded-2xl p-3.5 space-y-2.5" aria-live="polite">
+                    <div id="detail-tmdb-meta" class="flex flex-wrap gap-1.5"></div>
+                    <p id="detail-tmdb-overview" class="text-xs text-slate-300 leading-relaxed"></p>
+                    <p id="detail-tmdb-crew" class="text-[11px] text-slate-500"></p>
+                    <p id="detail-tmdb-stream" class="text-[11px] text-slate-500"></p>
+                    <a id="detail-tmdb-trailer" href="#" target="_blank" rel="noopener noreferrer" class="hidden inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold tap-scale">
+                        <i class="fa-brands fa-youtube"></i> Tonton trailer
+                    </a>
+                </div>
+
                 <div class="space-y-3">
                     <div id="detail-review-zald-wrap" class="bg-black/80 border border-sky-400/20 rounded-2xl p-3.5 space-y-1.5 shadow-sm">
                         <div class="flex items-center gap-1.5">
@@ -1808,6 +1818,7 @@
             modal.classList.remove('hidden');
             content.classList.add('animate-slideUp');
             activateModal(modal, modal.querySelector('[aria-label="Tutup detail film"]'));
+            loadTmdbExtra(movie);
         }
 
         function closeDetailModal() {
@@ -2201,6 +2212,82 @@
             if (year) document.getElementById('form-tahun').value = year;
             document.getElementById('form-poster').value = r.poster_path ? TMDB_IMG + r.poster_path : '';
             document.getElementById('tmdb-results').classList.add('hidden');
+        }
+
+        // --- DETAIL TAMBAHAN DARI TMDB (diambil saat detail dibuka, tidak disimpan) ---
+        const tmdbExtraCache = new Map();
+
+        async function fetchTmdbExtra(movie) {
+            const key = encodeURIComponent(TMDB_API_KEY);
+            const year = r => parseInt((r.release_date || r.first_air_date || '').slice(0, 4)) || null;
+            const sres = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${key}&query=${encodeURIComponent(movie.judul || '')}&include_adult=false`);
+            if (!sres.ok) throw new Error(sres.status);
+            const hit = (await sres.json()).results
+                .filter(r => r.media_type === 'movie' || r.media_type === 'tv')
+                .find(r => !movie.tahun || (year(r) && Math.abs(year(r) - movie.tahun) <= 1));
+            if (!hit) return null;
+            const dres = await fetch(`https://api.themoviedb.org/3/${hit.media_type}/${hit.id}?api_key=${key}&language=id-ID&append_to_response=videos,credits,watch/providers&include_video_language=id,en,null`);
+            if (!dres.ok) throw new Error(dres.status);
+            const d = await dres.json();
+            let overview = (d.overview || '').trim();
+            if (!overview) {
+                const eres = await fetch(`https://api.themoviedb.org/3/${hit.media_type}/${hit.id}?api_key=${key}&language=en-US`);
+                if (eres.ok) overview = ((await eres.json()).overview || '').trim();
+            }
+            const videos = (d.videos && d.videos.results || []).filter(v => v.site === 'YouTube' && /^[\w-]{6,20}$/.test(v.key || ''));
+            const trailer = videos.find(v => v.type === 'Trailer' && v.official) || videos.find(v => v.type === 'Trailer') || videos.find(v => v.type === 'Teaser');
+            const crew = d.credits && d.credits.crew || [];
+            const director = hit.media_type === 'tv'
+                ? (d.created_by || []).map(c => c.name).slice(0, 2).join(', ')
+                : crew.filter(c => c.job === 'Director').map(c => c.name).slice(0, 2).join(', ');
+            const cast = (d.credits && d.credits.cast || []).slice(0, 4).map(c => c.name).join(', ');
+            const idProv = d['watch/providers'] && d['watch/providers'].results && d['watch/providers'].results.ID;
+            const stream = idProv && idProv.flatrate ? idProv.flatrate.map(p => p.provider_name).slice(0, 4).join(', ') : '';
+            const runtime = hit.media_type === 'tv' ? (d.episode_run_time && d.episode_run_time[0]) || null : d.runtime || null;
+            return {
+                overview,
+                genres: (d.genres || []).map(g => g.name).slice(0, 4),
+                runtime,
+                tmdbRating: d.vote_average && d.vote_count > 20 ? d.vote_average.toFixed(1) : '',
+                type: hit.media_type === 'tv' ? 'Series' : 'Film',
+                director, cast, stream,
+                trailer: trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : ''
+            };
+        }
+
+        function renderTmdbExtra(x) {
+            const box = document.getElementById('detail-tmdb');
+            if (!x) { box.classList.add('hidden'); return; }
+            const chip = t => `<span class="px-2 py-0.5 rounded-lg bg-neutral-900 text-slate-300 text-[10px] font-semibold">${escapeHtml(t)}</span>`;
+            const meta = [x.type, ...x.genres];
+            if (x.runtime) meta.push(`${x.runtime} mnt`);
+            if (x.tmdbRating) meta.push(`TMDB ${x.tmdbRating}`);
+            document.getElementById('detail-tmdb-meta').innerHTML = meta.map(chip).join('');
+            document.getElementById('detail-tmdb-overview').textContent = x.overview;
+            document.getElementById('detail-tmdb-overview').classList.toggle('hidden', !x.overview);
+            const crew = document.getElementById('detail-tmdb-crew');
+            crew.textContent = [x.director && `Sutradara: ${x.director}`, x.cast && `Pemeran: ${x.cast}`].filter(Boolean).join(' • ');
+            crew.classList.toggle('hidden', !crew.textContent);
+            const st = document.getElementById('detail-tmdb-stream');
+            st.textContent = x.stream ? `Streaming di Indonesia: ${x.stream}` : '';
+            st.classList.toggle('hidden', !x.stream);
+            const tr = document.getElementById('detail-tmdb-trailer');
+            if (x.trailer) { tr.href = x.trailer; tr.classList.remove('hidden'); } else tr.classList.add('hidden');
+            box.classList.remove('hidden');
+        }
+
+        async function loadTmdbExtra(movie) {
+            const box = document.getElementById('detail-tmdb');
+            box.classList.add('hidden');
+            if (!TMDB_API_KEY || !movie.judul) return;
+            const cacheKey = `${movie.judul}|${movie.tahun}`;
+            try {
+                if (!tmdbExtraCache.has(cacheKey)) tmdbExtraCache.set(cacheKey, await fetchTmdbExtra(movie));
+                if (currentDetailMovieId != movie.id) return;
+                renderTmdbExtra(tmdbExtraCache.get(cacheKey));
+            } catch (err) {
+                console.warn('Detail TMDB gagal:', err);
+            }
         }
 
         // --- SINKRON POSTER TMDB (admin) ---
