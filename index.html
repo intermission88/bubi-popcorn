@@ -913,7 +913,10 @@
 
                 <div id="detail-tmdb" class="hidden bg-black/80 border border-neutral-800 rounded-2xl p-3.5 space-y-2.5" aria-live="polite">
                     <div id="detail-tmdb-meta" class="flex flex-wrap gap-1.5"></div>
-                    <p id="detail-tmdb-overview" class="text-xs text-slate-300 leading-relaxed"></p>
+                    <div>
+                        <p id="detail-tmdb-overview" class="text-xs text-slate-300 leading-relaxed line-clamp-3"></p>
+                        <button type="button" id="detail-tmdb-more" onclick="toggleOverview()" aria-expanded="false" class="hidden mt-1 text-[11px] font-semibold text-amber-400 hover:text-amber-300">Selengkapnya</button>
+                    </div>
                     <p id="detail-tmdb-crew" class="text-[11px] text-slate-500"></p>
                     <p id="detail-tmdb-stream" class="text-[11px] text-slate-500"></p>
                     <div id="detail-tmdb-player" class="hidden space-y-1.5">
@@ -2265,8 +2268,14 @@
             if (x.runtime) meta.push(`${x.runtime} mnt`);
             if (x.tmdbRating) meta.push(`TMDB ${x.tmdbRating}`);
             document.getElementById('detail-tmdb-meta').innerHTML = meta.map(chip).join('');
-            document.getElementById('detail-tmdb-overview').textContent = x.overview;
-            document.getElementById('detail-tmdb-overview').classList.toggle('hidden', !x.overview);
+            const ov = document.getElementById('detail-tmdb-overview');
+            ov.textContent = x.overview;
+            ov.classList.add('line-clamp-3');
+            ov.parentElement.classList.toggle('hidden', !x.overview);
+            const more = document.getElementById('detail-tmdb-more');
+            more.textContent = 'Selengkapnya';
+            more.setAttribute('aria-expanded', 'false');
+            more.classList.add('hidden');
             const crew = document.getElementById('detail-tmdb-crew');
             crew.textContent = [x.director && `Sutradara: ${x.director}`, x.cast && `Pemeran: ${x.cast}`].filter(Boolean).join(' • ');
             crew.classList.toggle('hidden', !crew.textContent);
@@ -2274,7 +2283,16 @@
             st.textContent = x.stream ? `Streaming di Indonesia: ${x.stream}` : '';
             st.classList.toggle('hidden', !x.stream);
             box.classList.remove('hidden');
+            more.classList.toggle('hidden', ov.scrollHeight <= ov.clientHeight + 1);
             showTrailer(x.trailerKey || '');
+        }
+
+        function toggleOverview() {
+            const ov = document.getElementById('detail-tmdb-overview');
+            const more = document.getElementById('detail-tmdb-more');
+            const open = ov.classList.toggle('line-clamp-3') === false;
+            more.textContent = open ? 'Lebih sedikit' : 'Selengkapnya';
+            more.setAttribute('aria-expanded', String(open));
         }
 
         function stopTrailer() {
