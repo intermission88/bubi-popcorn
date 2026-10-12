@@ -187,7 +187,7 @@ git push origin main
 ## 📜 Lisensi & Kredit
 
 - **Kode** dilisensikan di bawah [MIT](LICENSE). Isi arsip pribadi (judul yang dicatat, rating, ulasan) dan foto di `assets/` **tidak** termasuk dan tetap menjadi hak pemiliknya.
-- **TMDB:** produk ini memakai TMDB API tetapi tidak didukung atau disertifikasi oleh TMDB. Data ketersediaan streaming berasal dari JustWatch lewat TMDB.
+- **TMDB:** This product uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB. Logo resmi TMDB (`assets/tmdb-logo.svg`) dipakai apa adanya di footer, dengan ukuran lebih kecil daripada identitas aplikasi. Data ketersediaan streaming berasal dari JustWatch lewat TMDB.
 - **Poster, gambar, dan trailer** film adalah hak cipta pemilik masing-masing, ditampilkan untuk arsip pribadi nonkomersial. Pemutar trailer memakai YouTube dan tunduk pada Ketentuan Layanannya.
 - **Pustaka:** [Tailwind CSS](https://tailwindcss.com/) (MIT), [Font Awesome Free](https://fontawesome.com/license/free) (ikon CC BY 4.0, font SIL OFL 1.1, kode MIT), [Google Fonts](https://fonts.google.com/) Anton, Inter, Outfit (SIL OFL 1.1), dan [Supabase JS](https://github.com/supabase/supabase-js) (MIT).
 

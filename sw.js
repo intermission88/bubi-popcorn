@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bubi-popcorn-v14';
+const CACHE_NAME = 'bubi-popcorn-v15';
 const CORE_ASSETS = [
   './',
   './index.html',
