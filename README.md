@@ -19,6 +19,7 @@ Seluruh aplikasi berada dalam satu file: [`index.html`](index.html) (HTML, CSS, 
 - **Mau Ditonton (Watchlist):** antrean film yang belum ditonton, tambah lewat judul atau pencarian TMDB (admin). Tombol "Sudah ditonton" membuka form ulasan terisi dan menghapus item dari antrean setelah disimpan. Roulette ikut memilih dari antrean. Butuh tabel `bubi_watchlist`: jalankan [`supabase/watchlist.sql`](supabase/watchlist.sql) sekali di SQL Editor Supabase. Tanpa tabel ini, bagian watchlist tersembunyi.
 - **Tahun dalam Film:** recap per tahun di modal statistik (total, rata-rata rating, bulan tersibuk, top 3), bisa dibagikan.
 - **Ekspor/Impor CSV:** ekspor untuk semua orang, impor khusus admin (format sendiri atau diary Letterboxd; duplikat judul + bulan dilewati).
+- **Sinkron Poster TMDB (admin):** di modal statistik, mencocokkan semua film dengan TMDB (judul + tahun), menampilkan pratinjau poster lama dan baru dengan centang per film, lalu memperbarui hanya kolom `poster` setelah dikonfirmasi.
 - **Ping Indicator:** indikator latensi ke Supabase, bisa ditekan untuk cek ulang.
 
 ### Fitur Khusus

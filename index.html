@@ -627,6 +627,13 @@
                         </label>
                         <p class="mt-1.5 text-[10px] text-slate-600">Format sendiri atau ekspor diary Letterboxd. Film dengan judul dan bulan yang sama dilewati.</p>
                     </div>
+                    <div id="tmdb-sync-wrap" class="hidden pt-1">
+                        <button type="button" id="tmdb-sync-btn" onclick="triggerHaptic(); planTmdbSync()" class="w-full py-2 rounded-xl bg-neutral-900 border border-neutral-800 text-slate-200 text-xs font-bold tap-scale hover:border-amber-400">
+                            <i class="fa-solid fa-arrows-rotate mr-1"></i> Sinkron poster TMDB (admin)
+                        </button>
+                        <div id="tmdb-sync-list" class="mt-2 space-y-1.5" aria-live="polite"></div>
+                        <button type="button" id="tmdb-sync-apply" onclick="applyTmdbSync()" class="hidden mt-2 w-full py-2 rounded-xl popcorn-gradient text-black text-xs font-bold tap-scale">Terapkan yang dicentang</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2194,6 +2201,69 @@
             if (year) document.getElementById('form-tahun').value = year;
             document.getElementById('form-poster').value = r.poster_path ? TMDB_IMG + r.poster_path : '';
             document.getElementById('tmdb-results').classList.add('hidden');
+        }
+
+        // --- SINKRON POSTER TMDB (admin) ---
+        let tmdbSyncPlan = [];
+        async function planTmdbSync() {
+            const list = document.getElementById('tmdb-sync-list');
+            const btn = document.getElementById('tmdb-sync-btn');
+            const applyBtn = document.getElementById('tmdb-sync-apply');
+            applyBtn.classList.add('hidden');
+            if (!isAdminUnlocked) { showToast('Akses ditolak!', 'warning'); return; }
+            if (!TMDB_API_KEY) { list.innerHTML = '<p class="text-[11px] text-slate-500">TMDB belum dikonfigurasi.</p>'; return; }
+            btn.disabled = true;
+            tmdbSyncPlan = [];
+            const skipped = [];
+            const year = r => parseInt((r.release_date || r.first_air_date || '').slice(0, 4)) || null;
+            const lookup = async m => {
+                try {
+                    const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${encodeURIComponent(TMDB_API_KEY)}&query=${encodeURIComponent(m.judul || '')}&include_adult=false`);
+                    if (!res.ok) throw new Error(res.status);
+                    const cands = (await res.json()).results.filter(r => (r.media_type === 'movie' || r.media_type === 'tv') && r.poster_path);
+                    const hit = cands.find(r => !m.tahun || (year(r) && Math.abs(year(r) - m.tahun) <= 1));
+                    if (!hit) { skipped.push(`${m.judul}: tidak ada kecocokan tahun`); return; }
+                    const next = TMDB_IMG + hit.poster_path;
+                    if (m.poster === next) return;
+                    tmdbSyncPlan.push({ id: m.id, judul: m.judul, old: m.poster || '', next, tmdbTitle: hit.title || hit.name || '' });
+                } catch (err) {
+                    skipped.push(`${m.judul}: gagal menghubungi TMDB`);
+                }
+            };
+            for (let i = 0; i < moviesData.length; i += 5) {
+                list.innerHTML = `<p class="text-[11px] text-slate-500">Mencari ${Math.min(i + 5, moviesData.length)}/${moviesData.length}...</p>`;
+                await Promise.all(moviesData.slice(i, i + 5).map(lookup));
+            }
+            btn.disabled = false;
+            const img = u => u ? `<img src="${escapeHtml(u)}" alt="" loading="lazy" class="w-8 h-12 rounded object-cover">` : '<div class="w-8 h-12 rounded bg-neutral-800"></div>';
+            const rows = tmdbSyncPlan.map((x, i) => `
+                <label class="flex items-center gap-2 p-1.5 rounded-lg bg-black border border-neutral-800 cursor-pointer">
+                    <input type="checkbox" data-sync="${i}" checked class="accent-amber-400">
+                    ${img(x.old)}<i class="fa-solid fa-arrow-right text-[9px] text-slate-600"></i>${img(x.next)}
+                    <span class="text-[11px] text-slate-300 min-w-0 flex-1 truncate">${escapeHtml(x.judul)}<span class="block text-[10px] text-slate-600 truncate">TMDB: ${escapeHtml(x.tmdbTitle)}</span></span>
+                </label>`).join('');
+            const skipNote = skipped.length ? `<p class="text-[10px] text-slate-600">Dilewati (${skipped.length}): ${escapeHtml(skipped.join('; '))}</p>` : '';
+            list.innerHTML = (rows || '<p class="text-[11px] text-slate-500">Semua poster sudah sama dengan TMDB.</p>') + skipNote;
+            applyBtn.classList.toggle('hidden', !tmdbSyncPlan.length);
+        }
+
+        async function applyTmdbSync() {
+            if (!isAdminUnlocked) { showToast('Akses ditolak!', 'warning'); return; }
+            const chosen = [...document.querySelectorAll('#tmdb-sync-list input[data-sync]:checked')].map(c => tmdbSyncPlan[+c.dataset.sync]);
+            if (!chosen.length) { showToast('Tidak ada yang dicentang.', 'warning'); return; }
+            if (!confirm(`Perbarui poster ${chosen.length} film dari TMDB?`)) return;
+            const btn = document.getElementById('tmdb-sync-apply');
+            btn.disabled = true;
+            let failed = 0;
+            for (const x of chosen) {
+                const { error } = await supabaseClient.from(TABLE_NAME).update({ poster: x.next }).eq('id', x.id);
+                if (error) { failed++; console.error(error); }
+            }
+            btn.disabled = false;
+            showToast(failed ? `${chosen.length - failed} berhasil, ${failed} gagal.` : `${chosen.length} poster diperbarui!`, failed ? 'warning' : 'success');
+            document.getElementById('tmdb-sync-list').innerHTML = '';
+            btn.classList.add('hidden');
+            await fetchSupabaseData();
         }
 
         // --- WATCHLIST ---
