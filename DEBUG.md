@@ -150,6 +150,7 @@ Pola assertion yang sudah terbukti: render kartu uji via `createMovieCard({...})
 17. **`requestAnimationFrame` bisa dijeda di browser pane**, jadi efek scroll (`updateScrollUI`) tidak terpicu saat uji. Panggil `updateScrollUI()` manual setelah `scrollTo`.
 18. **Uji geser-tutup** lewat `PointerEvent` sintetis di `[data-sheet-grab]` (`pointerdown` lalu beberapa `pointermove` lalu `pointerup`, `pointerType: 'touch'`). Geser >120px (atau >40px dan cepat) menutup; kurang dari itu kembali. Animasi `animate-slideUp` dilepas saat drag dan dipasang lagi saat modal dibuka.
 19. **Pull-to-refresh** (touchend di `DOMContentLoaded`) dimatikan saat `activeModal` ada, supaya geser-tutup tidak memicu refresh data.
+20. **Kaca tidak terlihat?** `backdrop-filter` hanya tampak bila ada konten berwarna di belakangnya (di atas latar hitam polos hasilnya gelap). Cek dengan scroll ke area poster. Header memakai pseudo-elemen `::before` untuk blur bermasker agar tombol di dalamnya tidak ikut memudar.
 
 ## Probe cepat (read-only)
 

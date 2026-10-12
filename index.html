@@ -224,11 +224,45 @@
         .sheet-handle::before { content: ''; width: 36px; height: 5px; border-radius: 9999px; background: rgba(255,255,255,0.3); }
         [data-sheet-grab] { touch-action: none; }
 
-        /* Tab bar bawah ala iOS */
-        .tab-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 48px; color: #a3a3a3; font-size: 11px; font-weight: 600; transition: color .15s; -webkit-tap-highlight-color: transparent; }
+        /* Liquid Glass (pendekatan CSS yang jalan di Safari): kaca buram jenuh + kilau tepi + bayangan */
+        .glass, #ping-indicator, #lock-btn {
+            background: linear-gradient(135deg, rgba(255,255,255,0.16), rgba(255,255,255,0.04) 55%, rgba(255,255,255,0.09)), rgba(24,24,24,0.35) !important;
+            -webkit-backdrop-filter: blur(18px) saturate(190%) brightness(1.1);
+            backdrop-filter: blur(18px) saturate(190%) brightness(1.1);
+            border: 1px solid rgba(255,255,255,0.16) !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.38), inset 0 -1px 0 rgba(255,255,255,0.06), inset 0 0 16px rgba(255,255,255,0.05), 0 10px 28px rgba(0,0,0,0.5);
+        }
+        #lock-btn[aria-label^="Kunci"] {
+            background: linear-gradient(135deg, rgba(250,204,21,0.30), rgba(250,204,21,0.08) 60%, rgba(250,204,21,0.16)), rgba(24,24,24,0.35) !important;
+            border-color: rgba(250,204,21,0.5) !important;
+        }
+        @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+            .glass, #ping-indicator, #lock-btn { background: rgba(28,28,28,0.95) !important; }
+        }
+        @media (prefers-reduced-transparency: reduce) {
+            .glass, #ping-indicator, #lock-btn { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(28,28,28,0.96) !important; }
+        }
+
+        /* Header: tanpa bar solid; lapisan blur memudar ke bawah (scroll edge) */
+        #app-header { background: linear-gradient(to bottom, rgba(0,0,0,0.92), rgba(0,0,0,0.5) 70%, rgba(0,0,0,0)); }
+        #app-header::before {
+            content: ''; position: absolute; inset: 0 0 -16px 0; z-index: -1; pointer-events: none;
+            -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+            -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent);
+            mask-image: linear-gradient(to bottom, #000 55%, transparent);
+        }
+
+        /* Tab bar: kapsul kaca melayang, tab aktif = gelembung kaca emas */
+        #tab-bar { padding: 0 12px calc(env(safe-area-inset-bottom) + 8px); pointer-events: none; }
+        #tab-bar-inner { pointer-events: auto; border-radius: 30px; }
+        .tab-item { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 52px; margin: 4px 2px; border-radius: 24px; color: #d4d4d4; font-size: 11px; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,0.65); transition: color .2s, background .25s, box-shadow .25s, transform .15s; -webkit-tap-highlight-color: transparent; }
         .tab-item i { font-size: 18px; }
-        .tab-item:active { transform: scale(0.94); }
-        .tab-item[aria-current="true"] { color: #facc15; }
+        .tab-item:active { transform: scale(0.93); }
+        .tab-item[aria-current="true"] {
+            color: #facc15;
+            background: linear-gradient(135deg, rgba(250,204,21,0.26), rgba(250,204,21,0.07) 60%, rgba(250,204,21,0.14));
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), inset 0 0 0 1px rgba(250,204,21,0.28), 0 4px 14px rgba(250,204,21,0.12);
+        }
 
         /* Poster bertahap: latar kecil buram dulu, lalu poster tajam memudar masuk */
         .poster-img { opacity: 0; transition: opacity .35s ease; }
@@ -253,7 +287,7 @@
 <body class="min-h-screen pb-32 pt-16 selection:bg-amber-400 selection:text-black">
 
     <!-- Header App Bar -->
-    <header id="app-header" class="fixed top-0 inset-x-0 z-40 bg-black/60 backdrop-blur-xl backdrop-saturate-150 border-b border-transparent px-4 py-3 transition-colors duration-200">
+    <header id="app-header" class="fixed top-0 inset-x-0 z-40 px-4 py-3">
         <div class="max-w-md mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl popcorn-gradient flex items-center justify-center text-black text-base shadow-lg flex-shrink-0 font-bold">
@@ -614,8 +648,8 @@
     </main>
 
     <!-- Tab Bar Bawah (menggantikan tombol melayang) -->
-    <nav id="tab-bar" aria-label="Navigasi utama" class="fixed bottom-0 inset-x-0 z-40 bg-black/60 backdrop-blur-xl backdrop-saturate-150 border-t border-white/10 pb-[env(safe-area-inset-bottom)]">
-        <div class="max-w-md mx-auto grid grid-flow-col auto-cols-fr items-center px-2 pt-1">
+    <nav id="tab-bar" aria-label="Navigasi utama" class="fixed bottom-0 inset-x-0 z-40">
+        <div id="tab-bar-inner" class="glass max-w-md mx-auto grid grid-flow-col auto-cols-fr items-center px-1">
             <button type="button" id="tab-home" onclick="triggerHaptic(); scrollToTop()" class="tab-item" aria-current="true">
                 <i class="fa-solid fa-house"></i><span>Beranda</span>
             </button>
@@ -623,7 +657,7 @@
                 <i class="fa-solid fa-ticket"></i><span>Antrean</span>
             </button>
             <div id="fab-container" class="hidden flex justify-center">
-                <button type="button" onclick="triggerHaptic(); openAddModal()" class="-mt-5 w-14 h-14 rounded-full popcorn-gradient flex items-center justify-center text-black shadow-2xl border-4 border-black tap-scale transition" aria-label="Tambah film" title="Tambah Film">
+                <button type="button" onclick="triggerHaptic(); openAddModal()" class="-mt-6 w-14 h-14 rounded-full popcorn-gradient flex items-center justify-center text-black border border-white/40 tap-scale transition" style="box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 8px 22px rgba(250,204,21,0.35)" aria-label="Tambah film" title="Tambah Film">
                     <i class="fa-solid fa-plus text-xl"></i>
                 </button>
             </div>
@@ -1161,9 +1195,6 @@
         function updateScrollUI() {
             scrollTicking = false;
             const y = window.scrollY;
-            const header = document.getElementById('app-header');
-            header.classList.toggle('border-white/10', y > 8);
-            header.classList.toggle('border-transparent', y <= 8);
             document.getElementById('header-title').classList.toggle('opacity-0', y < 56);
             const wl = document.getElementById('watchlist-section');
             let onWatchlist = false;

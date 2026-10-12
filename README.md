@@ -12,7 +12,7 @@ Aplikasi web mobile-first untuk mengarsipkan film yang ditonton bersama oleh Zal
 - Film dikelompokkan per bulan, bulan terbaru di atas.
 - Dua tampilan: karusel per bulan, atau **grid poster** 3 kolom (ala Letterboxd) lewat tombol di samping "Bulan Tayang"; pilihan diingat.
 - Detail film: rating, ulasan, bagikan atau salin ringkasan.
-- Navigasi **tab bar bawah** (Beranda, Antrean, Statistik, Waktu, dan Tambah untuk admin), judul besar yang mengecil saat scroll, header kaca buram, dan modal yang bisa **digeser ke bawah untuk menutup** di HP. Poster tampil bertahap (kecil buram lalu tajam).
+- Navigasi **tab bar bawah** (Beranda, Antrean, Statistik, Waktu, dan Tambah untuk admin), judul besar yang mengecil saat scroll, header dan tab bar bergaya **Liquid Glass** (kapsul kaca melayang, pendekatan CSS yang jalan di Safari), dan modal yang bisa **digeser ke bawah untuk menutup** di HP. Poster tampil bertahap (kecil buram lalu tajam).
 
 **Bareng-bareng**
 - **Mau Ditonton:** antrean film yang belum ditonton. Tombol "Sudah ditonton" langsung membuka form ulasan.
