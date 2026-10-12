@@ -47,5 +47,5 @@ Repo ini dikerjakan dari dua mesin: macOS (rumah) dan Windows (apartemen).
 
 ## Setelah selesai
 - Commit + push langsung ke `main` tanpa bertanya. Pesan commit bahasa Indonesia, jelas.
-- `git add` hanya file yang kamu ubah. Jangan ikut meng-commit `.commandcode/taste/taste.md` (perubahan dari tool lain).
+- `git add` hanya file yang kamu ubah, jangan `git add -A`. Folder `.commandcode/` sudah dihapus dan di-ignore.
 - Perbarui `README.md` bila fitur atau langkah setup berubah, dan `DEBUG.md` bila peta kode bergeser.

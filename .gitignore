@@ -15,5 +15,5 @@ desktop.ini
 node_modules/
 *.log
 
-# Folder sampah yang dibuat otomatis oleh sistem taste (nama kepotong dari catatan)
-.commandcode/taste/--*/
+# Folder milik tool lain (Command Code); tidak dipakai di repo ini
+.commandcode/
