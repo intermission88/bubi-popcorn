@@ -6,10 +6,12 @@ Peta untuk debug cepat: ke mana melihat, perintah apa yang jalan, dan jebakan ya
 
 | File | Fungsi | Kapan dibuka |
 |---|---|---|
-| `index.html` | Semua markup, CSS, JS (~2130 baris). JANGAN dibaca utuh. | Saat perbaikan perilaku/tampilan |
-| `sw.js` | Service worker: network-first HTML, cache-first aset, Supabase tidak di-cache. | Gejala "perubahan tidak tampil" / offline |
+| `index.html` | Semua markup, CSS, JS (~2800 baris). JANGAN dibaca utuh. | Saat perbaikan perilaku/tampilan |
+| `sw.js` | Service worker: network-first HTML, cache-first aset, Supabase dan TMDB tidak di-cache. | Gejala "perubahan tidak tampil" / offline |
 | `manifest.json` | Metadata PWA + ikon (`assets/icon.svg`). | Ikon install salah |
-| `assets/` | Biner: 5 slider, 2 foto profil, 2 ikon. Jangan dibaca; pakai `file`/`sips` untuk metadata. | Aset 404 |
+| `assets/` | Biner: 5 slider, 2 foto profil, ikon PWA, `tmdb-logo.svg`. Jangan dibaca; pakai `file`/`sips` untuk metadata. | Aset 404 |
+| `supabase/watchlist.sql` | Skema tabel `bubi_watchlist` + RLS. Dijalankan user manual. | Watchlist tidak muncul |
+| `LICENSE` | MIT untuk kode (isi arsip dan foto dikecualikan). | Soal lisensi |
 | `push.bat` | Alternatif commit+push interaktif (Windows). | — |
 | `README.md` | Fitur, skema data, setup. | Referensi |
 | `AGENTS.md` | Konvensi kerja + lingkungan per-OS. | Wajib baca dulu |
@@ -24,6 +26,9 @@ Baris bergeser setiap edit. Anchor yang stabil:
 | Hero slider (5 slide) | `grep -n 'hero-slider'` |
 | Kartu "Now Showing" + Hari Bersama + jam ganda | `grep -n 'ticket-card'` |
 | Mau Ditonton (watchlist, di atas pencarian) | `grep -n 'watchlist-section'` |
+| Modal Statistik + Roulette + Recap + CSV + sinkron TMDB | `grep -n 'id="stats-modal"'` |
+| Kotak info TMDB + trailer di modal detail | `grep -n 'id="detail-tmdb"'` |
+| Footer: logo TMDB + Kredit & Lisensi | `grep -n 'tmdb-logo\|Kredit'` |
 | Search + filter viewer + Top 9+ | `grep -n 'search-section'` |
 | Karusel film per bulan | `grep -n 'months-carousel'` |
 | Empty state / error state | `grep -n 'empty-state\|error-state'` |
@@ -31,7 +36,9 @@ Baris bergeser setiap edit. Anchor yang stabil:
 | Footer + panel admin | `grep -n 'Footer Section'` |
 | FAB (konverter, tambah, scroll-top) | `grep -n 'Floating Action'` |
 | Modal konverter / login / tambah / detail | `grep -n 'id="time-calc-modal\|password-modal\|add-modal\|detail-modal"'` |
-| Konstanta Supabase + ADMIN_EMAIL | `grep -n 'SUPABASE_URL\|ADMIN_EMAIL'` |
+| Konstanta Supabase + ADMIN_EMAIL + watchlist | `grep -n 'SUPABASE_URL\|ADMIN_EMAIL\|WATCHLIST_TABLE'` |
+| Konstanta TMDB | `grep -n 'TMDB_API_KEY\|TMDB_IMG'` |
+| Blok JS per fitur | `grep -n '// --- '` |
 | Fungsi JS | `grep -n 'function <nama>'` |
 
 ## Fungsi JS per Fitur
@@ -43,6 +50,13 @@ Baris bergeser setiap edit. Anchor yang stabil:
 - **Admin:** `handleLockClick`, `openPasswordModal`, `handlePasswordSubmit` (`signInWithPassword`, email dari `ADMIN_EMAIL`), `initAdminSession` (`getSession` + `onAuthStateChange`), `updateLockUI`.
 - **Waktu:** `updateDualClocks` (Zald `Asia/Colombo`, Micel `Asia/Tokyo`), `updateConvertedTime` + `toggleConverterDirection` (JST ↔ Colombo, beda 3,5 jam), `calculateAgeAndCountdown`.
 - **Slider:** `updateSlider`, `startSlideTimer` (hormati reduced motion), `currentSlide`.
+- **Statistik + Roulette:** `openStatsModal` / `closeStatsModal`, `renderStats`, `getRoulettePool` (antrean + film yang baru ditonton satu orang), `spinRoulette` (hormati reduced motion).
+- **Recap tahunan:** `initRecap`, `renderRecap`, `shareRecap`.
+- **TMDB (form):** `searchTmdb(inputId, boxId, handler)` → `applyTmdbResult` / `applyTmdbToWatchlist`. Kunci di `TMDB_API_KEY`; kosong = fitur nonaktif.
+- **TMDB (detail):** `loadTmdbExtra` → `fetchTmdbExtra` (search lalu detail dengan `append_to_response`, cache di `tmdbExtraCache`) → `renderTmdbExtra`; `showTrailer` / `stopTrailer` (iframe `youtube-nocookie`, tanpa autoplay), `toggleOverview` (potong 3 baris).
+- **Sinkron poster (admin):** `planTmdbSync` (pratinjau, tidak menulis) → `applyTmdbSync` (satu-satunya yang menulis kolom `poster`).
+- **Watchlist:** `fetchWatchlist` (set `watchlistAvailable`, tabel hilang = bagian disembunyikan), `renderWatchlist`, `insertWatchlist`, `deleteWatchlistItem`, `markWatchlistWatched` (set `pendingWatchlistId`; dihapus di `handleFormSubmit` setelah simpan sukses).
+- **CSV:** `exportCsv`, `importCsv` (admin; dedup judul+bulan; format sendiri atau Letterboxd), `parseCsv`, `csvCell` (awalan `'` untuk cegah formula injection).
 - **Bootstrap:** satu `DOMContentLoaded` di akhir file — semuanya dipasang di sini.
 
 ## Cek Kesehatan 30 Detik (mulai dari sini kalau "website rusak")
@@ -81,6 +95,10 @@ Status sukses/gagal detail: `.../deployments/<id>/statuses` (ikuti `statuses_url
 | Modal nyangkut / fokus hilang | `activateModal`/`deactivateModal` + listener Escape | Modal dibuka lewat jalur yang belum memakai helper |
 | Ikon install salah | `manifest.json` + `apple-touch-icon` | iOS tidak baca SVG manifest, butuh PNG |
 | Waktu/konverter salah | `convDirection`, `formatAmPm` | Offset zona salah, arah tertukar |
+| Bagian "Mau Ditonton" tidak muncul | `watchlistAvailable`; probe `bubi_watchlist` (bawah) | Tabel belum dibuat (jalankan `supabase/watchlist.sql`), atau antrean kosong dan belum login admin |
+| Kotak info TMDB tidak muncul di detail | `TMDB_API_KEY` terisi? Tab Network ke `api.themoviedb.org` | Key kosong/salah; film tidak cocok judul+tahun (±1) |
+| Film series "Season N" tidak dapat poster/info | Tahun TMDB = tayang perdana, bukan musim | Normal; isi poster manual lewat form edit |
+| Trailer tidak muncul / hitam | Ada `trailerKey`? Tautan cadangan "Buka di YouTube" | Video melarang embed, atau tidak ada trailer YouTube |
 
 ## Verifikasi Cepat
 
@@ -122,6 +140,13 @@ Pola assertion yang sudah terbukti: render kartu uji via `createMovieCard({...})
 9. **Jangan taruh password/secret di `index.html` atau README** — bisa dibaca via Inspect Element. Auth lewat `signInWithPassword`, email di `ADMIN_EMAIL`.
 10. **Host adalah Vercel, bukan GitHub Pages.** Jangan ikuti klaim lama.
 
+11. **`javascript_tool` terpotong saat halaman navigasi.** `location.reload()` di skrip yang sama membuang hasilnya; reload di panggilan terpisah, lalu tunggu `DOMContentLoaded` sebelum assertion.
+12. **Service worker bisa menyajikan versi lama saat uji.** Cek dulu `typeof namaFungsiBaru === 'function'` sebelum assertion; kalau `stale`, muat ulang.
+13. **Console menampilkan "An unknown error occurred when fetching the script" dan 404 `bubi_watchlist`.** Yang pertama tidak menyebut skrip mana dan tidak mengganggu fitur; yang kedua normal bila tabel watchlist belum dibuat.
+14. **Pane browser tidak menampilkan konten YouTube.** Pemutaran trailer tidak bisa diverifikasi di sana; cukup cek elemen iframe-nya. Pemutaran harus dicek user di browser sungguhan.
+15. **Rating bisa `null` atau string.** Selalu lewat `parseRating()` sebelum menghitung; film yang ditonton satu orang tidak punya rating pihak lain.
+16. **Detail TMDB punya penjaga balapan.** `loadTmdbExtra` membandingkan `currentDetailMovieId`; kalau modal berpindah film sebelum fetch selesai, hasil lama dibuang.
+
 ## Probe cepat (read-only)
 
 ```bash
@@ -132,6 +157,10 @@ curl -s -o /dev/null -w '%{http_code}\n' -X DELETE \
 
 # Pendaftaran publik harus tertutup (disable_signup = true)
 curl -s "https://<project>.supabase.co/auth/v1/settings" -H "apikey: <publishable-key>"
+
+# Watchlist ada dan bisa dibaca publik? 200 + [] atau isi = ya; 404 = tabel belum dibuat
+curl -s -w '\nHTTP %{http_code}\n' "https://<project>.supabase.co/rest/v1/bubi_watchlist?select=*" \
+  -H "apikey: <publishable-key>" -H "Authorization: Bearer <publishable-key>"
 ```
 
 INSERT dengan `?on_conflict=id` + `Prefer: resolution=ignore-duplicates` pada id yang sudah ada: aman (tidak menulis apa pun) dan menjawab `42501` bila RLS aktif. DELETE/PATCH dengan filter yang tidak cocok TIDAK bisa dipakai membedakan — keduanya tetap 204.
@@ -140,5 +169,6 @@ INSERT dengan `?on_conflict=id` + `Prefer: resolution=ignore-duplicates` pada id
 
 - Baca `index.html` hanya dengan grep + `offset`/`limit`.
 - Commit + push ke `main` langsung setelah selesai; Vercel deploy otomatis.
-- Setelah mengubah aset yang di-cache, naikkan `CACHE_NAME`.
+- Setelah mengubah `index.html` atau aset yang di-cache, naikkan `CACHE_NAME`.
+- Uji perilaku lewat browser pane bawaan Claude, jangan fungsi yang menulis ke Supabase.
 - Bersihkan server/proses latar setelah verifikasi.
