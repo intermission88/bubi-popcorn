@@ -57,6 +57,7 @@ Baris bergeser setiap edit. Anchor yang stabil:
 - **Sinkron poster (admin):** `planTmdbSync` (pratinjau, tidak menulis) → `applyTmdbSync` (satu-satunya yang menulis kolom `poster`).
 - **Watchlist:** `fetchWatchlist` (set `watchlistAvailable`, tabel hilang = bagian disembunyikan), `renderWatchlist`, `insertWatchlist`, `deleteWatchlistItem`, `markWatchlistWatched` (set `pendingWatchlistId`; dihapus di `handleFormSubmit` setelah simpan sukses).
 - **CSV:** `exportCsv`, `importCsv` (admin; dedup judul+bulan; format sendiri atau Letterboxd), `parseCsv`, `csvCell` (awalan `'` untuk cegah formula injection).
+- **Navigasi dan tampilan:** tab bar bawah `#tab-bar` (`scrollToTop`, `scrollToWatchlist`; tab Antrean ikut visibilitas section watchlist; `#fab-container` = tombol tambah admin di tengah tab bar). `updateScrollUI` (judul header muncul setelah large title keluar layar, tab aktif). Mode tampilan: `toggleViewMode` / `applyViewModeUI` (`bubi_view_mode` di localStorage), `createMovieCard` (karusel) vs `createPosterTile` (grid 3 kolom). Poster: `posterBox`, `tmdbSized`. Bottom sheet: `initSheetDrag` (pointer events; zona `[data-sheet-grab]`).
 - **Bootstrap:** satu `DOMContentLoaded` di akhir file — semuanya dipasang di sini.
 
 ## Cek Kesehatan 30 Detik (mulai dari sini kalau "website rusak")
@@ -146,6 +147,9 @@ Pola assertion yang sudah terbukti: render kartu uji via `createMovieCard({...})
 14. **Pane browser tidak menampilkan konten YouTube.** Pemutaran trailer tidak bisa diverifikasi di sana; cukup cek elemen iframe-nya. Pemutaran harus dicek user di browser sungguhan.
 15. **Rating bisa `null` atau string.** Selalu lewat `parseRating()` sebelum menghitung; film yang ditonton satu orang tidak punya rating pihak lain.
 16. **Detail TMDB punya penjaga balapan.** `loadTmdbExtra` membandingkan `currentDetailMovieId`; kalau modal berpindah film sebelum fetch selesai, hasil lama dibuang.
+17. **`requestAnimationFrame` bisa dijeda di browser pane**, jadi efek scroll (`updateScrollUI`) tidak terpicu saat uji. Panggil `updateScrollUI()` manual setelah `scrollTo`.
+18. **Uji geser-tutup** lewat `PointerEvent` sintetis di `[data-sheet-grab]` (`pointerdown` lalu beberapa `pointermove` lalu `pointerup`, `pointerType: 'touch'`). Geser >120px (atau >40px dan cepat) menutup; kurang dari itu kembali. Animasi `animate-slideUp` dilepas saat drag dan dipasang lagi saat modal dibuka.
+19. **Pull-to-refresh** (touchend di `DOMContentLoaded`) dimatikan saat `activeModal` ada, supaya geser-tutup tidak memicu refresh data.
 
 ## Probe cepat (read-only)
 

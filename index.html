@@ -219,6 +219,22 @@
 
         .touch-target { min-width: 44px; min-height: 44px; }
 
+        /* Bottom sheet: handle + zona geser-untuk-tutup (iOS) */
+        .sheet-handle { display: flex; justify-content: center; padding: 10px 0 4px; flex-shrink: 0; touch-action: none; }
+        .sheet-handle::before { content: ''; width: 36px; height: 5px; border-radius: 9999px; background: rgba(255,255,255,0.3); }
+        [data-sheet-grab] { touch-action: none; }
+
+        /* Tab bar bawah ala iOS */
+        .tab-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 48px; color: #a3a3a3; font-size: 11px; font-weight: 600; transition: color .15s; -webkit-tap-highlight-color: transparent; }
+        .tab-item i { font-size: 18px; }
+        .tab-item:active { transform: scale(0.94); }
+        .tab-item[aria-current="true"] { color: #facc15; }
+
+        /* Poster bertahap: latar kecil buram dulu, lalu poster tajam memudar masuk */
+        .poster-img { opacity: 0; transition: opacity .35s ease; }
+        .poster-img.is-loaded { opacity: 1; }
+        @media (prefers-reduced-motion: reduce) { .poster-img { transition: none; } }
+
         @media (max-width: 639px) {
             input, select, textarea { font-size: 16px !important; }
         }
@@ -237,15 +253,15 @@
 <body class="min-h-screen pb-32 pt-16 selection:bg-amber-400 selection:text-black">
 
     <!-- Header App Bar -->
-    <header class="fixed top-0 inset-x-0 z-40 bg-black/90 backdrop-blur-xl border-b border-neutral-900 px-4 py-3">
+    <header id="app-header" class="fixed top-0 inset-x-0 z-40 bg-black/60 backdrop-blur-xl backdrop-saturate-150 border-b border-transparent px-4 py-3 transition-colors duration-200">
         <div class="max-w-md mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl popcorn-gradient flex items-center justify-center text-black text-base shadow-lg flex-shrink-0 font-bold">
                     <i class="fa-solid fa-bowl-food"></i>
                 </div>
-                <h1 class="font-display font-black text-base text-neutral-50 leading-tight tracking-tight">
+                <div id="header-title" class="font-display font-black text-base text-neutral-50 leading-tight tracking-tight opacity-0 transition-opacity duration-200">
                     Bubi's Popcorn
-                </h1>
+                </div>
             </div>
 
             <!-- Bagian Kanan Atas: Ping Indicator & Tombol Gembok -->
@@ -265,6 +281,12 @@
 
     <!-- Main Container -->
     <main id="main-content" class="max-w-md mx-auto px-4 space-y-4 mt-3">
+
+        <!-- Large Title (mengecil jadi judul kecil di header saat scroll) -->
+        <section id="large-title" class="px-1 pt-1">
+            <h1 class="font-display text-4xl text-neutral-50 tracking-tight leading-none">Bubi's Popcorn</h1>
+            <p class="mt-1.5 text-xs text-neutral-300">Cinema log archive by <span class="text-sky-400 font-semibold">Zald</span> &amp; <span class="text-pink-400 font-semibold">Micel</span></p>
+        </section>
 
         <!-- SECTION: AUTO SLIDE INFINITE (1000x324 Aspect Ratio) -->
         <section class="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-neutral-800 bg-neutral-950 group">
@@ -399,7 +421,7 @@
         </section>
 
         <!-- Watchlist: Mau Ditonton -->
-        <section id="watchlist-section" class="pt-6 hidden">
+        <section id="watchlist-section" class="pt-6 hidden scroll-mt-16">
             <div class="film-strip -mx-4"></div>
             <h2 class="mt-5 mb-3 text-xs font-bold text-amber-400 uppercase tracking-[0.25em] font-display flex items-center gap-2">
                 <i class="fa-solid fa-ticket"></i> Mau Ditonton
@@ -450,9 +472,14 @@
         <section class="space-y-3">
             <div class="flex items-center justify-between px-1">
                 <h2 class="marquee-label font-display text-sm text-neutral-300 uppercase tracking-[0.25em] leading-none pt-1">Bulan Tayang</h2>
-                <span class="text-caption text-neutral-300 flex items-center gap-1.5">
-                    <i class="fa-solid fa-arrows-left-right text-amber-400/70 text-micro"></i> Geser antar bulan
-                </span>
+                <div class="flex items-center gap-2">
+                    <span id="swipe-hint" class="text-caption text-neutral-300 flex items-center gap-1.5">
+                        <i class="fa-solid fa-arrows-left-right text-amber-400/70 text-micro"></i> Geser antar bulan
+                    </span>
+                    <button type="button" id="view-toggle" onclick="triggerHaptic(); toggleViewMode()" class="touch-target rounded-xl bg-neutral-950 border border-neutral-800 text-amber-400 flex items-center justify-center tap-scale hover:border-amber-400/60" aria-label="Ganti ke tampilan grid poster" title="Ganti tampilan">
+                        <i id="view-toggle-icon" class="fa-solid fa-table-cells-large text-xs"></i>
+                    </button>
+                </div>
             </div>
 
             <div id="months-carousel" class="space-y-5"></div>
@@ -558,7 +585,7 @@
             <div class="space-y-1.5">
                 <div class="font-anton text-xs tracking-[0.45em] text-neutral-400 uppercase pl-[0.45em]">The End</div>
                 <p class="text-caption text-neutral-300">
-                    Cinema log archive by <span class="text-pink-400 font-semibold">Zald &amp; Micel</span>
+                    Cinema log archive by <span class="text-sky-400 font-semibold">Zald</span> &amp; <span class="text-pink-400 font-semibold">Micel</span>
                 </p>
                 <p class="text-micro text-neutral-400 tracking-wide">
                     &copy; 2026 Bubi's Popcorn
@@ -586,35 +613,34 @@
         </footer>
     </main>
 
-    <!-- Floating Action Buttons (Right Bottom) -->
-    <div class="fixed bottom-8 right-6 z-40 flex flex-col gap-3 pb-[env(safe-area-inset-bottom)]">
-        <!-- Floating Stats Button -->
-        <button type="button" onclick="triggerHaptic(); openStatsModal()" class="w-12 h-12 rounded-full bg-neutral-900 border border-neutral-700 text-amber-400 flex items-center justify-center shadow-2xl tap-scale transition hover:bg-neutral-800 hover:border-amber-400" title="Statistik Kita" aria-label="Statistik Kita">
-            <i class="fa-solid fa-chart-simple text-base"></i>
-        </button>
-        <!-- Floating Time Converter Button -->
-        <button onclick="triggerHaptic(); openTimeCalcModal()" class="w-12 h-12 rounded-full bg-neutral-900 border border-neutral-700 text-amber-400 flex items-center justify-center shadow-2xl tap-scale transition hover:bg-neutral-800 hover:border-amber-400" title="Konverter Waktu">
-            <i class="fa-solid fa-clock text-base"></i>
-        </button>
-        <!-- FAB Tambah Film (Only if admin unlocked) -->
-        <div id="fab-container" class="hidden">
-            <button type="button" onclick="triggerHaptic(); openAddModal()" class="w-14 h-14 rounded-full popcorn-gradient flex items-center justify-center text-black shadow-2xl border-2 border-black tap-scale transition hover:rotate-90 duration-300" aria-label="Tambah ulasan film">
-                <i class="fa-solid fa-plus text-xl"></i>
+    <!-- Tab Bar Bawah (menggantikan tombol melayang) -->
+    <nav id="tab-bar" aria-label="Navigasi utama" class="fixed bottom-0 inset-x-0 z-40 bg-black/60 backdrop-blur-xl backdrop-saturate-150 border-t border-white/10 pb-[env(safe-area-inset-bottom)]">
+        <div class="max-w-md mx-auto grid grid-flow-col auto-cols-fr items-center px-2 pt-1">
+            <button type="button" id="tab-home" onclick="triggerHaptic(); scrollToTop()" class="tab-item" aria-current="true">
+                <i class="fa-solid fa-house"></i><span>Beranda</span>
+            </button>
+            <button type="button" id="tab-watchlist" onclick="triggerHaptic(); scrollToWatchlist()" class="tab-item hidden">
+                <i class="fa-solid fa-ticket"></i><span>Antrean</span>
+            </button>
+            <div id="fab-container" class="hidden flex justify-center">
+                <button type="button" onclick="triggerHaptic(); openAddModal()" class="-mt-5 w-14 h-14 rounded-full popcorn-gradient flex items-center justify-center text-black shadow-2xl border-4 border-black tap-scale transition" aria-label="Tambah film" title="Tambah Film">
+                    <i class="fa-solid fa-plus text-xl"></i>
+                </button>
+            </div>
+            <button type="button" onclick="triggerHaptic(); openStatsModal()" class="tab-item">
+                <i class="fa-solid fa-chart-simple"></i><span>Statistik</span>
+            </button>
+            <button type="button" onclick="triggerHaptic(); openTimeCalcModal()" class="tab-item">
+                <i class="fa-solid fa-clock"></i><span>Waktu</span>
             </button>
         </div>
-    </div>
-
-    <!-- QoL: Floating Action Button (Scroll to Top) -->
-    <div id="scroll-top-btn" class="fixed bottom-8 left-6 z-40 hidden pb-[env(safe-area-inset-bottom)] transition-all duration-300">
-        <button onclick="triggerHaptic(); scrollToTop()" class="w-11 h-11 rounded-full bg-neutral-900 border border-neutral-700 text-amber-400 flex items-center justify-center shadow-2xl tap-scale transition hover:bg-neutral-800" title="Kembali ke Atas">
-            <i class="fa-solid fa-arrow-up text-sm"></i>
-        </button>
-    </div>
+    </nav>
 
     <!-- Modal Statistik Kita + Roulette -->
     <div id="stats-modal" role="dialog" aria-modal="true" aria-labelledby="stats-title" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
         <div id="stats-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] pb-[env(safe-area-inset-bottom)]">
-            <div class="px-4 py-3 border-b border-neutral-900 flex items-center justify-between bg-neutral-950">
+            <div class="sheet-handle sm:hidden" data-sheet-grab aria-hidden="true"></div>
+            <div data-sheet-grab class="px-4 py-3 border-b border-neutral-900 flex items-center justify-between bg-neutral-950">
                 <h3 id="stats-title" class="font-bold text-base text-neutral-50 font-display flex items-center gap-1.5">
                     <i class="fa-solid fa-chart-simple text-amber-400"></i> Statistik Kita
                 </h3>
@@ -669,8 +695,9 @@
     <!-- Modal Konverter Waktu Ultra Clean -->
     <div id="time-calc-modal" role="dialog" aria-modal="true" aria-labelledby="time-calc-title" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
         <div id="time-calc-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-xs rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col transform transition-all pb-[env(safe-area-inset-bottom)]">
+            <div class="sheet-handle sm:hidden" data-sheet-grab aria-hidden="true"></div>
             <!-- Header Modal Clean -->
-            <div class="px-4 py-3 border-b border-neutral-900 flex items-center justify-between bg-neutral-950">
+            <div data-sheet-grab class="px-4 py-3 border-b border-neutral-900 flex items-center justify-between bg-neutral-950">
                 <h3 id="time-calc-title" class="font-bold text-base text-neutral-50 font-display flex items-center gap-1.5">
                     <i class="fa-solid fa-clock text-amber-400"></i> Konverter Waktu
                 </h3>
@@ -735,7 +762,8 @@
     <!-- Mobile Bottom Sheet / Modal Form -->
     <div id="add-modal" role="dialog" aria-modal="true" aria-labelledby="modal-form-title" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
         <div id="add-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[85vh] sm:h-auto sm:max-h-[85vh] transform transition-all pb-[env(safe-area-inset-bottom)]">
-            <div class="px-5 py-3.5 border-b border-neutral-900 flex items-center justify-between flex-shrink-0 bg-neutral-950">
+            <div class="sheet-handle sm:hidden" data-sheet-grab aria-hidden="true"></div>
+            <div data-sheet-grab class="px-5 py-3.5 border-b border-neutral-900 flex items-center justify-between flex-shrink-0 bg-neutral-950">
                 <div class="flex items-center gap-2.5">
                     <div class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></div>
                     <h3 id="modal-form-title" class="font-bold text-base text-neutral-50 font-display">Tambah Ulasan Baru</h3>
@@ -890,7 +918,8 @@
     <!-- Mobile Detail Modal -->
     <div id="detail-modal" role="dialog" aria-modal="true" aria-labelledby="detail-title" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
         <div id="detail-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col transform transition-all pb-[env(safe-area-inset-bottom)]">
-            <div class="relative h-48 bg-black overflow-hidden flex-shrink-0">
+            <div data-sheet-grab class="relative h-48 bg-black overflow-hidden flex-shrink-0">
+                <div class="sheet-handle sm:hidden absolute top-0 inset-x-0 z-10" aria-hidden="true"></div>
                 <img id="detail-banner-img" src="" alt="Banner" class="w-full h-full object-cover opacity-40 blur-sm scale-105" onerror="posterFallback(this)">
                 <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/60 to-transparent"></div>
                 <button type="button" onclick="triggerHaptic(); closeDetailModal()" class="absolute top-3 right-3 z-10 touch-target rounded-full bg-black/80 border border-neutral-800 text-neutral-200 flex items-center justify-center tap-scale" aria-label="Tutup detail film">
@@ -994,6 +1023,16 @@
         // Email akun admin bersama. Bukan rahasia, dan tidak perlu diketik di UI.
         const ADMIN_EMAIL = 'admin@bubipopcorn.app';
         const POSTER_FALLBACK = 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400"><rect width="300" height="400" fill="#0a0a0a"/><circle cx="150" cy="180" r="80" fill="none" stroke="#facc15" stroke-width="6"/><circle cx="150" cy="180" r="14" fill="#facc15"/><circle cx="150" cy="116" r="16" fill="#facc15"/><circle cx="214" cy="180" r="16" fill="#facc15"/><circle cx="150" cy="244" r="16" fill="#facc15"/><circle cx="86" cy="180" r="16" fill="#facc15"/><text x="150" y="320" font-family="Arial" font-size="16" fill="#52525b" text-anchor="middle">NO POSTER</text></svg>`);
+
+        // Poster bertahap: ukuran TMDB disesuaikan, latar w92 buram dulu lalu poster tajam memudar masuk
+        const TMDB_POSTER_RE = /^https:\/\/image\.tmdb\.org\/t\/p\/w\d+\/[\w.-]+$/;
+        function tmdbSized(url, size) {
+            return TMDB_POSTER_RE.test(url) ? url.replace(/\/t\/p\/w\d+\//, `/t/p/${size}/`) : url;
+        }
+        function posterBox(url, alt, imgClass) {
+            const lq = TMDB_POSTER_RE.test(url) ? ` style="background:url('${tmdbSized(url, 'w92')}') center/cover"` : '';
+            return `<div class="absolute inset-0 bg-black"${lq}><img src="${escapeHtml(tmdbSized(url, 'w342'))}" alt="${escapeHtml(alt)}" loading="lazy" decoding="async" class="poster-img ${imgClass}" onload="this.classList.add('is-loaded')" onerror="posterFallback(this)"></div>`;
+        }
 
         function posterFallback(img) {
             img.onerror = null;
@@ -1113,14 +1152,31 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        window.addEventListener('scroll', () => {
-            const scrollTopBtn = document.getElementById('scroll-top-btn');
-            if (window.scrollY > 400) {
-                scrollTopBtn.classList.remove('hidden');
-            } else {
-                scrollTopBtn.classList.add('hidden');
+        function scrollToWatchlist() {
+            document.getElementById('watchlist-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Header: judul kecil muncul setelah large title keluar layar; tab aktif mengikuti posisi scroll
+        let scrollTicking = false;
+        function updateScrollUI() {
+            scrollTicking = false;
+            const y = window.scrollY;
+            const header = document.getElementById('app-header');
+            header.classList.toggle('border-white/10', y > 8);
+            header.classList.toggle('border-transparent', y <= 8);
+            document.getElementById('header-title').classList.toggle('opacity-0', y < 56);
+            const wl = document.getElementById('watchlist-section');
+            let onWatchlist = false;
+            if (wl && !wl.classList.contains('hidden')) {
+                const r = wl.getBoundingClientRect();
+                onWatchlist = r.top < window.innerHeight * 0.45 && r.bottom > 140;
             }
-        });
+            document.getElementById('tab-home').setAttribute('aria-current', String(!onWatchlist));
+            document.getElementById('tab-watchlist').setAttribute('aria-current', String(onWatchlist));
+        }
+        window.addEventListener('scroll', () => {
+            if (!scrollTicking) { scrollTicking = true; requestAnimationFrame(updateScrollUI); }
+        }, { passive: true });
 
         function toggleClearSearchBtn() {
             const val = document.getElementById('search-input').value;
@@ -1619,7 +1675,7 @@
 
             card.innerHTML = `
                 <div class="relative aspect-[3/4] w-full overflow-hidden bg-black">
-                    <img src="${escapeHtml(posterUrl)}" alt="${escapeHtml(movie.judul)}" loading="lazy" decoding="async" class="w-full h-full object-cover transform hover:scale-110 transition duration-500" onerror="posterFallback(this)">
+                    ${posterBox(posterUrl, movie.judul, 'w-full h-full object-cover')}
                     <span class="absolute top-2.5 right-2.5 bg-black/85 backdrop-blur px-2 py-0.5 rounded-lg text-micro font-bold text-neutral-200 border border-neutral-800 shadow">${escapeHtml(movie.tahun || '')}</span>
                     ${watcherBadgeHTML}
                 </div>
@@ -1632,6 +1688,63 @@
                 </div>
             `;
             return card;
+        }
+
+        // --- MODE TAMPILAN: karusel / grid poster (ala Letterboxd) ---
+        let viewMode = 'carousel';
+        try { if (localStorage.getItem('bubi_view_mode') === 'grid') viewMode = 'grid'; } catch (e) {}
+
+        function applyViewModeUI() {
+            const grid = viewMode === 'grid';
+            document.getElementById('swipe-hint')?.classList.toggle('hidden', grid);
+            const btn = document.getElementById('view-toggle');
+            if (btn) btn.setAttribute('aria-label', grid ? 'Ganti ke tampilan karusel' : 'Ganti ke tampilan grid poster');
+            const icon = document.getElementById('view-toggle-icon');
+            if (icon) icon.className = `fa-solid ${grid ? 'fa-film' : 'fa-table-cells-large'} text-xs`;
+        }
+
+        function toggleViewMode() {
+            viewMode = viewMode === 'grid' ? 'carousel' : 'grid';
+            try { localStorage.setItem('bubi_view_mode', viewMode); } catch (e) {}
+            applyViewModeUI();
+            renderMonthsCarousel();
+        }
+
+        function createPosterTile(movie, index) {
+            const posterUrl = (movie.poster && movie.poster.trim() !== '') ? movie.poster : POSTER_FALLBACK;
+            const watcher = movie.watched_by || 'both';
+            const isCertified = movie.is_certified === true || movie.is_certified === 'true' || movie.is_certified === 'TRUE';
+            const z = parseRating(movie.rating_aku), m = parseRating(movie.rating_dia);
+            let chip = '';
+            if (watcher === 'zald' && z !== null) chip = `<span class="text-sky-400">Z</span> ${escapeHtml(String(z))}`;
+            else if (watcher === 'micel' && m !== null) chip = `<span class="text-pink-400">M</span> ${escapeHtml(String(m))}`;
+            else if (watcher === 'both') {
+                const v = [z, m].filter(x => x !== null);
+                if (v.length) chip = `<i class="fa-solid fa-star text-amber-400"></i> ${escapeHtml((v.reduce((a, b) => a + b, 0) / v.length).toFixed(1))}`;
+            }
+
+            const tile = document.createElement('div');
+            tile.id = `movie-card-${movie.id}`;
+            tile.style.animationDelay = `${(index % 9) * 0.04}s`;
+            tile.className = 'tap-scale cursor-pointer animate-popIn';
+            tile.setAttribute('role', 'button');
+            tile.setAttribute('tabindex', '0');
+            tile.setAttribute('aria-label', `Buka detail ${movie.judul || 'film tanpa judul'}`);
+            tile.onclick = () => { triggerHaptic(); openDetailModal(movie.id); };
+            tile.onkeydown = event => {
+                if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); tile.click(); }
+            };
+            const ring = isCertified ? 'ring-2 ring-amber-400' : 'ring-1 ring-white/10';
+            const edge = watcher === 'zald' ? '<span class="absolute left-0 inset-y-0 w-1 bg-sky-400"></span>' : watcher === 'micel' ? '<span class="absolute left-0 inset-y-0 w-1 bg-pink-400"></span>' : '';
+            tile.innerHTML = `
+                <div class="relative aspect-[2/3] w-full rounded-xl overflow-hidden bg-black ${ring}">
+                    ${posterBox(posterUrl, movie.judul, 'w-full h-full object-cover')}
+                    ${edge}
+                    ${chip ? `<span class="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 rounded-md bg-black/80 backdrop-blur text-micro font-bold text-neutral-50">${chip}</span>` : ''}
+                </div>
+                <div class="mt-1.5 text-caption font-semibold ${isCertified ? 'text-amber-200' : 'text-neutral-100'} line-clamp-2 leading-tight">${escapeHtml(movie.judul) || 'Tanpa Judul'}</div>
+            `;
+            return tile;
         }
 
         function renderMonthsCarousel() {
@@ -1676,19 +1789,24 @@
                             <div class="font-display text-lg text-amber-300 uppercase tracking-[0.15em] leading-none">${escapeHtml(formatMonthDisplay(key))}</div>
                             <div class="text-caption text-neutral-300 mt-1">${monthMovies.length} film • Chapter ${panelNumber}/${totalMonths}</div>
                         </div>
-                        <span class="ml-auto text-caption text-neutral-300 flex items-center gap-1.5 pb-1">
+                        ${viewMode === 'grid' ? '' : `<span class="ml-auto text-caption text-neutral-300 flex items-center gap-1.5 pb-1">
                             <i class="fa-solid fa-arrows-left-right text-amber-400/70 text-micro"></i> Geser
-                        </span>
+                        </span>`}
                     </div>
                 `;
 
                 const track = document.createElement('div');
-                track.className = "flex gap-3.5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2 -mx-4 px-4";
-                monthMovies.forEach((movie, i) => {
-                    const card = createMovieCard(movie, i);
-                    card.className = card.className.replace("overflow-hidden flex flex-col", "overflow-hidden flex flex-col w-36 flex-shrink-0 snap-start");
-                    track.appendChild(card);
-                });
+                if (viewMode === 'grid') {
+                    track.className = "grid grid-cols-3 gap-2.5 pb-2";
+                    monthMovies.forEach((movie, i) => track.appendChild(createPosterTile(movie, i)));
+                } else {
+                    track.className = "flex gap-3.5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2 -mx-4 px-4";
+                    monthMovies.forEach((movie, i) => {
+                        const card = createMovieCard(movie, i);
+                        card.className = card.className.replace("overflow-hidden flex flex-col", "overflow-hidden flex flex-col w-36 flex-shrink-0 snap-start");
+                        track.appendChild(card);
+                    });
+                }
 
                 row.appendChild(track);
                 carousel.appendChild(row);
@@ -1842,7 +1960,7 @@
             document.getElementById('detail-zald-text').innerText = movie.review_aku ? `"${movie.review_aku}"` : "Belum ada review.";
             document.getElementById('detail-micel-text').innerText = movie.review_dia ? `"${movie.review_dia}"` : "Belum ada review.";
 
-            document.getElementById('detail-banner-img').src = (movie.poster && movie.poster.trim() !== '') ? movie.poster : POSTER_FALLBACK;
+            document.getElementById('detail-banner-img').src = (movie.poster && movie.poster.trim() !== '') ? tmdbSized(movie.poster, 'w342') : POSTER_FALLBACK;
 
             const modal = document.getElementById('detail-modal');
             const content = document.getElementById('detail-modal-content');
@@ -2441,6 +2559,7 @@
             const section = document.getElementById('watchlist-section');
             if (!section) return;
             section.classList.toggle('hidden', !watchlistAvailable || (!watchlistData.length && !isAdminUnlocked));
+            document.getElementById('tab-watchlist')?.classList.toggle('hidden', section.classList.contains('hidden'));
             document.getElementById('watchlist-add').classList.toggle('hidden', !isAdminUnlocked);
             const list = document.getElementById('watchlist-list');
             if (!watchlistData.length) {
@@ -2449,7 +2568,7 @@
             }
             list.innerHTML = watchlistData.map(w => {
                 const id = escapeHtml(w.id);
-                const thumb = w.poster ? `<img src="${escapeHtml(w.poster)}" alt="" loading="lazy" class="w-9 h-14 rounded object-cover">` : '<div class="w-9 h-14 rounded bg-neutral-800"></div>';
+                const thumb = w.poster ? `<img src="${escapeHtml(tmdbSized(w.poster, 'w92'))}" alt="" loading="lazy" class="w-9 h-14 rounded object-cover">` : '<div class="w-9 h-14 rounded bg-neutral-800"></div>';
                 const actions = isAdminUnlocked ? `
                     <button type="button" onclick="markWatchlistWatched('${id}')" class="px-2.5 py-1.5 rounded-lg bg-amber-400/10 border border-amber-500/40 text-amber-400 text-micro font-bold tap-scale">Sudah ditonton</button>
                     <button type="button" onclick="deleteWatchlistItem('${id}')" class="px-2 py-1.5 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-red-400 text-micro tap-scale" aria-label="Hapus dari antrean"><i class="fa-solid fa-trash"></i></button>` : '';
@@ -2669,6 +2788,43 @@
             }
         }
 
+        // --- BOTTOM SHEET: geser ke bawah untuk menutup (di HP) ---
+        function initSheetDrag(contentId, closeFn) {
+            const el = document.getElementById(contentId);
+            if (!el) return;
+            let active = false, startY = 0, dy = 0, startT = 0, pid = null;
+            el.addEventListener('pointerdown', e => {
+                if (window.matchMedia('(min-width: 640px)').matches) return;
+                if (!e.target.closest('[data-sheet-grab]') || e.target.closest('button, a, input, select, textarea, label')) return;
+                active = true; startY = e.clientY; dy = 0; startT = performance.now(); pid = e.pointerId;
+                el.classList.remove('animate-slideUp');
+                el.style.transition = 'none';
+                try { el.setPointerCapture(pid); } catch (err) {}
+            });
+            el.addEventListener('pointermove', e => {
+                if (!active) return;
+                dy = Math.max(0, e.clientY - startY);
+                el.style.transform = `translateY(${dy}px)`;
+            });
+            const end = () => {
+                if (!active) return;
+                active = false;
+                try { el.releasePointerCapture(pid); } catch (err) {}
+                const velocity = dy / Math.max(1, performance.now() - startT);
+                if (dy > 120 || (dy > 40 && velocity > 0.6)) {
+                    el.style.transition = 'transform .2s ease-out';
+                    el.style.transform = 'translateY(100%)';
+                    setTimeout(() => { closeFn(); el.style.transition = ''; el.style.transform = ''; }, 180);
+                } else {
+                    el.style.transition = 'transform .25s cubic-bezier(.16, 1, .3, 1)';
+                    el.style.transform = '';
+                    setTimeout(() => { el.style.transition = ''; }, 260);
+                }
+            };
+            el.addEventListener('pointerup', end);
+            el.addEventListener('pointercancel', end);
+        }
+
         function openTimeCalcModal() {
             const modal = document.getElementById('time-calc-modal');
             const content = document.getElementById('time-calc-modal-content');
@@ -2758,6 +2914,12 @@
         document.addEventListener('DOMContentLoaded', () => {
             updateLockUI();
             initAdminSession();
+            applyViewModeUI();
+            updateScrollUI();
+            initSheetDrag('detail-modal-content', closeDetailModal);
+            initSheetDrag('add-modal-content', requestCloseAddModal);
+            initSheetDrag('stats-modal-content', closeStatsModal);
+            initSheetDrag('time-calc-modal-content', closeTimeCalcModal);
             updateSlider();
             startSlideTimer();
             fetchSupabaseData();
@@ -2790,7 +2952,7 @@
                 if (window.scrollY <= 0) touchStartY = e.touches[0].clientY;
             }, { passive: true });
             document.addEventListener('touchend', (e) => {
-                if (window.scrollY <= 0 && touchStartY > 0) {
+                if (window.scrollY <= 0 && touchStartY > 0 && !activeModal) {
                     const pull = e.changedTouches[0].clientY - touchStartY;
                     if (pull > 120) {
                         showToast("Menyegarkan data film...", "info");
