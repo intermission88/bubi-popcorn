@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 340" width="1200" height="340" role="img" aria-labelledby="t d">
+  <title id="t">Bubi's Popcorn</title>
+  <desc id="d">Cinema log archive by Zald and Micel</desc>
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff7c2"/><stop offset=".28" stop-color="#fde047"/>
+      <stop offset=".6" stop-color="#eab308"/><stop offset="1" stop-color="#fde68a"/>
+    </linearGradient>
+    <linearGradient id="ticket" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#0c4a6e" stop-opacity=".55"/><stop offset=".5" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#831843" stop-opacity=".55"/>
+    </linearGradient>
+    <radialGradient id="glow" cx=".5" cy="0" r=".9">
+      <stop offset="0" stop-color="#facc15" stop-opacity=".22"/><stop offset="1" stop-color="#facc15" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="holes" width="32" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="16" cy="12" r="5" fill="#3f3f46"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="340" fill="#000"/>
+  <rect width="1200" height="340" fill="url(#glow)"/>
+  <rect width="1200" height="340" fill="url(#ticket)"/>
+  <!-- film strip atas & bawah -->
+  <rect y="0" width="1200" height="24" fill="#0d0d0d"/><rect y="0" width="1200" height="24" fill="url(#holes)"/>
+  <rect y="316" width="1200" height="24" fill="#0d0d0d"/><rect y="316" width="1200" height="24" fill="url(#holes)"/>
+  <!-- ikon popcorn -->
+  <g transform="translate(570 56)">
+    <rect width="60" height="60" rx="16" fill="url(#gold)"/>
+    <path d="M17 31h26l-3 16a3 3 0 0 1-3 2H23a3 3 0 0 1-3-2z" fill="#000"/>
+    <circle cx="22" cy="26" r="6" fill="#000"/><circle cx="31" cy="22" r="7" fill="#000"/><circle cx="40" cy="26" r="6" fill="#000"/>
+  </g>
+  <!-- judul -->
+  <text x="600" y="206" text-anchor="middle" font-family="Anton, Impact, 'Arial Narrow', 'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="92" letter-spacing="8" fill="url(#gold)">BUBI'S POPCORN</text>
+  <!-- garis emas + subjudul -->
+  <rect x="470" y="228" width="260" height="2" fill="#facc15" opacity=".55"/>
+  <text x="600" y="268" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="600" letter-spacing="5" fill="#d4d4d4">CINEMA LOG ARCHIVE BY <tspan fill="#38bdf8">ZALD</tspan> &amp; <tspan fill="#f472b6">MICEL</tspan></text>
+</svg>

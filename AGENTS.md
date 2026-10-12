@@ -53,4 +53,5 @@ Repo ini dikerjakan dari dua mesin: macOS (rumah) dan Windows (apartemen).
 ## Setelah selesai
 - Commit + push langsung ke `main` tanpa bertanya. Pesan commit bahasa Indonesia, jelas.
 - `git add` hanya file yang kamu ubah, jangan `git add -A`. Folder `.commandcode/` sudah dihapus dan di-ignore.
+- README bergaya desain: banner, pembatas, dan palet ada di `assets/readme/*.svg` (buatan sendiri). Bila palet atau nama brand berubah, perbarui `palette.svg` dan `banner.svg`. Gunakan heading tanpa emoji (anchor stabil); emoji hanya di dalam sel tabel.
 - Perbarui `README.md` bila fitur atau langkah setup berubah, dan `DEBUG.md` bila peta kode bergeser.

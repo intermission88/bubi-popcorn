@@ -1,43 +1,137 @@
-# 🍿 Bubi's Popcorn
+<div align="center">
 
-Aplikasi web mobile-first untuk mengarsipkan film yang ditonton bersama oleh Zald dan Micel: judul, rating, ulasan, dan momen, lengkap dengan penghitung hari bersama dan jam dua zona waktu.
+<img src="assets/readme/banner.svg" alt="Bubi's Popcorn: cinema log archive by Zald and Micel" width="100%">
 
-**Live:** [bubi-popcorn.vercel.app](https://bubi-popcorn.vercel.app) · Seluruh aplikasi ada di satu file, [`index.html`](index.html) (HTML, CSS, JS inline), tanpa build step.
+<br>
 
-## 🚀 Fitur
+**Buku harian film untuk berdua.**
+<br>
+<sub>Judul, rating, ulasan, dan momen nonton bareng, tersimpan rapi dan indah.</sub>
 
-**Arsip film**
-- Catat judul, tahun, poster, bulan menonton, serta rating dan ulasan terpisah untuk Zald dan Micel.
-- **Certified Fresh:** film favorit tampil dalam **emas metalik** (bingkai gradien, kilau yang menyapu pelan, judul emas, lencana logam, modal detail bercahaya emas). Kilau mati bila pengguna memilih kurangi gerakan.
-- Filter `Semua`, `Nonton Bareng`, `Zald Picks`, `Micel Picks`, `Top 9+`, dan pencarian judul atau bulan (mendukung nama bulan Indonesia).
-- Film dikelompokkan per bulan, bulan terbaru di atas.
-- Dua tampilan: karusel per bulan, atau **grid poster** 3 kolom (ala Letterboxd) lewat tombol di samping "Bulan Tayang"; pilihan diingat.
-- Detail film: rating, ulasan, bagikan atau salin ringkasan.
-- Navigasi **tab bar bawah** (Beranda, Antrean, Statistik, Waktu, dan Tambah untuk admin), judul besar yang mengecil saat scroll, header dan tab bar bergaya **Liquid Glass** (kapsul kaca melayang, pendekatan CSS yang jalan di Safari), dan modal yang bisa **digeser ke bawah untuk menutup** di HP. Poster tampil bertahap (kecil buram lalu tajam).
+<br><br>
 
-**Bareng-bareng**
-- **Mau Ditonton:** antrean film yang belum ditonton. Tombol "Sudah ditonton" langsung membuka form ulasan.
-- **Statistik Kita:** total film, rata-rata rating, favorit berdua, selera paling beda, bulan tersibuk.
-- **Roulette Nobar:** pilih film acak dari antrean dan film yang baru ditonton salah satu.
-- **Tahun dalam Film:** recap per tahun yang bisa dibagikan.
-- **Hari bersama** sejak 5 April 2025, jam Zald (`Asia/Colombo`) dan Micel (`Asia/Tokyo`), konverter waktu, serta hitungan ulang tahun.
+[![Live](https://img.shields.io/badge/LIVE-bubi--popcorn.vercel.app-facc15?style=for-the-badge&labelColor=000000)](https://bubi-popcorn.vercel.app)
+[![PWA](https://img.shields.io/badge/PWA-bisa%20dipasang-38bdf8?style=for-the-badge&labelColor=000000)](#mulai-cepat)
+[![Supabase](https://img.shields.io/badge/SUPABASE-RLS-f472b6?style=for-the-badge&labelColor=000000)](#mode-admin)
+[![TMDB](https://img.shields.io/badge/TMDB-API%20v3-fafafa?style=for-the-badge&labelColor=000000)](#lisensi-dan-kredit)
+[![License](https://img.shields.io/badge/LICENSE-MIT-facc15?style=for-the-badge&labelColor=000000)](LICENSE)
 
-**Data dari TMDB**
-- Isi otomatis judul, tahun, dan poster di form admin.
-- Detail film: genre, durasi, rating TMDB, sinopsis, sutradara, pemeran, streaming di Indonesia, dan trailer (tap play).
-- Sinkron poster massal (admin) dengan pratinjau dan centang per film.
+<sub>[Fitur](#fitur) · [Desain](#desain) · [Arsitektur](#arsitektur) · [Mulai Cepat](#mulai-cepat) · [Setup](#setup) · [Mode Admin](#mode-admin) · [Skema Data](#skema-data) · [Lisensi](#lisensi-dan-kredit)</sub>
 
-**Admin dan data**
-- Tambah, edit, hapus film di balik satu password (lihat [Mode Admin](#-mode-admin)).
-- Ekspor CSV untuk semua orang, impor CSV khusus admin (format sendiri atau diary Letterboxd).
+</div>
 
-**Lainnya:** hero slider, tema bioskop (marquee, film-strip, "The End"), PWA yang bisa dipasang dan jalan offline, indikator latensi Supabase.
+<img src="assets/readme/divider.svg" alt="" width="100%">
 
-## 🛠️ Tech Stack
+## Sekilas
 
-[Tailwind CSS](https://tailwindcss.com/) (CDN) · JavaScript murni · [Supabase](https://supabase.com/) (`supabase-js` v2) · [TMDB API](https://www.themoviedb.org/) v3 · YouTube embed (`youtube-nocookie`) · Font Awesome 6.5.1 · Google Fonts (Anton, Inter, Outfit) · Vercel
+Aplikasi web **mobile-first** untuk mengarsipkan film yang ditonton bersama oleh **Zald** dan **Micel**, lengkap dengan hitungan hari bersama dan jam dua zona waktu. Dirancang untuk iPhone: tab bar kaca, bottom sheet yang bisa digeser, dan tipografi yang nyaman dibaca.
 
-## ⚙️ Mulai Cepat
+| 📱 Mobile-first | 🗂 Satu file | ⚡ Tanpa build |
+|:---:|:---:|:---:|
+| Kolom tunggal `max-w-md`, target sentuh 44 px | Semua ada di [`index.html`](index.html) | HTML, CSS, JS murni via CDN |
+
+<img src="assets/readme/divider.svg" alt="" width="100%">
+
+## Fitur
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### 🎬 Arsip film
+
+- Catat judul, tahun, poster, bulan nonton, serta rating dan ulasan **terpisah** untuk Zald dan Micel
+- **Dua tampilan:** karusel per bulan atau **grid poster** 3 kolom (ala Letterboxd), pilihan diingat
+- Filter `Semua` · `Nonton Bareng` · `Zald Picks` · `Micel Picks` · `Top 9+`
+- Pencarian judul atau bulan, mendukung nama bulan Indonesia
+- **Certified Fresh:** film favorit tampil dalam emas metalik
+
+</td>
+<td width="50%" valign="top">
+
+### 💞 Bareng-bareng
+
+- **Mau Ditonton:** antrean film, tombol "Sudah ditonton" langsung membuka form ulasan
+- **Statistik Kita:** rata-rata rating, favorit berdua, selera paling beda, bulan tersibuk
+- **Roulette Nobar:** pilih film acak untuk malam ini
+- **Tahun dalam Film:** recap tahunan yang bisa dibagikan
+- **Hari bersama** sejak 5 April 2025, jam Zald (`Asia/Colombo`) dan Micel (`Asia/Tokyo`), konverter waktu, hitungan ulang tahun
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+### 🎞 Data dari TMDB
+
+- Isi otomatis judul, tahun, dan poster di form
+- Detail film: genre, durasi, rating, sinopsis, sutradara, pemeran, streaming di Indonesia
+- **Trailer** langsung tampil di modal (tap play)
+- Sinkron poster massal dengan pratinjau dan centang per film
+
+</td>
+<td width="50%" valign="top">
+
+### 🔐 Admin dan data
+
+- Tambah, edit, hapus film di balik satu password
+- **Ekspor CSV** untuk semua orang, **impor CSV** khusus admin (format sendiri atau diary Letterboxd)
+- PWA: bisa dipasang ke layar utama dan jalan offline
+- Indikator latensi ke Supabase
+
+</td>
+</tr>
+</table>
+
+<img src="assets/readme/divider.svg" alt="" width="100%">
+
+## Desain
+
+### Palet
+
+<img src="assets/readme/palette.svg" alt="Palet warna: hitam, putih, emas, biru untuk Zald, pink untuk Micel" width="100%">
+
+Hitam dan putih sebagai dasar, **emas** sebagai aksen brand, **biru hanya untuk Zald** dan **pink hanya untuk Micel**. Merah hanya untuk hapus dan error. Semua teks diperiksa minimal kontras 4,5:1.
+
+### Tipografi
+
+Satu skala untuk iPhone, didefinisikan di `tailwind.config`. Teks terkecil 11 px; input 16 px agar iOS tidak memperbesar layar sendiri.
+
+| Peran | Ukuran | Dipakai untuk |
+|---|---:|---|
+| `micro` | 11 px | Label dan overline huruf kapital |
+| `caption` | 12 px | Keterangan |
+| `xs` | 13 px | Teks sekunder |
+| `sm` | 15 px | Isi, ulasan, sinopsis |
+| `base` | 16 px | Judul modal, input |
+| `2xl` | 24 px | Judul film di detail |
+| Display | 48 px+ | Hitungan hari bersama |
+
+Font: **Anton** (judul), **Outfit** (display), **Inter** (isi).
+
+### Material dan gerak
+
+| | |
+|---|---|
+| **Liquid Glass** | Tab bar kapsul melayang dan tombol header berbahan kaca buram, versi CSS yang jalan di Safari |
+| **Emas metalik** | Film *Certified Fresh*: bingkai gradien, kilau yang menyapu pelan, lencana logam |
+| **Bottom sheet** | Handle dan geser ke bawah untuk menutup modal |
+| **Poster bertahap** | Versi kecil buram dulu, lalu poster tajam memudar masuk |
+| **Gerak** | Menghormati `prefers-reduced-motion` dan `prefers-reduced-transparency` |
+
+<img src="assets/readme/divider.svg" alt="" width="100%">
+
+## Arsitektur
+
+```mermaid
+flowchart LR
+    A["📱 Browser / PWA<br/>index.html"] -->|baca publik, tulis admin| B[("Supabase<br/>bubi_popcorn<br/>bubi_watchlist")]
+    A -->|poster, sinopsis, trailer| C["TMDB API v3"]
+    A -->|embed trailer| D["YouTube<br/>nocookie"]
+    E["git push ke main"] --> F["Vercel"] --> A
+```
+
+## Mulai Cepat
 
 Pakai server lokal (bukan `file://`), karena ada service worker:
 
@@ -45,12 +139,14 @@ Pakai server lokal (bukan `file://`), karena ada service worker:
 python3 -m http.server 4173
 ```
 
-Buka <http://localhost:4173>. Konfigurasi ada di `index.html`, cari `SUPABASE_URL`, `SUPABASE_KEY`, `TABLE_NAME`, `ADMIN_EMAIL`, dan `TMDB_API_KEY`.
+Buka <http://localhost:4173>. Konfigurasi ada di `index.html`: cari `SUPABASE_URL`, `SUPABASE_KEY`, `TABLE_NAME`, `ADMIN_EMAIL`, dan `TMDB_API_KEY`.
 
-## 🧰 Setup
+## Setup
 
 <details>
-<summary><strong>Supabase: RLS dan akun admin</strong> (sekali saja)</summary>
+<summary><b>Supabase</b>: RLS dan akun admin (sekali saja)</summary>
+
+<br>
 
 1. **Matikan pendaftaran publik:** Authentication → Sign In / Providers → Email → nonaktifkan *Allow new users to sign up*. Wajib, kalau tidak siapa pun bisa membuat akun dan mendapat izin tulis.
 2. **Buat satu akun admin:** Authentication → Users → Add user.
@@ -72,19 +168,24 @@ create policy "Admin delete" on public.bubi_popcorn
   for delete to authenticated using (true);
 ```
 
+> [!IMPORTANT]
 > Publishable key di `index.html` memang aman untuk publik, tetapi **tanpa RLS** siapa pun bisa menulis langsung ke tabel. RLS-lah yang menolak permintaan tulis dari pengunjung yang belum login. Tombol admin di UI hanya kenyamanan, bukan pengamanan.
 
 </details>
 
 <details>
-<summary><strong>Watchlist (Mau Ditonton)</strong></summary>
+<summary><b>Watchlist</b>: tabel Mau Ditonton</summary>
+
+<br>
 
 Jalankan [`supabase/watchlist.sql`](supabase/watchlist.sql) sekali di SQL Editor. Tabel `bubi_watchlist`: baca publik, tulis hanya admin. Tanpa tabel ini bagian "Mau Ditonton" tersembunyi dan fitur lain tetap normal.
 
 </details>
 
 <details>
-<summary><strong>TMDB API key</strong></summary>
+<summary><b>TMDB</b>: API key</summary>
+
+<br>
 
 1. Daftar gratis di [themoviedb.org](https://www.themoviedb.org/signup), lalu Settings → API → buat aplikasi bertipe Developer.
 2. Pakai **API Key (v3)**, string pendek 32 karakter. **Jangan** pakai *API Read Access Token* (v4) yang panjang berawalan `eyJ`.
@@ -94,16 +195,16 @@ Key v3 hanya bisa membaca data publik dan memang terlihat di klien. Kalau bocor,
 
 </details>
 
-## 🔐 Mode Admin
+## Mode Admin
 
 - Satu password bersama untuk Zald dan Micel. Email tetap di kode (`ADMIN_EMAIL`), jadi layar hanya meminta password.
 - Password **tidak ada** di `index.html`. Diverifikasi di server lewat Supabase Auth (`signInWithPassword`).
-- Sesi disimpan Supabase, klik gembok lagi untuk keluar. Ganti password kapan saja lewat dashboard tanpa deploy ulang.
-- Setelah masuk muncul tombol tambah, edit, dan hapus film, pengelolaan antrean, impor CSV, dan sinkron poster TMDB.
+- Sesi disimpan Supabase; klik gembok lagi untuk keluar. Ganti password kapan saja lewat dashboard tanpa deploy ulang.
+- Setelah masuk muncul tombol tambah, edit dan hapus film, pengelolaan antrean, impor CSV, dan sinkron poster TMDB.
 
-## 🗄️ Skema Data
+## Skema Data
 
-**`bubi_popcorn`** (rating `*_aku` milik Zald, `*_dia` milik Micel)
+**`bubi_popcorn`**: rating `*_aku` milik Zald, `*_dia` milik Micel.
 
 | Kolom | Tipe | Keterangan |
 |---|---|---|
@@ -117,32 +218,32 @@ Key v3 hanya bisa membaca data publik dan memang terlihat di klien. Kalau bocor,
 | `rating_aku` / `rating_dia` | text | Rating 0–10 |
 | `review_aku` / `review_dia` | text | Ulasan |
 
-**`bubi_watchlist`:** `id` (`w_<timestamp>`), `judul`, `tahun`, `poster`, `created_at`. Skema lengkap di [`supabase/watchlist.sql`](supabase/watchlist.sql).
+**`bubi_watchlist`**: `id` (`w_<timestamp>`), `judul`, `tahun`, `poster`, `created_at`. Skema lengkap di [`supabase/watchlist.sql`](supabase/watchlist.sql).
 
-## 📁 Struktur
+## Struktur Proyek
 
 | Path | Fungsi |
 |---|---|
 | `index.html` | Seluruh aplikasi |
 | `sw.js` | Service worker (network-first untuk HTML, cache-first untuk aset; Supabase dan TMDB tidak di-cache) |
 | `manifest.json` | Metadata PWA |
-| `assets/` | Gambar slider, foto profil, ikon PWA, logo TMDB |
+| `assets/` | Gambar slider, foto profil, ikon PWA, logo TMDB, dan `readme/` (aset README) |
 | `supabase/watchlist.sql` | Skema tabel watchlist |
-| `DEBUG.md`, `AGENTS.md` | Guide debug dan konvensi kerja |
+| `DEBUG.md` · `AGENTS.md` | Guide debug dan konvensi kerja |
 | `LICENSE` | MIT untuk kode |
 
-## 🚢 Deploy dan Pengembangan
+## Deploy dan Pengembangan
 
 - Push ke `main` otomatis dideploy ke Vercel. `push.bat` tersedia untuk Windows.
-- Setelah mengubah aset yang di-cache, naikkan `CACHE_NAME` di `sw.js`.
-- Semua data dari database yang masuk `innerHTML` wajib lewat `escapeHtml()`, dan modal wajib lewat `activateModal()`/`deactivateModal()`.
-- Konvensi dan cara uji: [`AGENTS.md`](AGENTS.md), peta kode dan resep debug: [`DEBUG.md`](DEBUG.md).
+- Setelah mengubah `index.html` atau aset yang di-cache, naikkan `CACHE_NAME` di `sw.js`.
+- Semua data dari database yang masuk `innerHTML` wajib lewat `escapeHtml()`, dan modal wajib lewat `activateModal()` / `deactivateModal()`.
+- Konvensi dan cara uji: [`AGENTS.md`](AGENTS.md). Peta kode dan resep debug: [`DEBUG.md`](DEBUG.md).
 
-## ♿ Aksesibilitas
+## Aksesibilitas
 
-Palet terbatas: hitam dan putih sebagai dasar, emas sebagai aksen, biru untuk Zald dan pink untuk Micel (merah hanya untuk hapus/error); teks diperiksa minimal kontras 4,5:1. Skala tipografi tunggal untuk iPhone (teks terkecil 11px, isi 15px, input 16px agar tidak memicu zoom otomatis iOS). Kontrol memakai elemen native, kartu film bisa dibuka dengan Enter/Space, modal menahan fokus dan menutup dengan Escape, target sentuh minimal 44×44 px, dan `prefers-reduced-motion` dihormati. Layout kolom tunggal `max-w-md` di semua ukuran layar.
+Kontrol memakai elemen native, kartu film bisa dibuka dengan Enter atau Space, modal menahan fokus dan menutup dengan Escape, target sentuh minimal 44×44 px, dan layout kolom tunggal di semua ukuran layar.
 
-## 📜 Lisensi dan Kredit
+## Lisensi dan Kredit
 
 - **Kode:** [MIT](LICENSE). Isi arsip pribadi (judul yang dicatat, rating, ulasan) dan foto di `assets/` tidak termasuk dan tetap hak pemiliknya.
 - **TMDB:** This product uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB. Logo resmi dipakai apa adanya di footer. Data streaming dari JustWatch lewat TMDB.
@@ -150,3 +251,13 @@ Palet terbatas: hitam dan putih sebagai dasar, emas sebagai aksen, biru untuk Za
 - **Pustaka:** Tailwind CSS (MIT), Font Awesome Free (ikon CC BY 4.0, font SIL OFL 1.1, kode MIT), Google Fonts Anton, Inter, Outfit (SIL OFL 1.1), Supabase JS (MIT).
 
 Daftar yang sama tampil di footer situs, bagian **Kredit & Lisensi**.
+
+<img src="assets/readme/divider.svg" alt="" width="100%">
+
+<div align="center">
+
+**THE END**
+
+<sub>Cinema log archive by <b>Zald</b> & <b>Micel</b> · © 2026 Bubi's Popcorn</sub>
+
+</div>
