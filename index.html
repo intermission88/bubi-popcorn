@@ -284,6 +284,45 @@
             box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), inset 0 0 0 1px rgba(250,204,21,0.28), 0 4px 14px rgba(250,204,21,0.12);
         }
 
+        /* Tab bar: gelembung aktif meluncur antar tab; mengecil (ikon saja) saat scroll ke bawah */
+        #tab-bar-inner { position: relative; }
+        #tab-indicator {
+            position: absolute; top: 4px; bottom: 4px; left: 0; width: 0; border-radius: 24px; pointer-events: none; opacity: 0;
+            background: linear-gradient(135deg, rgba(250,204,21,0.26), rgba(250,204,21,0.07) 60%, rgba(250,204,21,0.14));
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), inset 0 0 0 1px rgba(250,204,21,0.28), 0 4px 14px rgba(250,204,21,0.12);
+            transition: transform .45s cubic-bezier(.3, 1.35, .45, 1), width .45s cubic-bezier(.3, 1.35, .45, 1), opacity .2s;
+        }
+        .tab-item[aria-current="true"] { background: none; box-shadow: none; }
+        .tab-item span { max-height: 16px; overflow: hidden; transition: max-height .25s ease, opacity .2s ease; }
+        .tab-item { transition: min-height .25s ease, color .2s, transform .15s; }
+        #tab-bar.is-min .tab-item { min-height: 44px; }
+        #tab-bar.is-min .tab-item span { max-height: 0; opacity: 0; }
+        #tab-bar.is-min .tab-item { gap: 0; }
+
+        /* Bottom sheet terbuka: halaman di belakang mengecil dan meredup (efek kartu bertumpuk iOS) */
+        #main-content { transform-origin: 50% var(--sheet-oy, 50%); transition: transform .4s cubic-bezier(.2, .8, .2, 1), filter .4s ease, border-radius .4s ease; }
+        @media (max-width: 639px) {
+            body.sheet-open #main-content { transform: scale(0.94); filter: brightness(0.7); border-radius: 28px; overflow: hidden; }
+            /* overlay lebih tipis agar halaman yang mengecil tetap terlihat */
+            body.sheet-open [role="dialog"].fixed { background: rgba(0,0,0,0.4) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+        }
+
+        /* Segmented control (filter penonton) dengan thumb yang bergeser */
+        .seg { position: relative; display: flex; flex-shrink: 0; padding: 3px; border-radius: 14px; background: #0a0a0a; border: 1px solid #262626; }
+        .seg-thumb { position: absolute; top: 3px; bottom: 3px; left: 0; width: 0; border-radius: 11px; background: #facc15; box-shadow: 0 2px 8px rgba(250,204,21,0.25); transition: transform .35s cubic-bezier(.3, 1.25, .45, 1), width .35s cubic-bezier(.3, 1.25, .45, 1); }
+        .seg-btn { position: relative; z-index: 1; min-height: 38px; padding: 0 12px; border-radius: 11px; font-size: 13px; font-weight: 600; color: #e5e5e5; white-space: nowrap; transition: color .2s; -webkit-tap-highlight-color: transparent; }
+        .seg-btn[aria-pressed="true"] { color: #000; }
+
+        /* Pull-to-refresh */
+        #ptr { position: fixed; left: 50%; top: calc(env(safe-area-inset-top) + 56px); z-index: 45; width: 36px; height: 36px; margin-left: -18px; border-radius: 9999px; display: flex; align-items: center; justify-content: center; background: #171717; border: 1px solid #404040; color: #facc15; opacity: 0; pointer-events: none; transform: translateY(-50px); }
+        #ptr.is-snap { transition: transform .25s ease, opacity .25s ease; }
+
+        /* Geser untuk aksi (baris antrean, admin) */
+        .swipe-wrap { position: relative; overflow: hidden; border-radius: 12px; }
+        .swipe-action { position: absolute; inset: 0 0 0 auto; width: 88px; display: flex; align-items: center; justify-content: center; gap: 6px; background: #b91c1c; color: #fff; font-size: 13px; font-weight: 700; }
+        .swipe-row { position: relative; touch-action: pan-y; transition: transform .25s cubic-bezier(.2, .8, .2, 1); }
+        .swipe-row.is-dragging { transition: none; }
+
         /* Poster bertahap: latar kecil buram dulu, lalu poster tajam memudar masuk */
         .poster-img { opacity: 0; transition: opacity .35s ease, transform .5s cubic-bezier(.2, .7, .2, 1); }
         /* Hover kartu film (hanya perangkat dengan mouse; di HP tetap tap-scale) */
@@ -314,6 +353,8 @@
 <body class="min-h-screen pb-32 pt-16 selection:bg-amber-400 selection:text-black">
 
     <!-- Header App Bar -->
+    <div id="ptr" aria-hidden="true"><i class="fa-solid fa-rotate-right text-sm"></i></div>
+
     <header id="app-header" class="fixed top-0 inset-x-0 z-40 px-4 py-3">
         <div class="max-w-md mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
@@ -342,6 +383,13 @@
 
     <!-- Main Container -->
     <main id="main-content" class="max-w-md mx-auto px-4 space-y-4 mt-3">
+
+        <!-- Petunjuk pasang ke Layar Utama (hanya iPhone/iPad Safari, bisa ditutup) -->
+        <aside id="a2hs" class="hidden flex items-start gap-3 p-3.5 rounded-2xl bg-neutral-900 border border-neutral-800" role="note">
+            <i class="fa-solid fa-arrow-up-from-bracket text-amber-400 mt-0.5"></i>
+            <p class="flex-1 text-xs text-neutral-200 leading-relaxed">Pasang di layar utama supaya terasa seperti app: ketuk <b class="text-neutral-50">Bagikan</b>, lalu <b class="text-neutral-50">Tambah ke Layar Utama</b>.</p>
+            <button type="button" onclick="dismissA2hs()" class="touch-target -my-2 -mr-2 text-neutral-300" aria-label="Tutup petunjuk"><i class="fa-solid fa-xmark text-xs"></i></button>
+        </aside>
 
         <!-- Large Title (mengecil jadi judul kecil di header saat scroll) -->
         <section id="large-title" class="px-1 pt-1">
@@ -514,10 +562,13 @@
             </div>
 
             <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
-                <button onclick="triggerHaptic(); setViewerFilter('all', this)" class="filter-btn touch-target px-3.5 rounded-xl text-xs font-semibold bg-amber-400 text-black tap-scale flex-shrink-0 transition shadow-sm">Semua</button>
-                <button onclick="triggerHaptic(); setViewerFilter('both', this)" class="filter-btn touch-target px-3.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-neutral-200 tap-scale flex-shrink-0 transition">Nonton Bareng</button>
-                <button onclick="triggerHaptic(); setViewerFilter('zald', this)" class="filter-btn touch-target px-3.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-neutral-200 tap-scale flex-shrink-0 transition">Zald Picks</button>
-                <button onclick="triggerHaptic(); setViewerFilter('micel', this)" class="filter-btn touch-target px-3.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-neutral-200 tap-scale flex-shrink-0 transition">Micel Picks</button>
+                <div id="viewer-seg" class="seg" role="group" aria-label="Filter penonton">
+                    <span class="seg-thumb" id="seg-thumb" aria-hidden="true"></span>
+                    <button type="button" onclick="triggerHaptic(); setViewerFilter('all', this)" class="filter-btn seg-btn" aria-pressed="true">Semua</button>
+                    <button type="button" onclick="triggerHaptic(); setViewerFilter('both', this)" class="filter-btn seg-btn" aria-pressed="false">Nonton Bareng</button>
+                    <button type="button" onclick="triggerHaptic(); setViewerFilter('zald', this)" class="filter-btn seg-btn" aria-pressed="false">Zald Picks</button>
+                    <button type="button" onclick="triggerHaptic(); setViewerFilter('micel', this)" class="filter-btn seg-btn" aria-pressed="false">Micel Picks</button>
+                </div>
                 <div class="h-4 w-[1px] bg-neutral-800 mx-1 flex-shrink-0"></div>
                 <button onclick="triggerHaptic(); toggleTopRatedFilter(this)" id="top-rated-btn" class="touch-target px-3.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-amber-400 tap-scale flex-shrink-0 transition flex items-center gap-1.5 shadow-sm">
                     <i class="fa-solid fa-star text-micro"></i> Top 9+
@@ -670,6 +721,7 @@
     <!-- Tab Bar Bawah (menggantikan tombol melayang) -->
     <nav id="tab-bar" aria-label="Navigasi utama" class="fixed bottom-0 inset-x-0 z-40">
         <div id="tab-bar-inner" class="glass max-w-md mx-auto grid grid-flow-col auto-cols-fr items-center px-1">
+            <span id="tab-indicator" aria-hidden="true"></span>
             <button type="button" id="tab-home" onclick="triggerHaptic(); scrollToTop()" class="tab-item" aria-current="true">
                 <i class="fa-solid fa-house"></i><span>Beranda</span>
             </button>
@@ -1130,13 +1182,17 @@
             modalTrigger = document.activeElement;
             activeModal = modal;
             document.body.classList.add('modal-lock');
+            if (modal.querySelector('.sheet-handle')) {
+                document.documentElement.style.setProperty('--sheet-oy', `${(window.scrollY + window.innerHeight / 2)}px`);
+                document.body.classList.add('sheet-open');
+            }
             requestAnimationFrame(() => (initialFocus || modal.querySelector('button, input, select, textarea, [href]'))?.focus());
         }
 
         function deactivateModal(modal) {
             if (activeModal !== modal) return;
             activeModal = null;
-            document.body.classList.remove('modal-lock');
+            document.body.classList.remove('modal-lock', 'sheet-open');
             modalTrigger?.focus();
             modalTrigger = null;
         }
@@ -1203,10 +1259,25 @@
         }
 
         // --- HAPTIC FEEDBACK UTILITY ---
+        // Android: Vibration API. iOS Safari tidak punya; mengetuk <input type="checkbox" switch> memicu haptic sistem (iOS 17.4+).
+        let hapticSwitch = null;
         function triggerHaptic() {
-            if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
-                navigator.vibrate(12);
-            }
+            if (typeof navigator === 'undefined') return;
+            if (typeof navigator.vibrate === 'function') { navigator.vibrate(12); return; }
+            try {
+                if (!hapticSwitch) {
+                    const label = document.createElement('label');
+                    label.setAttribute('aria-hidden', 'true');
+                    label.style.cssText = 'position:fixed;left:-100px;top:0;width:1px;height:1px;opacity:0;pointer-events:none;';
+                    hapticSwitch = document.createElement('input');
+                    hapticSwitch.type = 'checkbox';
+                    hapticSwitch.setAttribute('switch', '');
+                    hapticSwitch.tabIndex = -1;
+                    label.appendChild(hapticSwitch);
+                    document.body.appendChild(label);
+                }
+                hapticSwitch.parentElement.click();
+            } catch (e) {}
         }
 
         function scrollToTop() {
@@ -1231,7 +1302,26 @@
             }
             document.getElementById('tab-home').setAttribute('aria-current', String(!onWatchlist));
             document.getElementById('tab-watchlist').setAttribute('aria-current', String(onWatchlist));
+            updateTabIndicator();
+            // Tab bar mengecil saat scroll ke bawah, kembali penuh saat scroll ke atas
+            const dy = y - lastScrollY;
+            if (Math.abs(dy) > 6) {
+                document.getElementById('tab-bar').classList.toggle('is-min', dy > 0 && y > 120);
+                lastScrollY = y;
+            }
+            if (y < 80) document.getElementById('tab-bar').classList.remove('is-min');
         }
+
+        let lastScrollY = 0;
+        function updateTabIndicator() {
+            const ind = document.getElementById('tab-indicator');
+            const cur = document.querySelector('#tab-bar-inner .tab-item[aria-current="true"]:not(.hidden)');
+            if (!ind || !cur || !cur.offsetWidth) { if (ind) ind.style.opacity = '0'; return; }
+            ind.style.opacity = '1';
+            ind.style.width = (cur.offsetWidth) + 'px';
+            ind.style.transform = `translateX(${cur.offsetLeft}px)`;
+        }
+        window.addEventListener('resize', updateTabIndicator);
         window.addEventListener('scroll', () => {
             if (!scrollTicking) { scrollTicking = true; requestAnimationFrame(updateScrollUI); }
         }, { passive: true });
@@ -1303,6 +1393,7 @@
             }
             renderWatchlist();
             document.getElementById('csv-import-wrap')?.classList.toggle('hidden', !isAdminUnlocked);
+            updateTabIndicator();
         }
 
         async function handleLockClick() {
@@ -1454,13 +1545,19 @@
             document.getElementById('micel-date').innerText = micelDate;
         }
 
+        function syncViewerSeg(activeBtn) {
+            const btns = [...document.querySelectorAll('#viewer-seg .seg-btn')];
+            const act = activeBtn || btns[0];
+            btns.forEach(b => b.setAttribute('aria-pressed', String(b === act)));
+            const thumb = document.getElementById('seg-thumb');
+            if (thumb && act.offsetWidth) { thumb.style.width = act.offsetWidth + 'px'; thumb.style.transform = `translateX(${act.offsetLeft}px)`; }
+        }
+        window.addEventListener('resize', () => syncViewerSeg([...document.querySelectorAll('#viewer-seg .seg-btn')].find(b => b.getAttribute('aria-pressed') === 'true')));
+
         function setViewerFilter(filterType, btnEl) {
             currentViewerFilter = filterType;
             localStorage.setItem('bubi_viewer_filter', filterType);
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.className = "filter-btn touch-target px-3.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-neutral-200 tap-scale flex-shrink-0 transition";
-            });
-            btnEl.className = "filter-btn touch-target px-3.5 rounded-xl text-xs font-semibold bg-amber-400 text-black tap-scale flex-shrink-0 transition shadow-sm";
+            syncViewerSeg(btnEl);
             processFilterAndRender();
         }
 
@@ -1817,14 +1914,99 @@
                 topRatedBtn.className = "touch-target px-3.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-amber-400 tap-scale flex-shrink-0 transition flex items-center gap-1.5 shadow-sm";
             }
 
-            document.querySelectorAll('.filter-btn').forEach((btn, idx) => {
-                if (idx === 0) {
-                    btn.className = "filter-btn touch-target px-3.5 rounded-xl text-xs font-semibold bg-amber-400 text-black tap-scale flex-shrink-0 transition shadow-sm";
-                } else {
-                    btn.className = "filter-btn touch-target px-3.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-neutral-200 tap-scale flex-shrink-0 transition";
-                }
-            });
+            syncViewerSeg();
             processFilterAndRender();
+        }
+
+        // --- GESER UNTUK AKSI (baris antrean): geser kiri membuka tombol Hapus ---
+        function initSwipeRows() {
+            const list = document.getElementById('watchlist-list');
+            if (!list) return;
+            const MAX = 88;
+            let row = null, startX = 0, startY = 0, base = 0, dx = 0, axis = null;
+            const openRows = () => list.querySelectorAll('.swipe-row[data-open]');
+            list.addEventListener('pointerdown', e => {
+                if (e.pointerType === 'mouse') return;
+                const r = e.target.closest('.swipe-row');
+                openRows().forEach(o => { if (o !== r) { o.style.transform = ''; delete o.dataset.open; } });
+                if (!r || e.target.closest('button')) return;
+                row = r; startX = e.clientX; startY = e.clientY; base = r.dataset.open ? -MAX : 0; dx = 0; axis = null;
+            });
+            list.addEventListener('pointermove', e => {
+                if (!row) return;
+                const mx = e.clientX - startX, my = e.clientY - startY;
+                if (!axis && Math.max(Math.abs(mx), Math.abs(my)) > 8) axis = Math.abs(mx) > Math.abs(my) ? 'x' : 'y';
+                if (axis !== 'x') return;
+                row.classList.add('is-dragging');
+                dx = Math.max(-MAX - 24, Math.min(0, base + mx));
+                row.style.transform = `translateX(${dx}px)`;
+            });
+            const end = () => {
+                if (!row) return;
+                row.classList.remove('is-dragging');
+                if (axis === 'x') {
+                    const open = dx < -MAX / 2;
+                    row.style.transform = open ? `translateX(${-MAX}px)` : '';
+                    if (open) row.dataset.open = '1'; else delete row.dataset.open;
+                    if (open) triggerHaptic();
+                }
+                row = null; axis = null;
+            };
+            list.addEventListener('pointerup', end);
+            list.addEventListener('pointercancel', end);
+        }
+
+        // --- PULL-TO-REFRESH (PWA iOS standalone tidak punya bawaan) ---
+        function initPullToRefresh() {
+            const ptr = document.getElementById('ptr');
+            if (!ptr || !('ontouchstart' in window)) return;
+            const icon = ptr.querySelector('i');
+            const THRESHOLD = 70;
+            let startY = 0, startX = 0, pulling = false, dist = 0, busy = false;
+            const show = d => {
+                ptr.classList.remove('is-snap');
+                ptr.style.opacity = Math.min(1, d / 40);
+                ptr.style.transform = `translateY(${Math.min(d, 110) - 50}px)`;
+                icon.style.transform = `rotate(${d * 3}deg)`;
+            };
+            const hide = () => { ptr.classList.add('is-snap'); ptr.style.opacity = 0; ptr.style.transform = 'translateY(-50px)'; icon.style.transform = ''; };
+            window.addEventListener('touchstart', e => {
+                if (busy || document.body.classList.contains('modal-lock') || window.scrollY > 0 || e.touches.length !== 1) { pulling = false; return; }
+                if (e.target.closest('input, textarea, select, .overflow-x-auto')) { pulling = false; return; }
+                startY = e.touches[0].clientY; startX = e.touches[0].clientX; pulling = true; dist = 0;
+            }, { passive: true });
+            window.addEventListener('touchmove', e => {
+                if (!pulling) return;
+                const dy = e.touches[0].clientY - startY, dx = Math.abs(e.touches[0].clientX - startX);
+                if (dy <= 0 || dx > dy || window.scrollY > 0) { if (dist > 0) hide(); pulling = false; dist = 0; return; }
+                dist = dy * 0.5; // tarikan berat ala iOS
+                if (e.cancelable) e.preventDefault();
+                show(dist);
+            }, { passive: false });
+            window.addEventListener('touchend', async () => {
+                if (!pulling) return;
+                pulling = false;
+                if (dist >= THRESHOLD / 2 + 10 && !busy) {
+                    busy = true; triggerHaptic();
+                    ptr.classList.add('is-snap'); ptr.style.transform = 'translateY(10px)'; ptr.style.opacity = 1;
+                    icon.classList.add('refresh-spin');
+                    try { await refreshData(); } finally { icon.classList.remove('refresh-spin'); hide(); busy = false; }
+                } else hide();
+                dist = 0;
+            }, { passive: true });
+        }
+
+        // --- PETUNJUK TAMBAH KE LAYAR UTAMA (iOS Safari) ---
+        function dismissA2hs() {
+            document.getElementById('a2hs')?.classList.add('hidden');
+            try { localStorage.setItem('bubi_a2hs_dismissed', '1'); } catch (e) {}
+        }
+        function initA2hs() {
+            const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            const standalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+            let dismissed = false;
+            try { dismissed = localStorage.getItem('bubi_a2hs_dismissed') === '1'; } catch (e) {}
+            if (ios && !standalone && !dismissed) document.getElementById('a2hs')?.classList.remove('hidden');
         }
 
         function openAddModal() {
@@ -2584,10 +2766,14 @@
                 const actions = isAdminUnlocked ? `
                     <button type="button" onclick="markWatchlistWatched('${id}')" class="px-2.5 py-1.5 rounded-lg bg-amber-400/10 border border-amber-500/40 text-amber-400 text-micro font-bold tap-scale">Sudah ditonton</button>
                     <button type="button" onclick="deleteWatchlistItem('${id}')" class="px-2 py-1.5 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-red-400 text-micro tap-scale" aria-label="Hapus dari antrean"><i class="fa-solid fa-trash"></i></button>` : '';
-                return `<div class="flex items-center gap-3 p-2 rounded-xl bg-neutral-950 border border-neutral-800">${thumb}
+                const rowHtml = `<div class="flex items-center gap-3 p-2 rounded-xl bg-neutral-950 border border-neutral-800 ${isAdminUnlocked ? 'swipe-row' : ''}">${thumb}
                     <div class="min-w-0 flex-1"><div class="text-xs font-bold text-neutral-50 truncate">${escapeHtml(w.judul)}</div><div class="text-caption text-neutral-400">${escapeHtml(String(w.tahun || ''))}</div></div>
                     <div class="flex items-center gap-1.5 shrink-0">${actions}</div></div>`;
+                return isAdminUnlocked
+                    ? `<div class="swipe-wrap"><button type="button" class="swipe-action" onclick="deleteWatchlistItem('${id}')" aria-label="Hapus dari antrean"><i class="fa-solid fa-trash"></i> Hapus</button>${rowHtml}</div>`
+                    : rowHtml;
             }).join('');
+            updateTabIndicator();
         }
 
         async function insertWatchlist(item) {
@@ -2932,6 +3118,9 @@
             updateLockUI();
             initAdminSession();
             updateScrollUI();
+            initSwipeRows();
+            initPullToRefresh();
+            initA2hs();
             initSheetDrag('detail-modal-content', closeDetailModal);
             initSheetDrag('add-modal-content', requestCloseAddModal);
             initSheetDrag('stats-modal-content', closeStatsModal);
