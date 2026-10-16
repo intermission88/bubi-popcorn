@@ -75,7 +75,7 @@
                         shake: 'shake 0.3s ease-in-out',
                         goldGlow: 'goldGlow 2.5s infinite ease-in-out',
                         popIn: 'popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-                        slideUp: 'slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        slideUp: 'slideUp 0.26s cubic-bezier(0.2, 0.9, 0.25, 1) forwards',
                         fadeIn: 'fadeIn 0.25s ease-out forwards',
                         marquee: 'marquee 28s linear infinite',
                         pulseSlow: 'pulseSlow 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite'
@@ -300,7 +300,7 @@
         #tab-bar.is-min .tab-item { gap: 0; }
 
         /* Bottom sheet terbuka: halaman di belakang mengecil dan meredup (efek kartu bertumpuk iOS) */
-        #main-content { transform-origin: 50% var(--sheet-oy, 50%); transition: transform .4s cubic-bezier(.2, .8, .2, 1), filter .4s ease, border-radius .4s ease; }
+        #main-content { transform-origin: 50% var(--sheet-oy, 50%); transition: transform .28s cubic-bezier(.2, .9, .25, 1), filter .28s ease, border-radius .28s ease; }
         @media (max-width: 639px) {
             body.sheet-open #main-content { transform: scale(0.94); filter: brightness(0.7); border-radius: 28px; overflow: hidden; }
             /* overlay lebih tipis agar halaman yang mengecil tetap terlihat */
@@ -335,11 +335,6 @@
         .ctx-item.is-danger { color: #f87171; }
         .ctx-item i { font-size: 14px; color: #d4d4d4; }
         .ctx-item.is-danger i { color: #f87171; }
-
-        /* Transisi kartu -> detail (View Transitions API; browser lama memakai animasi geser biasa) */
-        ::view-transition-group(poster-hero) { animation-duration: .45s; animation-timing-function: cubic-bezier(.2, .8, .2, 1); }
-        ::view-transition-old(poster-hero), ::view-transition-new(poster-hero) { height: 100%; object-fit: cover; }
-        ::view-transition-old(root), ::view-transition-new(root) { animation-duration: .25s; }
 
         /* Poster bertahap: latar kecil buram dulu, lalu poster tajam memudar masuk */
         .poster-img { opacity: 0; transition: opacity .35s ease, transform .5s cubic-bezier(.2, .7, .2, 1); }
@@ -2216,28 +2211,6 @@
             });
         }
 
-        // Morph elemen `from` menjadi `to` lewat View Transitions; `apply` mengubah DOM. Pengaman waktu bila frame tertahan.
-        function morphTransition(from, to, apply) {
-            let done = false;
-            const cleanup = () => { from.style.viewTransitionName = ''; to.style.viewTransitionName = ''; };
-            const run = () => { if (done) return; done = true; from.style.viewTransitionName = ''; to.style.viewTransitionName = 'poster-hero'; apply(); setTimeout(cleanup, 1200); };
-            from.style.viewTransitionName = 'poster-hero';
-            try {
-                document.startViewTransition(run).finished.finally(cleanup);
-            } catch (err) { run(); cleanup(); return; }
-            setTimeout(run, 450);
-        }
-
-        // Kontainer poster kartu untuk morph, hanya jika browser mendukung, gerak tidak dikurangi, dan kartu terlihat
-        function morphSource(id) {
-            if (typeof document.startViewTransition !== 'function' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return null;
-            const img = document.getElementById(`movie-card-${id}`)?.querySelector('.poster-img');
-            const box = img && img.parentElement && img.parentElement.parentElement;
-            if (!box) return null;
-            const r = box.getBoundingClientRect();
-            return (r.bottom > 0 && r.top < window.innerHeight && r.right > 0 && r.left < window.innerWidth) ? box : null;
-        }
-
         function openDetailModal(id) {
             lastScrollPosition = window.pageYOffset || document.documentElement.scrollTop;
             lastClickedMovieId = id;
@@ -2303,43 +2276,31 @@
 
             const modal = document.getElementById('detail-modal');
             const content = document.getElementById('detail-modal-content');
-            const reveal = morph => {
-                modal.classList.remove('hidden');
-                if (!morph) content.classList.add('animate-slideUp');
-                activateModal(modal, modal.querySelector('[aria-label="Tutup detail film"]'));
-            };
-            const cardPoster = morphSource(id);
-            if (cardPoster) morphTransition(cardPoster, content.querySelector('[data-sheet-grab]'), () => reveal(true));
-            else reveal(false);
+            modal.classList.remove('hidden');
+            content.classList.add('animate-slideUp');
+            activateModal(modal, modal.querySelector('[aria-label="Tutup detail film"]'));
             loadTmdbExtra(movie);
         }
 
-        function closeDetailModal(noMorph) {
-            const content = document.getElementById('detail-modal-content');
-            const doClose = () => {
-                stopTrailer();
-                const modal = document.getElementById('detail-modal');
-                modal.classList.add('hidden');
-                document.getElementById('detail-modal-content').classList.remove('animate-slideUp');
-                deactivateModal(modal);
-            
-                if (lastClickedMovieId) {
-                    setTimeout(() => {
-                        const targetCard = document.getElementById(`movie-card-${lastClickedMovieId}`);
-                        if (targetCard) {
-                            targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        } else {
-                            window.scrollTo({ top: lastScrollPosition, behavior: 'instant' });
-                        }
-                    }, 50);
-                } else {
-                    window.scrollTo({ top: lastScrollPosition, behavior: 'instant' });
-                }
-            };
-            const dragged = !!content.style.transform;
-            const cardPoster = !noMorph && !dragged && lastClickedMovieId ? morphSource(lastClickedMovieId) : null;
-            if (!cardPoster || document.getElementById('detail-modal').classList.contains('hidden')) { doClose(); return; }
-            morphTransition(content.querySelector('[data-sheet-grab]'), cardPoster, doClose);
+        function closeDetailModal() {
+            stopTrailer();
+            const modal = document.getElementById('detail-modal');
+            modal.classList.add('hidden');
+            document.getElementById('detail-modal-content').classList.remove('animate-slideUp');
+            deactivateModal(modal);
+        
+            if (lastClickedMovieId) {
+                setTimeout(() => {
+                    const targetCard = document.getElementById(`movie-card-${lastClickedMovieId}`);
+                    if (targetCard) {
+                        targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    } else {
+                        window.scrollTo({ top: lastScrollPosition, behavior: 'instant' });
+                    }
+                }, 50);
+            } else {
+                window.scrollTo({ top: lastScrollPosition, behavior: 'instant' });
+            }
         }
 
         async function refreshData(btn) {
@@ -2444,7 +2405,7 @@
             const movie = moviesData.find(m => m.id == currentDetailMovieId);
             if (!movie) return;
 
-            closeDetailModal(true);
+            closeDetailModal();
 
             document.getElementById('editing_id').value = movie.id;
             const form = document.getElementById('add-movie-form');
@@ -2502,7 +2463,7 @@
             if (!confirmed) return;
 
             const idToDelete = currentDetailMovieId;
-            closeDetailModal(true);
+            closeDetailModal();
 
             try {
                 const { error } = await supabaseClient
