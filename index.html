@@ -184,8 +184,6 @@
             color: transparent;
             -webkit-text-stroke: 1.5px #3f3f46;
         }
-        .tilt-card { transition: transform 0.25s ease, box-shadow 0.25s ease; }
-        .tilt-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6); }
         @keyframes shimmer {
             0% { background-position: -400px 0; }
             100% { background-position: 400px 0; }
@@ -287,7 +285,14 @@
         }
 
         /* Poster bertahap: latar kecil buram dulu, lalu poster tajam memudar masuk */
-        .poster-img { opacity: 0; transition: opacity .35s ease; }
+        .poster-img { opacity: 0; transition: opacity .35s ease, transform .5s cubic-bezier(.2, .7, .2, 1); }
+        /* Hover kartu film (hanya perangkat dengan mouse; di HP tetap tap-scale) */
+        @media (hover: hover) and (pointer: fine) {
+            #months-carousel [id^="movie-card-"] { transition: translate .25s ease, transform .15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow .25s ease, border-color .25s ease; }
+            #months-carousel [id^="movie-card-"]:hover:not(:active) { translate: 0 -5px; box-shadow: 0 16px 28px rgba(0, 0, 0, 0.65); border-color: rgba(250, 204, 21, 0.45); }
+            #months-carousel [id^="movie-card-"]:hover .poster-img { transform: scale(1.06); }
+            #months-carousel .certified-card:hover:not(:active) { box-shadow: 0 16px 34px rgba(250, 204, 21, 0.22), 0 10px 24px rgba(0, 0, 0, 0.6); }
+        }
         .poster-img.is-loaded { opacity: 1; }
         @media (prefers-reduced-motion: reduce) { .poster-img { transition: none; } }
 
@@ -1686,7 +1691,7 @@
             card.style.animationDelay = `${(index % 8) * 0.05}s`;
             card.className = (isCertified 
                 ? "rounded-2xl overflow-hidden flex flex-col certified-card tap-scale cursor-pointer relative shadow-xl"
-                : "glass-card rounded-2xl overflow-hidden flex flex-col border border-neutral-800 tap-scale cursor-pointer shadow-lg hover:border-neutral-700 tilt-card") + " animate-popIn";
+                : "glass-card rounded-2xl overflow-hidden flex flex-col border border-neutral-800 tap-scale cursor-pointer shadow-lg") + " animate-popIn";
             card.setAttribute('role', 'button');
             card.setAttribute('tabindex', '0');
             card.setAttribute('aria-label', `Buka detail ${movie.judul || 'film tanpa judul'}`);
