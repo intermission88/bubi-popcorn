@@ -2001,12 +2001,13 @@
             const queued = isQueued(it);
             const soon = !isReleased(it.date);
             const poster = it.poster ? posterBox(it.poster, it.title, 'w-full h-full object-cover') : '';
-            const sub = [it.sub || (it.year ? String(it.year) : ''), soon ? 'Segera' : ''].filter(Boolean).join(' · ');
+            const when = it.date ? new Date(it.date + 'T00:00:00').toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : 'TBA';
+            const sub = soon ? [it.sub, when].filter(Boolean).join(' · ') : (it.sub || (it.year ? String(it.year) : ''));
             const action = it.noQueue ? '' : queued
                 ? '<div class="mt-1 text-micro text-neutral-400">Di antrean</div>'
                 : (isAdminUnlocked && watchlistAvailable ? `<button type="button" onclick="addRelated('${key}', ${idx})" class="mt-1 px-2 py-1 rounded-lg bg-amber-400/10 border border-amber-500/40 text-amber-400 text-micro font-bold tap-scale">+ Antrean</button>` : '');
             return `<div class="w-24 shrink-0 snap-start">
-                <div class="relative aspect-[2/3] rounded-xl overflow-hidden bg-neutral-900 ring-1 ring-white/10">${poster}</div>
+                <div class="relative aspect-[2/3] rounded-xl overflow-hidden bg-neutral-900 ring-1 ring-white/10">${poster}${soon ? '<span class="absolute inset-x-0 bottom-0 py-1 text-center text-micro font-extrabold uppercase tracking-wider bg-amber-400 text-black">Coming soon</span>' : ''}</div>
                 <div class="mt-1.5 text-caption font-semibold text-neutral-100 line-clamp-2 leading-tight">${escapeHtml(it.title)}</div>
                 <div class="text-micro text-neutral-400 truncate">${escapeHtml(sub)}</div>
                 ${action}</div>`;
@@ -2031,13 +2032,12 @@
             const cur = seasonNum(movie);
             if (x.media === 'tv' && cur) {
                 const seen = new Set(moviesData.filter(m => rowMatches(m, x.self) && seasonNum(m)).map(seasonNum));
-                const ups = (x.tvSeasons || []).filter(t => !seen.has(t.season) && t.season !== cur)
-                    .map(t => ({ id: x.self.id, media: 'tv', title: x.self.title, titles: x.self.titles, year: parseInt(t.date.slice(0, 4), 10) || null, date: t.date, poster: t.poster || x.self.poster, sub: `Season ${t.season} · ${t.episodes} eps`, noQueue: true }));
-                if (ups.length) groups.push(['Season lain', 'season', ups]);
+                const toItem = t => ({ id: x.self.id, media: 'tv', title: x.self.title, titles: x.self.titles, year: parseInt(t.date.slice(0, 4), 10) || null, date: t.date, poster: t.poster || x.self.poster, sub: isReleased(t.date) && t.episodes ? `Season ${t.season} · ${t.episodes} eps` : `Season ${t.season}`, noQueue: true });
+                const others = (x.tvSeasons || []).filter(t => !seen.has(t.season) && t.season !== cur);
+                const sPrev = others.filter(t => t.season < cur).map(toItem), sNext = others.filter(t => t.season > cur).map(toItem);
+                if (sPrev.length) groups.unshift(['Sebelumnya', 'season-prev', sPrev]);
+                if (sNext.length) groups.push(['Lanjutan', 'season-next', sNext]);
             }
-            const used = new Set(parts.map(p => p.id));
-            const sim = (x.recs || []).filter(r => r.poster && r.id !== x.self.id && !used.has(r.id) && !isWatched(r) && isReleased(r.date)).slice(0, 10);
-            if (sim.length) groups.push(['Mirip', 'sim', sim]);
             if (!groups.length) { box.classList.add('hidden'); box.innerHTML = ''; return; }
             box.innerHTML = groups.map(([label, key, list]) => `<div class="space-y-2">
                 <h3 class="text-micro font-bold text-amber-300 uppercase tracking-wider">${label}</h3>${relatedRow('detail-' + key, list)}</div>`).join('');
@@ -2054,8 +2054,8 @@
             try { renderDetailRelated(); renderHomeRecs(); } catch (err) { console.warn(err); }
         }
 
-        // Rekomendasi di Beranda: dari film berskor >= 8, termasuk lanjutan koleksi; cache 24 jam
-        const RECS_KEY = 'bubi_recs_v1';
+        // Rekomendasi di Beranda: hanya film/series MIRIP dari film berskor >= 8 (bagian satu koleksi dibuang); cache 24 jam
+        const RECS_KEY = 'bubi_recs_v2';
         let homeRecsTimer = null, homeRecsSig = '';
         function scheduleHomeRecs() {
             clearTimeout(homeRecsTimer);
@@ -2071,10 +2071,10 @@
                 const c = JSON.parse(localStorage.getItem(RECS_KEY) || 'null');
                 if (c && c.sig === sig && Date.now() - c.t < 864e5) { homeRecsSig = sig; homeRecItems = c.items; renderHomeRecs(); return; }
             } catch (e) {}
-            const pool = new Map();
+            const pool = new Map(), exclude = new Set();
             const add = (it, score, reason) => {
                 const k = `${it.media}:${it.id}`, cur = pool.get(k);
-                if (cur) { cur.score += score; if (score >= 40) cur.reason = reason; return; } // alasan koleksi lebih spesifik daripada "mirip"
+                if (cur) { cur.score += score; return; }
                 pool.set(k, { ...it, score: score + it.vote, reason });
             };
             await Promise.all(seeds.map(async m => {
@@ -2090,16 +2090,14 @@
                     const d = await tmdbGet(`/${media}/${id}`, '&append_to_response=recommendations');
                     const self = tmdbItem(d, media), why = `Mirip ${m.judul}`;
                     ((d.recommendations && d.recommendations.results) || []).forEach(r => add(tmdbItem(r, media), 10, why));
-                    if (media === 'movie' && d.belongs_to_collection) {
+                    exclude.add(`${media}:${self.id}`);
+                    if (media === 'movie' && d.belongs_to_collection) { // sekuel/prekuel bukan "mirip": hanya untuk dibuang
                         const col = await tmdbGet(`/collection/${d.belongs_to_collection.id}`);
-                        (col.parts || []).filter(p => p.id !== self.id).forEach(p => {
-                            const it = tmdbItem(p, 'movie');
-                            add(it, 40, it.date && self.date && it.date < self.date ? `Sebelum ${m.judul}` : `Lanjutan ${m.judul}`);
-                        });
+                        (col.parts || []).forEach(p => exclude.add(`movie:${p.id}`));
                     }
                 } catch (err) { console.warn('Rekomendasi gagal untuk', m.judul, err); }
             }));
-            homeRecItems = [...pool.values()].sort((a, b) => b.score - a.score).slice(0, 30);
+            homeRecItems = [...pool.entries()].filter(([k]) => !exclude.has(k)).map(([, v]) => v).sort((a, b) => b.score - a.score).slice(0, 30);
             homeRecsSig = sig;
             try { localStorage.setItem(RECS_KEY, JSON.stringify({ sig, t: Date.now(), items: homeRecItems })); } catch (e) {}
             renderHomeRecs();
@@ -2891,7 +2889,7 @@
                 hit = (seasonNum(movie) && await pickTvForSeason(results, movie)) || byYear || (seasonNum(movie) && results.find(r => r.media_type === 'tv'));
             }
             if (!hit) return null;
-            const dres = await fetch(`https://api.themoviedb.org/3/${hit.media_type}/${hit.id}?api_key=${key}&language=id-ID&append_to_response=videos,credits,watch/providers,images,recommendations&include_video_language=id,en,null&include_image_language=en,id,null`);
+            const dres = await fetch(`https://api.themoviedb.org/3/${hit.media_type}/${hit.id}?api_key=${key}&language=id-ID&append_to_response=videos,credits,watch/providers,images&include_video_language=id,en,null&include_image_language=en,id,null`);
             if (!dres.ok) throw new Error(dres.status);
             const d = await dres.json();
             let overview = (d.overview || '').trim();
@@ -2915,13 +2913,12 @@
             const logoRank = l => (l.iso_639_1 === 'en' ? 2 : !l.iso_639_1 ? 1 : 0);
             const logoItem = ((d.images && d.images.logos) || []).filter(l => /^\/[\w.-]+\.(png|svg)$/.test(l.file_path || ''))
                 .sort((a, b) => logoRank(b) - logoRank(a) || (b.vote_average || 0) - (a.vote_average || 0))[0];
-            // Bahan blok "Lanjut nonton": bagian lain dari koleksi film, daftar season, rekomendasi
+            // Bahan blok "Lanjut nonton": bagian lain dari koleksi film dan daftar season
             let collection = [];
             if (hit.media_type === 'movie' && d.belongs_to_collection) {
                 try { collection = ((await tmdbGet(`/collection/${d.belongs_to_collection.id}`)).parts || []).map(p => tmdbItem(p, 'movie')); } catch (err) { console.warn('Koleksi gagal:', err); }
             }
             const tvSeasons = hit.media_type === 'tv' ? (d.seasons || []).filter(x => x.season_number >= 1).map(x => ({ season: x.season_number, date: x.air_date || '', poster: x.poster_path ? TMDB_IMG + x.poster_path : '', episodes: x.episode_count || 0 })) : [];
-            const recs = ((d.recommendations && d.recommendations.results) || []).map(r => tmdbItem(r, hit.media_type));
             const crew = d.credits && d.credits.crew || [];
             const director = hit.media_type === 'tv'
                 ? (d.created_by || []).map(c => c.name).slice(0, 2).join(', ')
@@ -2940,7 +2937,7 @@
                 trailerKey: trailer ? trailer.key : '',
                 episodes: seasonInfo ? seasonInfo.episodes : 0,
                 logo: logoItem ? logoItem.file_path : '',
-                media: hit.media_type, self: tmdbItem(d, hit.media_type), collection, tvSeasons, recs,
+                media: hit.media_type, self: tmdbItem(d, hit.media_type), collection, tvSeasons,
                 backdrop: /^\/[\w.-]+$/.test(d.backdrop_path || '') ? d.backdrop_path : ''
             };
         }

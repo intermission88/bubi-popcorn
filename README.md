@@ -217,7 +217,7 @@ Kolom opsional `kutipan` di `bubi_popcorn`: jalankan [`supabase/kutipan.sql`](su
 
 Kolom opsional `season` di `bubi_popcorn`: jalankan [`supabase/season.sql`](supabase/season.sql) sekali. Admin memilih season dari daftar TMDB saat menambah series; lencana "S2" tampil di kartu dan detail. Tanpa kolom ini fiturnya tersembunyi.
 
-Kolom opsional `tmdb_id` dan `tmdb_media`: jalankan [`supabase/tmdb_id.sql`](supabase/tmdb_id.sql) sekali, lalu lengkapi film lama lewat tombol sinkron TMDB (admin; periksa daftar sebelum menerapkan). **Rekomendasi:** modal detail punya blok "Lanjut nonton" (sebelumnya, lanjutan, season lain, mirip) dan Beranda punya bagian Rekomendasi dari film berskor 8 ke atas. Keduanya tetap jalan tanpa kolom tersebut (pencocokan judul + tahun); admin bisa menekan "+ Antrean" pada kartu.
+Kolom opsional `tmdb_id` dan `tmdb_media`: jalankan [`supabase/tmdb_id.sql`](supabase/tmdb_id.sql) sekali, lalu lengkapi film lama lewat tombol sinkron TMDB (admin; periksa daftar sebelum menerapkan). **Rekomendasi:** modal detail punya blok "Lanjut nonton" yang hanya berisi bagian sebelumnya dan lanjutan (koleksi film dan season series, yang belum rilis diberi label Coming soon), sedangkan Beranda punya bagian Rekomendasi berisi film/series mirip dari film berskor 8 ke atas (tanpa sekuel/prekuel). Keduanya tetap jalan tanpa kolom tersebut (pencocokan judul + tahun); admin bisa menekan "+ Antrean" pada kartu.
 
 **`bubi_watchlist`**: `id` (`w_<timestamp>`), `judul`, `tahun`, `poster`, `created_at`. Skema lengkap di [`supabase/watchlist.sql`](supabase/watchlist.sql).
 
