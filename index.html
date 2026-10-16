@@ -382,14 +382,11 @@
             </div>
         </section>
 
-        <div class="film-strip -mx-4" aria-hidden="true"></div>
-
         <!-- SECTION ATAS: Cinema Themed Now Showing Card -->
         <section class="glass-card rounded-2xl p-3.5 border border-neutral-800 bg-gradient-to-br from-black via-neutral-950 to-black space-y-3 shadow-2xl relative overflow-hidden">
             <!-- NOW SHOWING Header -->
             <div class="text-center pb-0.5">
                 <div class="marquee-label justify-center font-anton text-xl tracking-[0.2em] text-amber-400 uppercase leading-none">Now Showing</div>
-                <div class="text-caption text-neutral-300 mt-1.5 tracking-[0.25em] uppercase">A Zald &amp; Micel Production</div>
             </div>
 
             <!-- Ticket: total hari bersama -->
@@ -401,16 +398,15 @@
 
             <!-- Showtimes: Dual Clocks (Clickable to open Time & Alarm Calc) -->
             <button type="button" onclick="triggerHaptic(); openTimeCalcModal()" class="w-full text-left group/clock rounded-xl" aria-label="Buka konverter waktu Zald dan Micel">
-                <div class="marquee-label w-full justify-center font-display text-xs tracking-[0.25em] text-neutral-300 uppercase mb-2">Showtimes</div>
                 <div class="grid grid-cols-2 gap-2.5">
                     <!-- Zald Clock -->
                     <div class="p-2.5 rounded-xl bg-sky-950/25 border border-sky-500/20 group-hover/clock:border-sky-500/50 flex flex-col justify-between shadow-inner transition">
                         <div class="flex items-center justify-between mb-1.5">
                             <div class="flex items-center gap-1.5">
                                 <img src="assets/pfp_zald.png" alt="Zald" class="w-5 h-5 rounded-md object-cover shadow-sm">
-                                <span class="text-caption font-bold text-sky-400 uppercase tracking-wider">Zald</span>
+                                <span class="text-caption font-bold text-sky-400 uppercase tracking-wide">Zald</span>
                             </div>
-                            <span class="text-micro font-semibold text-sky-200 bg-sky-900/60 px-1 py-0.5 rounded">UTC+5:30</span>
+                            <span class="text-micro font-medium text-neutral-300 whitespace-nowrap">UTC+5:30</span>
                         </div>
                         <div class="flex items-baseline justify-between">
                             <div id="zald-clock" class="font-display text-lg text-sky-200 tracking-wide leading-none">--:-- --</div>
@@ -423,9 +419,9 @@
                         <div class="flex items-center justify-between mb-1.5">
                             <div class="flex items-center gap-1.5">
                                 <img src="assets/pfp_micel.png" alt="Micel" class="w-5 h-5 rounded-md object-cover shadow-sm">
-                                <span class="text-caption font-bold text-pink-400 uppercase tracking-wider">Micel</span>
+                                <span class="text-caption font-bold text-pink-400 uppercase tracking-wide">Micel</span>
                             </div>
-                            <span class="text-micro font-semibold text-pink-200 bg-pink-900/60 px-1 py-0.5 rounded">UTC+9:00</span>
+                            <span class="text-micro font-medium text-neutral-300 whitespace-nowrap">UTC+9:00</span>
                         </div>
                         <div class="flex items-baseline justify-between">
                             <div id="micel-clock" class="font-display text-lg text-pink-200 tracking-wide leading-none">--:-- --</div>
@@ -1748,7 +1744,6 @@
                 <div class="p-3 flex flex-col justify-between flex-grow space-y-2.5">
                     <div>
                         <h3 class="font-display text-base ${isCertified ? 'gold-text' : 'text-neutral-50'} line-clamp-1 tracking-wide uppercase">${escapeHtml(movie.judul) || 'Tanpa Judul'}</h3>
-                        <p class="text-caption text-neutral-300 line-clamp-1 mt-0.5">${escapeHtml(formatMonthDisplay(movie.bulan)) || '-'}</p>
                     </div>
                     ${ratingsHTML}
                 </div>
@@ -1854,11 +1849,8 @@
                         <span class="font-display text-5xl leading-[0.8] stroke-number">${String(panelNumber).padStart(2, '0')}</span>
                         <div class="pb-0.5">
                             <div class="font-display text-lg text-amber-300 uppercase tracking-[0.15em] leading-none">${escapeHtml(formatMonthDisplay(key))}</div>
-                            <div class="text-caption text-neutral-300 mt-1">${monthMovies.length} film • Chapter ${panelNumber}/${totalMonths}</div>
+                            <div class="text-caption text-neutral-300 mt-1">${monthMovies.length} film</div>
                         </div>
-                        ${viewMode === 'grid' ? '' : `<span class="ml-auto text-caption text-neutral-300 flex items-center gap-1.5 pb-1">
-                            <i class="fa-solid fa-arrows-left-right text-amber-400/70 text-micro"></i> Geser
-                        </span>`}
                     </div>
                 `;
 
