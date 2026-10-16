@@ -1010,37 +1010,28 @@
             </div>
 
             <div class="p-5 overflow-y-auto space-y-4 flex-grow no-scrollbar">
-                <div id="detail-scores-container" class="grid grid-cols-2 gap-2.5 bg-black border border-neutral-800 p-3 rounded-2xl shadow-inner">
-                    <div id="detail-box-zald" class="flex items-center gap-2.5">
-                        <img src="assets/pfp_zald.png" alt="Zald" class="w-8 h-8 rounded-xl object-cover shadow-sm">
-                        <div>
-                            <div class="text-micro font-semibold text-neutral-300">Rating Zald</div>
-                            <div id="detail-zald-score" class="text-xs sm:text-sm font-bold text-sky-400">8.0</div>
-                        </div>
-                    </div>
-                    <div id="detail-box-micel" class="flex items-center gap-2.5 border-l border-neutral-800 pl-3">
-                        <img src="assets/pfp_micel.png" alt="Micel" class="w-8 h-8 rounded-xl object-cover shadow-sm">
-                        <div>
-                            <div class="text-micro font-semibold text-neutral-300">Rating Micel</div>
-                            <div id="detail-micel-score" class="text-xs sm:text-sm font-bold text-pink-400">8.5</div>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="space-y-3">
-                    <div id="detail-review-zald-wrap" class="bg-black/80 border border-sky-400/20 rounded-2xl p-3.5 space-y-1.5 shadow-sm">
-                        <div class="flex items-center gap-1.5">
-                            <img src="assets/pfp_zald.png" class="w-4 h-4 rounded-full object-cover">
-                            <span class="text-xs font-bold text-sky-400">Pendapat Zald</span>
+                    <div id="detail-review-zald-wrap" class="bg-black/80 border border-sky-400/20 rounded-2xl p-4">
+                        <div class="flex items-center gap-2.5">
+                            <img src="assets/pfp_zald.png" alt="Zald" class="w-8 h-8 rounded-xl object-cover">
+                            <span class="text-sm font-bold text-sky-400">Zald</span>
+                            <span class="ml-auto flex items-baseline gap-0.5">
+                                <span id="detail-zald-score" class="text-xl font-black text-sky-400 leading-none">-</span>
+                                <span id="detail-zald-max" class="text-xs text-neutral-400">/10</span>
+                            </span>
                         </div>
-                        <p id="detail-zald-text" class="text-xs sm:text-sm text-neutral-100 italic whitespace-pre-line leading-relaxed">--</p>
+                        <p id="detail-zald-text" class="mt-3 text-sm text-neutral-100 whitespace-pre-line leading-relaxed"></p>
                     </div>
-                    <div id="detail-review-micel-wrap" class="bg-black/80 border border-pink-400/20 rounded-2xl p-3.5 space-y-1.5 shadow-sm">
-                        <div class="flex items-center gap-1.5">
-                            <img src="assets/pfp_micel.png" class="w-4 h-4 rounded-full object-cover">
-                            <span class="text-xs font-bold text-pink-400">Pendapat Micel</span>
+                    <div id="detail-review-micel-wrap" class="bg-black/80 border border-pink-400/20 rounded-2xl p-4">
+                        <div class="flex items-center gap-2.5">
+                            <img src="assets/pfp_micel.png" alt="Micel" class="w-8 h-8 rounded-xl object-cover">
+                            <span class="text-sm font-bold text-pink-400">Micel</span>
+                            <span class="ml-auto flex items-baseline gap-0.5">
+                                <span id="detail-micel-score" class="text-xl font-black text-pink-400 leading-none">-</span>
+                                <span id="detail-micel-max" class="text-xs text-neutral-400">/10</span>
+                            </span>
                         </div>
-                        <p id="detail-micel-text" class="text-xs sm:text-sm text-neutral-100 italic whitespace-pre-line leading-relaxed">--</p>
+                        <p id="detail-micel-text" class="mt-3 text-sm text-neutral-100 whitespace-pre-line leading-relaxed"></p>
                     </div>
                 </div>
 
@@ -1915,37 +1906,21 @@
 
             const watcher = movie.watched_by || 'both';
             const viewerBadge = document.getElementById('detail-viewer-badge');
-            const boxZald = document.getElementById('detail-box-zald');
-            const boxMicel = document.getElementById('detail-box-micel');
             const wrapZald = document.getElementById('detail-review-zald-wrap');
             const wrapMicel = document.getElementById('detail-review-micel-wrap');
-            const scoresContainer = document.getElementById('detail-scores-container');
 
             if (watcher === 'zald') {
                 viewerBadge.innerText = "Zald Picks";
                 viewerBadge.className = "px-2 py-0.5 rounded-lg bg-black border border-sky-500/40 text-sky-400 text-micro font-bold";
-                boxZald.style.display = 'flex';
-                boxMicel.style.display = 'none';
-                scoresContainer.className = "grid grid-cols-1 gap-2.5 bg-black border border-neutral-800 p-3 rounded-2xl shadow-inner";
-                wrapZald.style.display = 'block';
-                wrapMicel.style.display = 'none';
             } else if (watcher === 'micel') {
                 viewerBadge.innerText = "Micel Picks";
                 viewerBadge.className = "px-2 py-0.5 rounded-lg bg-black border border-pink-500/40 text-pink-400 text-micro font-bold";
-                boxZald.style.display = 'none';
-                boxMicel.style.display = 'flex';
-                scoresContainer.className = "grid grid-cols-1 gap-2.5 bg-black border border-neutral-800 p-3 rounded-2xl shadow-inner";
-                wrapZald.style.display = 'none';
-                wrapMicel.style.display = 'block';
             } else {
                 viewerBadge.innerText = "Nonton Bareng";
                 viewerBadge.className = "px-2 py-0.5 rounded-lg bg-neutral-900 text-amber-300 text-micro font-bold";
-                boxZald.style.display = 'flex';
-                boxMicel.style.display = 'flex';
-                scoresContainer.className = "grid grid-cols-2 gap-2.5 bg-black border border-neutral-800 p-3 rounded-2xl shadow-inner";
-                wrapZald.style.display = 'block';
-                wrapMicel.style.display = 'block';
             }
+            wrapZald.style.display = watcher === 'micel' ? 'none' : 'block';
+            wrapMicel.style.display = watcher === 'zald' ? 'none' : 'block';
 
             const isCertified = movie.is_certified === true || movie.is_certified === 'true' || movie.is_certified === 'TRUE';
             const badgeWrapper = document.getElementById('detail-badge-wrapper');
@@ -1958,15 +1933,20 @@
             const rZ = movie.rating_aku || 'N/A';
             const rM = movie.rating_dia || 'N/A';
 
-            document.getElementById('detail-zald-score').innerText = rZ !== 'N/A' ? `${rZ} / 10` : 'N/A';
-            document.getElementById('detail-micel-score').innerText = rM !== 'N/A' ? `${rM} / 10` : 'N/A';
+            [['zald', rZ], ['micel', rM]].forEach(([k, r]) => {
+                document.getElementById(`detail-${k}-score`).innerText = r !== 'N/A' ? r : '-';
+                document.getElementById(`detail-${k}-max`).classList.toggle('hidden', r === 'N/A');
+            });
 
             const kut = (movie.kutipan || '').trim();
             document.getElementById('detail-kutipan').textContent = kut ? `"${kut}"` : '';
             document.getElementById('detail-kutipan-wrap').classList.toggle('hidden', !kut);
 
-            document.getElementById('detail-zald-text').innerText = movie.review_aku ? `"${movie.review_aku}"` : "Belum ada review.";
-            document.getElementById('detail-micel-text').innerText = movie.review_dia ? `"${movie.review_dia}"` : "Belum ada review.";
+            [['zald', movie.review_aku], ['micel', movie.review_dia]].forEach(([k, text]) => {
+                const el = document.getElementById(`detail-${k}-text`);
+                el.innerText = text || '';
+                el.classList.toggle('hidden', !text); // tanpa ulasan: kartu cukup nama dan skor
+            });
 
             const logoEl = document.getElementById('detail-logo');
             logoEl.classList.add('hidden'); logoEl.removeAttribute('src');
