@@ -1010,6 +1010,7 @@
                                 <i class="fa-solid fa-award text-micro"></i> Certified Fresh
                             </span>
                         </div>
+                        <img id="detail-logo" src="" alt="" class="hidden max-h-16 max-w-[72%] w-auto object-contain object-left drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
                         <h2 id="detail-title" class="text-2xl font-black font-display tracking-tight line-clamp-1 text-white">Title</h2>
                     </div>
                 </div>
@@ -2077,6 +2078,9 @@
             document.getElementById('detail-zald-text').innerText = movie.review_aku ? `"${movie.review_aku}"` : "Belum ada review.";
             document.getElementById('detail-micel-text').innerText = movie.review_dia ? `"${movie.review_dia}"` : "Belum ada review.";
 
+            const logoEl = document.getElementById('detail-logo');
+            logoEl.classList.add('hidden'); logoEl.removeAttribute('src');
+            document.getElementById('detail-title').classList.remove('sr-only');
             const banner = document.getElementById('detail-banner-img');
             banner.className = 'w-full h-full object-cover opacity-40 blur-sm scale-105 transition-opacity duration-500'; // poster buram dulu, backdrop TMDB menggantikan saat termuat
             banner.src = (movie.poster && movie.poster.trim() !== '') ? tmdbSized(movie.poster, 'w342') : POSTER_FALLBACK;
@@ -2537,7 +2541,7 @@
                 .filter(r => r.media_type === 'movie' || r.media_type === 'tv')
                 .find(r => !movie.tahun || (year(r) && Math.abs(year(r) - movie.tahun) <= 1) || (seasonNum(movie) && r.media_type === 'tv')); // season lanjutan tayang jauh setelah tahun perdana
             if (!hit) return null;
-            const dres = await fetch(`https://api.themoviedb.org/3/${hit.media_type}/${hit.id}?api_key=${key}&language=id-ID&append_to_response=videos,credits,watch/providers&include_video_language=id,en,null`);
+            const dres = await fetch(`https://api.themoviedb.org/3/${hit.media_type}/${hit.id}?api_key=${key}&language=id-ID&append_to_response=videos,credits,watch/providers,images&include_video_language=id,en,null&include_image_language=en,id,null`);
             if (!dres.ok) throw new Error(dres.status);
             const d = await dres.json();
             let overview = (d.overview || '').trim();
@@ -2557,6 +2561,10 @@
             };
             // Series bersesi: trailer season itu dulu, baru trailer series sebagai cadangan
             const trailer = (seasonInfo && pickTrailer(seasonInfo.videos)) || pickTrailer(d.videos && d.videos.results || []);
+            // Logo judul: utamakan en/tanpa teks, lalu suara terbanyak
+            const logoRank = l => (l.iso_639_1 === 'en' ? 2 : !l.iso_639_1 ? 1 : 0);
+            const logoItem = ((d.images && d.images.logos) || []).filter(l => /^\/[\w.-]+\.(png|svg)$/.test(l.file_path || ''))
+                .sort((a, b) => logoRank(b) - logoRank(a) || (b.vote_average || 0) - (a.vote_average || 0))[0];
             const crew = d.credits && d.credits.crew || [];
             const director = hit.media_type === 'tv'
                 ? (d.created_by || []).map(c => c.name).slice(0, 2).join(', ')
@@ -2574,6 +2582,7 @@
                 director, cast, stream,
                 trailerKey: trailer ? trailer.key : '',
                 episodes: seasonInfo ? seasonInfo.episodes : 0,
+                logo: logoItem ? logoItem.file_path : '',
                 backdrop: /^\/[\w.-]+$/.test(d.backdrop_path || '') ? d.backdrop_path : ''
             };
         }
@@ -2581,6 +2590,16 @@
         function renderTmdbExtra(x) {
             const box = document.getElementById('detail-tmdb');
             if (!x) { box.classList.add('hidden'); return; }
+            if (x.logo) {
+                const logo = document.getElementById('detail-logo');
+                const lp = new Image(), forId = currentDetailMovieId;
+                lp.onload = () => {
+                    if (currentDetailMovieId !== forId || document.getElementById('detail-modal').classList.contains('hidden')) return;
+                    logo.src = lp.src; logo.classList.remove('hidden');
+                    document.getElementById('detail-title').classList.add('sr-only');
+                };
+                lp.src = `https://image.tmdb.org/t/p/w500${x.logo}`;
+            }
             if (x.backdrop) {
                 const banner = document.getElementById('detail-banner-img');
                 const pre = new Image();

@@ -11,6 +11,7 @@ Peta untuk debug cepat: ke mana melihat, perintah apa yang jalan, dan jebakan ya
 | `manifest.json` | Metadata PWA + ikon (`assets/icon.svg`). | Ikon install salah |
 | `assets/` | Biner: 5 slider, 2 foto profil, ikon PWA, `tmdb-logo.svg`. Jangan dibaca; pakai `file`/`sips` untuk metadata. | Aset 404 |
 | `supabase/watchlist.sql` | Skema tabel `bubi_watchlist` + RLS. Dijalankan user manual. | Watchlist tidak muncul |
+| (tanpa SQL) logo judul | `fetchTmdbExtra` mengambil `images.logos` (en/tanpa teks dulu, suara terbanyak) -> `renderTmdbExtra` mengisi `#detail-logo` dan menyembunyikan `#detail-title` (`sr-only`, tetap untuk aksesibilitas). Tidak disimpan di DB; judul teks jadi cadangan. | Logo tidak muncul / judul hilang |
 | `supabase/backdrop.sql` | Kolom `backdrop` di `bubi_popcorn`. `backdropAvailable()`; diisi `applyTmdbResult` (form) dan `planTmdbSync`/`applyTmdbSync`. `createLandscapeCard` memakai `posterBox(..., 'w780', 'w300')`. Mode tampilan: `viewMode` carousel/grid/landscape (`toggleViewMode`). | Kartu landscape pakai poster, bukan backdrop |
 | `supabase/season.sql` | Kolom `season` di `bubi_popcorn`. Aktif lewat `seasonAvailable()`; `seasonNum(m)` = nomor valid atau null. Picker: `loadSeasonPicker`/`pickSeason`; `fetchTmdbExtra` melonggarkan aturan tahun untuk series bersesi. | Pemilih season / lencana S2 tidak muncul |
 | `supabase/kutipan.sql` | Kolom `kutipan` di `bubi_popcorn`. Fitur aktif otomatis lewat `kutipanAvailable()` (cek key `kutipan` di baris data). | Kolom kutipan tidak muncul di form |
