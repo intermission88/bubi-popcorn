@@ -2002,14 +2002,14 @@
             const soon = !isReleased(it.date);
             const poster = it.poster ? posterBox(it.poster, it.title, 'w-full h-full object-cover') : '';
             const when = it.date ? new Date(it.date + 'T00:00:00').toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : 'TBA';
-            const sub = soon ? [it.sub, when].filter(Boolean).join(' · ') : (it.sub || (it.year ? String(it.year) : ''));
+            const sub = soon ? [it.sub, when].filter(Boolean).join(' · ') : (it.hideSub ? '' : (it.sub || (it.year ? String(it.year) : '')));
             const action = it.noQueue ? '' : queued
                 ? '<div class="mt-1 text-micro text-neutral-400">Di antrean</div>'
                 : (isAdminUnlocked && watchlistAvailable ? `<button type="button" onclick="addRelated('${key}', ${idx})" class="mt-1 px-2 py-1 rounded-lg bg-amber-400/10 border border-amber-500/40 text-amber-400 text-micro font-bold tap-scale">+ Antrean</button>` : '');
             return `<div class="w-24 shrink-0 snap-start">
                 <div class="relative aspect-[2/3] rounded-xl overflow-hidden bg-neutral-900 ring-1 ring-white/10">${poster}${soon ? '<span class="absolute inset-x-0 bottom-0 py-1 text-center text-micro font-extrabold uppercase tracking-wider bg-amber-400 text-black">Coming soon</span>' : ''}</div>
                 <div class="mt-1.5 text-caption font-semibold text-neutral-100 line-clamp-2 leading-tight">${escapeHtml(it.title)}</div>
-                <div class="text-micro text-neutral-400 truncate">${escapeHtml(sub)}</div>
+                ${sub ? `<div class="text-micro text-neutral-400 truncate">${escapeHtml(sub)}</div>` : ''}
                 ${action}</div>`;
         }
         function relatedRow(key, list) {
@@ -2106,7 +2106,7 @@
             const sec = document.getElementById('rekomendasi-section');
             if (!sec) return;
             const list = homeRecItems.filter(it => it.poster && isReleased(it.date) && !isWatched(it) && !isQueued(it)).slice(0, 12)
-                .map(it => ({ ...it, sub: it.reason }));
+                .map(it => ({ ...it, hideSub: true })); // tanpa keterangan "Mirip ..." agar bersih
             sec.classList.toggle('hidden', !list.length);
             if (list.length) document.getElementById('rekomendasi-list').innerHTML = relatedRow('home', list);
         }
