@@ -42,7 +42,7 @@ Aplikasi web **mobile-first** untuk mengarsipkan film yang ditonton bersama oleh
 
 - Catat judul, tahun, poster, bulan nonton, serta rating dan ulasan **terpisah** untuk Zald dan Micel
 - **Karusel per bulan:** geser ke samping untuk bulan dan kartu film
-- **Nuansa iOS:** gelembung tab yang meluncur dan tab bar yang mengecil saat scroll, filter penonton bergaya segmented control, halaman mengecil di belakang bottom sheet, tarik-untuk-muat-ulang, geser baris antrean untuk menghapus (admin), haptic di iPhone, dan petunjuk "Tambah ke Layar Utama"
+- **Nuansa iOS:** gelembung tab yang meluncur dan tab bar yang mengecil saat scroll, filter penonton bergaya segmented control, halaman mengecil di belakang bottom sheet, tarik-untuk-muat-ulang, geser baris antrean untuk menghapus (admin), haptic di iPhone, petunjuk "Tambah ke Layar Utama", menu tekan-tahan pada kartu (buka, salin judul, edit, hapus), transisi poster kartu ke detail, warna status bar yang mengikuti sheet, parallax poster, dan haptic saat karusel berpindah kartu
 - Filter `Semua` · `Nonton Bareng` · `Zald Picks` · `Micel Picks` · `Top 9+`
 - Pencarian judul atau bulan, mendukung nama bulan Indonesia
 - **Certified Fresh:** film favorit tampil dalam emas metalik
