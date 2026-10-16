@@ -550,7 +550,7 @@
                     <button type="button" onclick="searchTmdb('wl-judul','wl-tmdb-results','applyTmdbToWatchlist')" class="shrink-0 px-3 rounded-xl bg-neutral-900 border border-neutral-800 text-amber-400 text-caption font-bold tap-scale hover:border-amber-400" aria-label="Cari di TMDB"><i class="fa-solid fa-magnifying-glass mr-1"></i>TMDB</button>
                     <button type="button" onclick="addWatchlistFromInput()" class="shrink-0 px-3 rounded-xl popcorn-gradient text-black text-caption font-bold tap-scale">Tambah</button>
                 </div>
-                <div id="wl-tmdb-results" class="mt-2 space-y-1.5 hidden" aria-live="polite"></div>
+                <div id="wl-tmdb-results" class="mt-2 space-y-1.5 max-h-72 overflow-y-auto overscroll-contain hidden" aria-live="polite"></div>
             </div>
             <div id="watchlist-list" class="space-y-2"></div>
         </section>
@@ -907,7 +907,7 @@
                             <i class="fa-solid fa-magnifying-glass mr-1"></i>TMDB
                         </button>
                     </div>
-                    <div id="tmdb-results" class="mt-2 space-y-1.5 hidden" aria-live="polite"></div>
+                    <div id="tmdb-results" class="mt-2 space-y-1.5 max-h-72 overflow-y-auto overscroll-contain hidden" aria-live="polite"></div>
                 </div>
 
                 <div>
@@ -2618,7 +2618,7 @@
             try {
                 const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${encodeURIComponent(TMDB_API_KEY)}&query=${encodeURIComponent(query)}&language=id-ID&include_adult=false`);
                 if (!res.ok) throw new Error(res.status);
-                const items = (await res.json()).results.filter(r => r.media_type === 'movie' || r.media_type === 'tv').slice(0, 5);
+                const items = (await res.json()).results.filter(r => r.media_type === 'movie' || r.media_type === 'tv').slice(0, 20);
                 if (!items.length) return note('Tidak ada hasil.');
                 tmdbItems = items;
                 box.innerHTML = items.map((r, i) => {
