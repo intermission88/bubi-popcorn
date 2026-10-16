@@ -2977,7 +2977,11 @@
             // Series bersesi: trailer season itu dulu, baru trailer series sebagai cadangan
             const trailer = (seasonInfo && pickTrailer(seasonInfo.videos)) || pickTrailer(d.videos && d.videos.results || []);
             // Logo judul: utamakan en/tanpa teks, lalu suara terbanyak
-            const logoRank = l => (l.iso_639_1 === 'en' ? 2 : !l.iso_639_1 ? 1 : 0);
+            // Film Indonesia: logo berbahasa Indonesia dulu (cocok dengan judul asli), lalu tanpa teks bahasa, baru Inggris.
+            // Lainnya: Inggris, lalu tanpa teks bahasa.
+            const logoRank = d.original_language === 'id'
+                ? (l => (l.iso_639_1 === 'id' ? 3 : !l.iso_639_1 ? 2 : l.iso_639_1 === 'en' ? 1 : 0))
+                : (l => (l.iso_639_1 === 'en' ? 2 : !l.iso_639_1 ? 1 : 0));
             const logoItem = ((d.images && d.images.logos) || []).filter(l => /^\/[\w.-]+\.(png|svg)$/.test(l.file_path || ''))
                 .sort((a, b) => logoRank(b) - logoRank(a) || (b.vote_average || 0) - (a.vote_average || 0))[0];
             // Bahan blok "Lanjut nonton": bagian lain dari koleksi film dan daftar season
