@@ -341,9 +341,6 @@
         ::view-transition-old(poster-hero), ::view-transition-new(poster-hero) { height: 100%; object-fit: cover; }
         ::view-transition-old(root), ::view-transition-new(root) { animation-duration: .25s; }
 
-        /* Parallax poster: gambar sedikit diperbesar agar tepi tidak terlihat saat bergeser */
-        @media (prefers-reduced-motion: no-preference) { #months-carousel .poster-img { scale: 1.12; } }
-
         /* Poster bertahap: latar kecil buram dulu, lalu poster tajam memudar masuk */
         .poster-img { opacity: 0; transition: opacity .35s ease, transform .5s cubic-bezier(.2, .7, .2, 1); }
         /* Hover kartu film (hanya perangkat dengan mouse; di HP tetap tap-scale) */
@@ -1931,7 +1928,7 @@
                 row.appendChild(track);
                 carousel.appendChild(row);
             });
-            bindParallax();
+            bindCarouselHaptics();
         }
 
         function resetSearch() {
@@ -2030,35 +2027,33 @@
             }, true);
         }
 
-        // --- PARALLAX poster + tick haptic saat karusel berpindah kartu ---
-        function bindParallax() {
-            const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        // --- TICK HAPTIC saat karusel berhenti di kartu lain (murah: tanpa baca layout per frame) ---
+        function bindCarouselHaptics() {
             document.querySelectorAll('#months-carousel .snap-x').forEach(track => {
-                const update = () => {
-                    const tr = track.getBoundingClientRect(), c = tr.left + tr.width / 2;
-                    let nearest = -1, best = Infinity, i = 0;
-                    track.querySelectorAll('[id^="movie-card-"]').forEach(card => {
-                        const r = card.getBoundingClientRect();
-                        const mid = r.left + r.width / 2, dist = Math.abs(mid - c);
-                        if (dist < best) { best = dist; nearest = i; }
-                        i++;
-                        if (reduce || r.right < tr.left - 40 || r.left > tr.right + 40) return;
-                        const off = Math.max(-1, Math.min(1, (mid - c) / (tr.width / 2)));
-                        const img = card.querySelector('.poster-img');
-                        if (img) img.style.translate = `${(-off * 8).toFixed(1)}px 0`;
-                    });
-                    if (track._idx !== undefined && nearest !== track._idx && track._touch) triggerHaptic();
-                    track._idx = nearest;
-                };
-                if (track._bound) { update(); return; }
+                if (track._bound) return;
                 track._bound = true;
-                let ticking = false, t;
-                track.addEventListener('touchstart', () => { track._touch = true; }, { passive: true });
+                let t;
+                const nearest = () => {
+                    const tr = track.getBoundingClientRect(), c = tr.left + tr.width / 2;
+                    let idx = 0, best = Infinity, i = 0;
+                    track.querySelectorAll('[id^="movie-card-"]').forEach(card => {
+                        const r = card.getBoundingClientRect(), d = Math.abs(r.left + r.width / 2 - c);
+                        if (d < best) { best = d; idx = i; }
+                        i++;
+                    });
+                    return idx;
+                };
+                let touched = false;
+                track.addEventListener('touchstart', () => { touched = true; track._idx = nearest(); }, { passive: true });
                 track.addEventListener('scroll', () => {
-                    if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; update(); }); }
-                    clearTimeout(t); t = setTimeout(() => { track._touch = false; }, 350);
+                    clearTimeout(t);
+                    t = setTimeout(() => {
+                        if (!touched) return;
+                        touched = false;
+                        const idx = nearest();
+                        if (idx !== track._idx) { track._idx = idx; triggerHaptic(); }
+                    }, 140);
                 }, { passive: true });
-                update();
             });
         }
 
