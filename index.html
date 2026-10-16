@@ -846,6 +846,13 @@
                         class="w-full px-3.5 py-3 bg-black border border-neutral-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-neutral-100 transition shadow-inner">
                 </div>
 
+                <div id="season-field" class="hidden -mt-1 space-y-2">
+                    <label for="form-season" class="block text-xs font-semibold text-neutral-300">Season (opsional, untuk series)</label>
+                    <input type="number" name="season" id="form-season" min="1" max="99" inputmode="numeric" placeholder="Kosong = film"
+                        class="w-full px-3.5 py-3 bg-black border border-neutral-800 rounded-xl text-base focus:outline-none focus:border-amber-400 text-neutral-100 transition shadow-inner">
+                    <div id="season-picker" class="flex flex-wrap gap-1.5 hidden"></div>
+                </div>
+
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-semibold text-neutral-300 mb-1.5 text-center">Tahun Rilis *</label>
@@ -1114,6 +1121,9 @@
         let moviesData = [];
         // Kolom `kutipan` baru ada setelah supabase/kutipan.sql dijalankan; tanpa itu fitur disembunyikan.
         const kutipanAvailable = () => moviesData.some(m => 'kutipan' in m);
+        // Kolom `season` (supabase/season.sql): sama, fitur tersembunyi sampai kolomnya ada.
+        const seasonAvailable = () => moviesData.some(m => 'season' in m);
+        const seasonNum = m => { const n = parseInt(m && m.season, 10); return n >= 1 ? n : null; };
         let filteredMoviesCache = [];
         
         let currentDetailMovieId = null;
@@ -1738,7 +1748,7 @@
             card.innerHTML = `
                 <div class="relative aspect-[3/4] w-full overflow-hidden bg-black">
                     ${posterBox(posterUrl, movie.judul, 'w-full h-full object-cover')}
-                    <span class="absolute top-2.5 right-2.5 bg-black/85 backdrop-blur px-2 py-0.5 rounded-lg text-micro font-bold text-neutral-200 border border-neutral-800 shadow">${escapeHtml(movie.tahun || '')}</span>
+                    <span class="absolute top-2.5 right-2.5 bg-black/85 backdrop-blur px-2 py-0.5 rounded-lg text-micro font-bold text-neutral-200 border border-neutral-800 shadow">${escapeHtml(movie.tahun || '')}${seasonNum(movie) ? ` · S${seasonNum(movie)}` : ''}</span>
                     ${watcherBadgeHTML}
                 </div>
                 <div class="p-3 flex flex-col justify-between flex-grow space-y-2.5">
@@ -1802,6 +1812,7 @@
                     ${posterBox(posterUrl, movie.judul, 'w-full h-full object-cover')}
                     ${edge}
                     ${isCertified ? '<span class="gold-badge absolute top-1.5 left-1.5 w-5 h-5 rounded-full flex items-center justify-center" aria-label="Certified Fresh"><i class="fa-solid fa-award text-micro"></i></span>' : ''}
+                    ${seasonNum(movie) ? `<span class="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded-md bg-black/80 backdrop-blur text-micro font-bold text-neutral-50">S${seasonNum(movie)}</span>` : ''}
                     ${chip ? `<span class="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 rounded-md bg-black/80 backdrop-blur text-micro font-bold text-neutral-50">${chip}</span>` : ''}
                 </div>
                 <div class="mt-1.5 text-caption font-semibold ${isCertified ? 'gold-text' : 'text-neutral-100'} line-clamp-2 leading-tight">${escapeHtml(movie.judul) || 'Tanpa Judul'}</div>
@@ -1907,6 +1918,8 @@
             document.getElementById('editing_id').value = '';
             document.getElementById('add-movie-form').reset();
             document.getElementById('kutipan-field').classList.toggle('hidden', !kutipanAvailable());
+            document.getElementById('season-picker').classList.add('hidden');
+            document.getElementById('season-field').classList.toggle('hidden', !seasonAvailable());
             
             const now = new Date();
             const year = now.getFullYear();
@@ -1966,7 +1979,7 @@
 
             currentDetailMovieId = id;
             document.getElementById('detail-title').innerText = movie.judul || 'Tanpa Judul';
-            document.getElementById('detail-year').innerText = movie.tahun || '';
+            document.getElementById('detail-year').innerText = [movie.tahun, seasonNum(movie) && `Season ${seasonNum(movie)}`].filter(Boolean).join(' · ');
             document.getElementById('detail-watch-month').innerText = formatMonthDisplay(movie.bulan) || '-';
 
             const watcher = movie.watched_by || 'both';
@@ -2162,6 +2175,7 @@
                 rating_dia: (watcher === 'both' || watcher === 'micel') && formData.get('rating_dia').trim() !== '' ? formData.get('rating_dia').trim() : null,
                 poster: formData.get('poster')
             };
+            if (seasonAvailable()) payload.season = Math.min(99, parseInt(formData.get('season'), 10)) || null;
             if (kutipanAvailable()) payload.kutipan = (formData.get('kutipan') || '').trim() || null;
 
             const submitBtn = document.getElementById('submit-btn');
@@ -2240,6 +2254,9 @@
             form.review_aku.value = movie.review_aku || '';
             form.review_dia.value = movie.review_dia || '';
             form.kutipan.value = movie.kutipan || '';
+            form.season.value = seasonNum(movie) || '';
+            document.getElementById('season-picker').classList.add('hidden');
+            document.getElementById('season-field').classList.toggle('hidden', !seasonAvailable());
             document.getElementById('kutipan-field').classList.toggle('hidden', !kutipanAvailable());
 
             document.getElementById('modal-form-title').innerText = "Edit Ulasan Film";
@@ -2431,6 +2448,37 @@
             if (year) document.getElementById('form-tahun').value = year;
             document.getElementById('form-poster').value = r.poster_path ? TMDB_IMG + r.poster_path : '';
             document.getElementById('tmdb-results').classList.add('hidden');
+            loadSeasonPicker(r);
+        }
+
+        // Series: ambil daftar season dari TMDB (/tv/{id} -> seasons[]), pilih satu untuk mengisi season, tahun, dan poster.
+        let tmdbSeasons = [], tmdbSeriesPoster = '';
+        async function loadSeasonPicker(r) {
+            const picker = document.getElementById('season-picker');
+            picker.classList.add('hidden'); picker.innerHTML = '';
+            tmdbSeasons = [];
+            if (r.media_type !== 'tv' || !seasonAvailable() || !TMDB_API_KEY) return;
+            tmdbSeriesPoster = r.poster_path ? TMDB_IMG + r.poster_path : '';
+            try {
+                const res = await fetch(`https://api.themoviedb.org/3/tv/${encodeURIComponent(r.id)}?api_key=${encodeURIComponent(TMDB_API_KEY)}&language=id-ID`);
+                if (!res.ok) throw new Error(res.status);
+                tmdbSeasons = ((await res.json()).seasons || []).filter(x => x.season_number >= 1);
+                if (!tmdbSeasons.length) return;
+                picker.innerHTML = tmdbSeasons.map((x, i) =>
+                    `<button type="button" onclick="pickSeason(${i})" class="px-2.5 py-1.5 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-amber-400 text-caption font-semibold text-neutral-100 tap-scale">S${Number(x.season_number)}<span class="text-neutral-400 font-normal"> · ${Number(x.episode_count) || 0} eps</span></button>`
+                ).join('');
+                picker.classList.remove('hidden');
+            } catch (err) { console.warn('Daftar season gagal:', err); }
+        }
+
+        function pickSeason(i) {
+            const x = tmdbSeasons[i];
+            if (!x) return;
+            document.getElementById('form-season').value = x.season_number;
+            const y = (x.air_date || '').slice(0, 4);
+            if (y) document.getElementById('form-tahun').value = y;
+            const poster = x.poster_path ? TMDB_IMG + x.poster_path : tmdbSeriesPoster;
+            if (poster) document.getElementById('form-poster').value = poster;
         }
 
         // --- DETAIL TAMBAHAN DARI TMDB (diambil saat detail dibuka, tidak disimpan) ---
@@ -2443,7 +2491,7 @@
             if (!sres.ok) throw new Error(sres.status);
             const hit = (await sres.json()).results
                 .filter(r => r.media_type === 'movie' || r.media_type === 'tv')
-                .find(r => !movie.tahun || (year(r) && Math.abs(year(r) - movie.tahun) <= 1));
+                .find(r => !movie.tahun || (year(r) && Math.abs(year(r) - movie.tahun) <= 1) || (seasonNum(movie) && r.media_type === 'tv')); // season lanjutan tayang jauh setelah tahun perdana
             if (!hit) return null;
             const dres = await fetch(`https://api.themoviedb.org/3/${hit.media_type}/${hit.id}?api_key=${key}&language=id-ID&append_to_response=videos,credits,watch/providers&include_video_language=id,en,null`);
             if (!dres.ok) throw new Error(dres.status);
@@ -2453,6 +2501,12 @@
                 const eres = await fetch(`https://api.themoviedb.org/3/${hit.media_type}/${hit.id}?api_key=${key}&language=en-US`);
                 if (eres.ok) overview = ((await eres.json()).overview || '').trim();
             }
+            let seasonInfo = null;
+            if (hit.media_type === 'tv' && seasonNum(movie)) {
+                const sr = await fetch(`https://api.themoviedb.org/3/tv/${hit.id}/season/${seasonNum(movie)}?api_key=${key}&language=id-ID`);
+                if (sr.ok) { const sd = await sr.json(); seasonInfo = { episodes: (sd.episodes || []).length, overview: (sd.overview || '').trim() }; }
+            }
+            if (seasonInfo && seasonInfo.overview) overview = seasonInfo.overview;
             const videos = (d.videos && d.videos.results || []).filter(v => v.site === 'YouTube' && /^[\w-]{6,20}$/.test(v.key || ''));
             const trailer = videos.find(v => v.type === 'Trailer' && v.official) || videos.find(v => v.type === 'Trailer') || videos.find(v => v.type === 'Teaser');
             const crew = d.credits && d.credits.crew || [];
@@ -2471,6 +2525,7 @@
                 type: hit.media_type === 'tv' ? 'Series' : 'Film',
                 director, cast, stream,
                 trailerKey: trailer ? trailer.key : '',
+                episodes: seasonInfo ? seasonInfo.episodes : 0,
                 backdrop: /^\/[\w.-]+$/.test(d.backdrop_path || '') ? d.backdrop_path : ''
             };
         }
@@ -2486,6 +2541,7 @@
             }
             const chip = t => `<span class="px-2 py-0.5 rounded-lg bg-neutral-900 text-neutral-200 text-micro font-semibold">${escapeHtml(t)}</span>`;
             const meta = [x.type, ...x.genres];
+            if (x.episodes) meta.push(`${x.episodes} eps`);
             if (x.runtime) meta.push(`${x.runtime} mnt`);
             if (x.tmdbRating) meta.push(`TMDB ${x.tmdbRating}`);
             document.getElementById('detail-tmdb-meta').innerHTML = meta.map(chip).join('');
@@ -2763,7 +2819,7 @@
         }
 
         // --- CSV ---
-        const CSV_COLUMNS = ['id', 'judul', 'tahun', 'bulan', 'watched_by', 'is_certified', 'rating_aku', 'review_aku', 'rating_dia', 'review_dia', 'poster'];
+        const CSV_COLUMNS = ['id', 'judul', 'tahun', 'bulan', 'watched_by', 'is_certified', 'rating_aku', 'review_aku', 'rating_dia', 'review_dia', 'poster', 'season'];
 
         function csvCell(v) {
             let t = v === null || v === undefined ? '' : String(v);
@@ -2843,6 +2899,7 @@
                             rating_dia: csvRating(get(r, 'rating_dia')), review_dia: unq(get(r, 'review_dia')) || null,
                             poster: /^https?:\/\//.test(get(r, 'poster')) ? get(r, 'poster') : ''
                         };
+                        if (seasonAvailable()) m.season = parseInt(get(r, 'season'), 10) || null;
                     }
                     const key = `${m.judul.toLowerCase()}|${m.bulan}`;
                     if (!m.judul || !/^\d{4}-\d{2}$/.test(m.bulan) || existing.has(key)) { skipped++; return; }

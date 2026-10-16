@@ -11,6 +11,7 @@ Peta untuk debug cepat: ke mana melihat, perintah apa yang jalan, dan jebakan ya
 | `manifest.json` | Metadata PWA + ikon (`assets/icon.svg`). | Ikon install salah |
 | `assets/` | Biner: 5 slider, 2 foto profil, ikon PWA, `tmdb-logo.svg`. Jangan dibaca; pakai `file`/`sips` untuk metadata. | Aset 404 |
 | `supabase/watchlist.sql` | Skema tabel `bubi_watchlist` + RLS. Dijalankan user manual. | Watchlist tidak muncul |
+| `supabase/season.sql` | Kolom `season` di `bubi_popcorn`. Aktif lewat `seasonAvailable()`; `seasonNum(m)` = nomor valid atau null. Picker: `loadSeasonPicker`/`pickSeason`; `fetchTmdbExtra` melonggarkan aturan tahun untuk series bersesi. | Pemilih season / lencana S2 tidak muncul |
 | `supabase/kutipan.sql` | Kolom `kutipan` di `bubi_popcorn`. Fitur aktif otomatis lewat `kutipanAvailable()` (cek key `kutipan` di baris data). | Kolom kutipan tidak muncul di form |
 | `LICENSE` | MIT untuk kode (isi arsip dan foto dikecualikan). | Soal lisensi |
 | `push.bat` | Alternatif commit+push interaktif (Windows). | — |

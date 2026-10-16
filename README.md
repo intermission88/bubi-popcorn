@@ -214,6 +214,8 @@ Key v3 hanya bisa membaca data publik dan memang terlihat di klien. Kalau bocor,
 
 Kolom opsional `kutipan` di `bubi_popcorn`: jalankan [`supabase/kutipan.sql`](supabase/kutipan.sql) sekali. Tanpa kolom ini kolom kutipan di form dan detail disembunyikan.
 
+Kolom opsional `season` di `bubi_popcorn`: jalankan [`supabase/season.sql`](supabase/season.sql) sekali. Admin memilih season dari daftar TMDB saat menambah series; lencana "S2" tampil di kartu, grid, dan detail. Tanpa kolom ini fiturnya tersembunyi.
+
 **`bubi_watchlist`**: `id` (`w_<timestamp>`), `judul`, `tahun`, `poster`, `created_at`. Skema lengkap di [`supabase/watchlist.sql`](supabase/watchlist.sql).
 
 ## Struktur Proyek
@@ -226,6 +228,7 @@ Kolom opsional `kutipan` di `bubi_popcorn`: jalankan [`supabase/kutipan.sql`](su
 | `assets/` | Gambar slider, foto profil, ikon PWA, logo TMDB, dan `readme/` (aset README) |
 | `supabase/watchlist.sql` | Skema tabel watchlist |
 | `supabase/kutipan.sql` | Kolom `kutipan` (kutipan favorit per film), opsional |
+| `supabase/season.sql` | Kolom `season` (nomor season series), opsional |
 | `DEBUG.md` · `AGENTS.md` | Guide debug dan konvensi kerja |
 | `LICENSE` | MIT untuk kode |
 
