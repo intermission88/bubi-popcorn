@@ -547,6 +547,7 @@
             <div id="watchlist-add" class="hidden mb-3">
                 <div class="flex gap-2">
                     <input type="text" id="wl-judul" placeholder="Judul film atau series..." maxlength="150" class="w-full px-3.5 py-2.5 bg-black border border-neutral-800 rounded-xl text-xs focus:outline-none focus:border-amber-400 text-neutral-100 transition" onkeydown="if(event.key==='Enter'){event.preventDefault();addWatchlistFromInput();}">
+                    <input type="text" id="wl-cari-tahun" inputmode="numeric" maxlength="4" placeholder="Tahun" aria-label="Tahun rilis (opsional, untuk mempersempit pencarian)" class="w-[4.5rem] shrink-0 px-2 py-2.5 bg-black border border-neutral-800 rounded-xl text-xs text-center focus:outline-none focus:border-amber-400 text-neutral-100 transition shadow-inner">
                     <button type="button" onclick="searchTmdb('wl-judul','wl-tmdb-results','applyTmdbToWatchlist')" class="shrink-0 px-3 rounded-xl bg-neutral-900 border border-neutral-800 text-amber-400 text-caption font-bold tap-scale hover:border-amber-400" aria-label="Cari di TMDB"><i class="fa-solid fa-magnifying-glass mr-1"></i>TMDB</button>
                     <button type="button" onclick="addWatchlistFromInput()" class="shrink-0 px-3 rounded-xl popcorn-gradient text-black text-caption font-bold tap-scale">Tambah</button>
                 </div>
@@ -903,6 +904,7 @@
                     <div class="flex gap-2">
                         <input type="text" name="judul" id="form-judul" required placeholder="Judul film..." 
                             class="w-full px-3.5 py-3 bg-black border border-neutral-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-neutral-100 transition shadow-inner">
+                        <input type="text" id="form-cari-tahun" inputmode="numeric" maxlength="4" placeholder="Tahun" aria-label="Tahun rilis (opsional, untuk mempersempit pencarian)" class="w-[4.5rem] shrink-0 px-2 py-3 bg-black border border-neutral-800 rounded-xl text-xs text-center focus:outline-none focus:border-amber-400 text-neutral-100 transition shadow-inner">
                         <button type="button" onclick="searchTmdb()" class="shrink-0 px-3 rounded-xl bg-neutral-900 border border-neutral-800 text-amber-400 text-caption font-bold tap-scale hover:border-amber-400" title="Isi otomatis dari TMDB">
                             <i class="fa-solid fa-magnifying-glass mr-1"></i>TMDB
                         </button>
@@ -2608,7 +2610,7 @@
         // Judul: film berbahasa Indonesia memakai judul aslinya; lainnya terjemahan id-ID (TMDB mengembalikan judul asli bila tidak ada terjemahan)
         const tmdbTitle = r => (r.original_language === 'id' ? (r.original_title || r.original_name) : '') || r.title || r.name || '';
 
-        async function searchTmdb(inputId = 'form-judul', boxId = 'tmdb-results', handler = 'applyTmdbResult') {
+        async function searchTmdb(inputId = 'form-judul', boxId = 'tmdb-results', handler = 'applyTmdbResult', yearId = inputId === 'wl-judul' ? 'wl-cari-tahun' : 'form-cari-tahun') {
             const box = document.getElementById(boxId);
             const query = document.getElementById(inputId).value.trim();
             const note = msg => { box.classList.remove('hidden'); box.innerHTML = `<p class="text-caption text-neutral-400">${escapeHtml(msg)}</p>`; };
@@ -2616,10 +2618,25 @@
             if (!query) return note('Ketik judul dulu, lalu tekan TMDB.');
             note('Mencari...');
             try {
-                const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${encodeURIComponent(TMDB_API_KEY)}&query=${encodeURIComponent(query)}&language=id-ID&include_adult=false`);
-                if (!res.ok) throw new Error(res.status);
-                const items = (await res.json()).results.filter(r => r.media_type === 'movie' || r.media_type === 'tv').slice(0, 20);
-                if (!items.length) return note('Tidak ada hasil.');
+                const base = `api_key=${encodeURIComponent(TMDB_API_KEY)}&query=${encodeURIComponent(query)}&language=id-ID&include_adult=false`;
+                const yr = parseInt((document.getElementById(yearId)?.value || '').trim(), 10);
+                let results;
+                if (yr >= 1900 && yr <= 2100) {
+                    // Dengan tahun: cari film dan series terpisah (TMDB menyaring tahun di endpoint masing-masing), gabung menurut popularitas
+                    const [mr, tr] = await Promise.all([
+                        fetch(`https://api.themoviedb.org/3/search/movie?${base}&year=${yr}`),
+                        fetch(`https://api.themoviedb.org/3/search/tv?${base}&first_air_date_year=${yr}`)
+                    ]);
+                    if (!mr.ok || !tr.ok) throw new Error(`${mr.status}/${tr.status}`);
+                    results = [...(await mr.json()).results.map(r => ({ ...r, media_type: 'movie' })), ...(await tr.json()).results.map(r => ({ ...r, media_type: 'tv' }))]
+                        .sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+                } else {
+                    const res = await fetch(`https://api.themoviedb.org/3/search/multi?${base}`);
+                    if (!res.ok) throw new Error(res.status);
+                    results = (await res.json()).results;
+                }
+                const items = results.filter(r => r.media_type === 'movie' || r.media_type === 'tv').slice(0, 20);
+                if (!items.length) return note(yr ? `Tidak ada hasil untuk tahun ${yr}.` : 'Tidak ada hasil.');
                 tmdbItems = items;
                 box.innerHTML = items.map((r, i) => {
                     const title = tmdbTitle(r);
