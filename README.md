@@ -216,6 +216,8 @@ Kolom opsional `kutipan` di `bubi_popcorn`: jalankan [`supabase/kutipan.sql`](su
 
 Kolom opsional `season` di `bubi_popcorn`: jalankan [`supabase/season.sql`](supabase/season.sql) sekali. Admin memilih season dari daftar TMDB saat menambah series; lencana "S2" tampil di kartu, grid, dan detail. Tanpa kolom ini fiturnya tersembunyi.
 
+Kolom opsional `backdrop` di `bubi_popcorn`: jalankan [`supabase/backdrop.sql`](supabase/backdrop.sql) sekali, lalu isi lewat tombol sinkron poster TMDB (admin). Tombol ganti tampilan sekarang berputar karusel, grid poster, landscape (kartu 16:9). Tanpa `backdrop`, landscape memakai poster yang dipotong.
+
 **`bubi_watchlist`**: `id` (`w_<timestamp>`), `judul`, `tahun`, `poster`, `created_at`. Skema lengkap di [`supabase/watchlist.sql`](supabase/watchlist.sql).
 
 ## Struktur Proyek
@@ -229,6 +231,7 @@ Kolom opsional `season` di `bubi_popcorn`: jalankan [`supabase/season.sql`](supa
 | `supabase/watchlist.sql` | Skema tabel watchlist |
 | `supabase/kutipan.sql` | Kolom `kutipan` (kutipan favorit per film), opsional |
 | `supabase/season.sql` | Kolom `season` (nomor season series), opsional |
+| `supabase/backdrop.sql` | Kolom `backdrop` (gambar landscape TMDB) untuk tampilan landscape, opsional |
 | `DEBUG.md` · `AGENTS.md` | Guide debug dan konvensi kerja |
 | `LICENSE` | MIT untuk kode |
 
