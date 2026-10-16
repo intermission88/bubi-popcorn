@@ -41,7 +41,7 @@ Aplikasi web **mobile-first** untuk mengarsipkan film yang ditonton bersama oleh
 ### 🎬 Arsip film
 
 - Catat judul, tahun, poster, bulan nonton, serta rating dan ulasan **terpisah** untuk Zald dan Micel
-- **Dua tampilan:** karusel per bulan atau **grid poster** 3 kolom (ala Letterboxd), pilihan diingat
+- **Karusel per bulan:** geser ke samping untuk bulan dan kartu film
 - Filter `Semua` · `Nonton Bareng` · `Zald Picks` · `Micel Picks` · `Top 9+`
 - Pencarian judul atau bulan, mendukung nama bulan Indonesia
 - **Certified Fresh:** film favorit tampil dalam emas metalik
@@ -214,9 +214,7 @@ Key v3 hanya bisa membaca data publik dan memang terlihat di klien. Kalau bocor,
 
 Kolom opsional `kutipan` di `bubi_popcorn`: jalankan [`supabase/kutipan.sql`](supabase/kutipan.sql) sekali. Tanpa kolom ini kolom kutipan di form dan detail disembunyikan.
 
-Kolom opsional `season` di `bubi_popcorn`: jalankan [`supabase/season.sql`](supabase/season.sql) sekali. Admin memilih season dari daftar TMDB saat menambah series; lencana "S2" tampil di kartu, grid, dan detail. Tanpa kolom ini fiturnya tersembunyi.
-
-Kolom opsional `backdrop` di `bubi_popcorn`: jalankan [`supabase/backdrop.sql`](supabase/backdrop.sql) sekali, lalu isi lewat tombol sinkron poster TMDB (admin). Tombol ganti tampilan sekarang berputar karusel, grid poster, landscape (kartu 16:9). Tanpa `backdrop`, landscape memakai poster yang dipotong.
+Kolom opsional `season` di `bubi_popcorn`: jalankan [`supabase/season.sql`](supabase/season.sql) sekali. Admin memilih season dari daftar TMDB saat menambah series; lencana "S2" tampil di kartu dan detail. Tanpa kolom ini fiturnya tersembunyi.
 
 **`bubi_watchlist`**: `id` (`w_<timestamp>`), `judul`, `tahun`, `poster`, `created_at`. Skema lengkap di [`supabase/watchlist.sql`](supabase/watchlist.sql).
 
@@ -231,7 +229,6 @@ Kolom opsional `backdrop` di `bubi_popcorn`: jalankan [`supabase/backdrop.sql`](
 | `supabase/watchlist.sql` | Skema tabel watchlist |
 | `supabase/kutipan.sql` | Kolom `kutipan` (kutipan favorit per film), opsional |
 | `supabase/season.sql` | Kolom `season` (nomor season series), opsional |
-| `supabase/backdrop.sql` | Kolom `backdrop` (gambar landscape TMDB) untuk tampilan landscape, opsional |
 | `DEBUG.md` · `AGENTS.md` | Guide debug dan konvensi kerja |
 | `LICENSE` | MIT untuk kode |
 

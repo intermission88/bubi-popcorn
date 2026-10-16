@@ -528,9 +528,6 @@
                     <span id="swipe-hint" class="text-caption text-neutral-300 flex items-center gap-1.5">
                         <i class="fa-solid fa-arrows-left-right text-amber-400/70 text-micro"></i> Geser antar bulan
                     </span>
-                    <button type="button" id="view-toggle" onclick="triggerHaptic(); toggleViewMode()" class="touch-target rounded-xl bg-neutral-950 border border-neutral-800 text-amber-400 flex items-center justify-center tap-scale hover:border-amber-400/60" aria-label="Ganti ke tampilan grid poster" title="Ganti tampilan">
-                        <i id="view-toggle-icon" class="fa-solid fa-table-cells-large text-xs"></i>
-                    </button>
                 </div>
             </div>
 
@@ -827,7 +824,6 @@
 
             <form id="add-movie-form" onsubmit="handleFormSubmit(event)" class="p-5 overflow-y-auto space-y-4 flex-grow no-scrollbar">
                 <input type="hidden" name="editing_id" id="editing_id" value="">
-                <input type="hidden" name="backdrop" id="form-backdrop" value="">
                 
                 <div>
                     <label class="block text-xs font-semibold text-neutral-300 mb-1.5">Judul Film *</label>
@@ -1101,9 +1097,9 @@
         function tmdbSized(url, size) {
             return TMDB_POSTER_RE.test(url) ? url.replace(/\/t\/p\/w\d+\//, `/t/p/${size}/`) : url;
         }
-        function posterBox(url, alt, imgClass, size = 'w342', lqSize = 'w92') { // backdrop: 'w780', 'w300'
-            const lq = TMDB_POSTER_RE.test(url) ? ` style="background:url('${tmdbSized(url, lqSize)}') center/cover"` : '';
-            return `<div class="absolute inset-0 bg-black"${lq}><img src="${escapeHtml(tmdbSized(url, size))}" alt="${escapeHtml(alt)}" loading="lazy" decoding="async" class="poster-img ${imgClass}" onload="this.classList.add('is-loaded')" onerror="posterFallback(this)"></div>`;
+        function posterBox(url, alt, imgClass) {
+            const lq = TMDB_POSTER_RE.test(url) ? ` style="background:url('${tmdbSized(url, 'w92')}') center/cover"` : '';
+            return `<div class="absolute inset-0 bg-black"${lq}><img src="${escapeHtml(tmdbSized(url, 'w342'))}" alt="${escapeHtml(alt)}" loading="lazy" decoding="async" class="poster-img ${imgClass}" onload="this.classList.add('is-loaded')" onerror="posterFallback(this)"></div>`;
         }
 
         function posterFallback(img) {
@@ -1124,7 +1120,6 @@
         // Kolom `kutipan` baru ada setelah supabase/kutipan.sql dijalankan; tanpa itu fitur disembunyikan.
         const kutipanAvailable = () => moviesData.some(m => 'kutipan' in m);
         // Kolom `season` (supabase/season.sql): sama, fitur tersembunyi sampai kolomnya ada.
-        const backdropAvailable = () => moviesData.some(m => 'backdrop' in m); // supabase/backdrop.sql
         const seasonAvailable = () => moviesData.some(m => 'season' in m);
         const seasonNum = m => { const n = parseInt(m && m.season, 10); return n >= 1 ? n : null; };
         let filteredMoviesCache = [];
@@ -1764,100 +1759,6 @@
             return card;
         }
 
-        // --- MODE TAMPILAN: karusel / grid poster (ala Letterboxd) ---
-        let viewMode = 'carousel';
-        try { const v = localStorage.getItem('bubi_view_mode'); if (v === 'grid' || v === 'landscape') viewMode = v; } catch (e) {}
-
-        function applyViewModeUI() {
-            document.getElementById('swipe-hint')?.classList.toggle('hidden', viewMode === 'grid');
-            // tombol menunjukkan tampilan BERIKUTNYA: karusel -> grid -> landscape -> karusel
-            const next = { carousel: ['grid poster', 'fa-table-cells-large'], grid: ['landscape', 'fa-image'], landscape: ['karusel', 'fa-film'] }[viewMode];
-            const btn = document.getElementById('view-toggle');
-            if (btn) btn.setAttribute('aria-label', `Ganti ke tampilan ${next[0]}`);
-            const icon = document.getElementById('view-toggle-icon');
-            if (icon) icon.className = `fa-solid ${next[1]} text-xs`;
-        }
-
-        function toggleViewMode() {
-            viewMode = { carousel: 'grid', grid: 'landscape', landscape: 'carousel' }[viewMode];
-            try { localStorage.setItem('bubi_view_mode', viewMode); } catch (e) {}
-            applyViewModeUI();
-            renderMonthsCarousel();
-        }
-
-        // Kartu landscape 16:9: backdrop TMDB (bila ada), jika tidak poster dipotong
-        function createLandscapeCard(movie, index) {
-            const hasBackdrop = TMDB_POSTER_RE.test(movie.backdrop || '');
-            const url = hasBackdrop ? movie.backdrop : ((movie.poster && movie.poster.trim() !== '') ? movie.poster : POSTER_FALLBACK);
-            const watcher = movie.watched_by || 'both';
-            const isCertified = movie.is_certified === true || movie.is_certified === 'true' || movie.is_certified === 'TRUE';
-            const z = parseRating(movie.rating_aku), m = parseRating(movie.rating_dia);
-            const pill = (c, r) => r === null ? '' : `<span class="text-${c}-400">${c === 'sky' ? 'Z' : 'M'}</span> ${escapeHtml(String(r))}`;
-            const scores = [watcher !== 'micel' ? pill('sky', z) : '', watcher !== 'zald' ? pill('pink', m) : ''].filter(Boolean).join('<span class="text-neutral-500 mx-1">·</span>');
-            const sub = [movie.tahun, seasonNum(movie) && `S${seasonNum(movie)}`].filter(Boolean).join(' · ');
-            const card = document.createElement('div');
-            card.id = `movie-card-${movie.id}`;
-            card.style.animationDelay = `${(index % 6) * 0.05}s`;
-            card.className = `tap-scale cursor-pointer animate-popIn w-64 flex-shrink-0 snap-start relative aspect-video rounded-2xl overflow-hidden bg-black ${isCertified ? 'gold-frame' : 'ring-1 ring-white/10'}`;
-            card.setAttribute('role', 'button');
-            card.setAttribute('tabindex', '0');
-            card.setAttribute('aria-label', `Buka detail ${movie.judul || 'film tanpa judul'}`);
-            card.onclick = () => { triggerHaptic(); openDetailModal(movie.id); };
-            card.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); } };
-            card.innerHTML = `
-                ${hasBackdrop ? posterBox(url, movie.judul, 'w-full h-full object-cover', 'w780', 'w300') : posterBox(url, movie.judul, 'w-full h-full object-cover object-top')}
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none"></div>
-                ${isCertified ? '<span class="gold-badge absolute top-2 left-2 w-5 h-5 rounded-full flex items-center justify-center" aria-label="Certified Fresh"><i class="fa-solid fa-award text-micro"></i></span>' : ''}
-                <div class="absolute bottom-0 inset-x-0 p-3 pointer-events-none">
-                    <div class="font-display text-base ${isCertified ? 'gold-text' : 'text-neutral-50'} uppercase tracking-wide line-clamp-1">${escapeHtml(movie.judul) || 'Tanpa Judul'}</div>
-                    <div class="flex items-center justify-between gap-2 mt-0.5 text-caption text-neutral-200">
-                        <span>${escapeHtml(sub)}</span>
-                        <span class="font-bold">${scores}</span>
-                    </div>
-                </div>
-            `;
-            return card;
-        }
-
-        function createPosterTile(movie, index) {
-            const posterUrl = (movie.poster && movie.poster.trim() !== '') ? movie.poster : POSTER_FALLBACK;
-            const watcher = movie.watched_by || 'both';
-            const isCertified = movie.is_certified === true || movie.is_certified === 'true' || movie.is_certified === 'TRUE';
-            const z = parseRating(movie.rating_aku), m = parseRating(movie.rating_dia);
-            let chip = '';
-            if (watcher === 'zald' && z !== null) chip = `<span class="text-sky-400">Z</span> ${escapeHtml(String(z))}`;
-            else if (watcher === 'micel' && m !== null) chip = `<span class="text-pink-400">M</span> ${escapeHtml(String(m))}`;
-            else if (watcher === 'both') {
-                const v = [z, m].filter(x => x !== null);
-                if (v.length) chip = `<i class="fa-solid fa-star text-amber-400"></i> ${escapeHtml((v.reduce((a, b) => a + b, 0) / v.length).toFixed(1))}`;
-            }
-
-            const tile = document.createElement('div');
-            tile.id = `movie-card-${movie.id}`;
-            tile.style.animationDelay = `${(index % 9) * 0.04}s`;
-            tile.className = 'tap-scale cursor-pointer animate-popIn';
-            tile.setAttribute('role', 'button');
-            tile.setAttribute('tabindex', '0');
-            tile.setAttribute('aria-label', `Buka detail ${movie.judul || 'film tanpa judul'}`);
-            tile.onclick = () => { triggerHaptic(); openDetailModal(movie.id); };
-            tile.onkeydown = event => {
-                if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); tile.click(); }
-            };
-            const ring = isCertified ? 'gold-frame' : 'ring-1 ring-white/10';
-            const edge = watcher === 'zald' ? '<span class="absolute left-0 inset-y-0 w-1 bg-sky-400"></span>' : watcher === 'micel' ? '<span class="absolute left-0 inset-y-0 w-1 bg-pink-400"></span>' : '';
-            tile.innerHTML = `
-                <div class="relative aspect-[2/3] w-full rounded-xl overflow-hidden bg-black ${ring}">
-                    ${posterBox(posterUrl, movie.judul, 'w-full h-full object-cover')}
-                    ${edge}
-                    ${isCertified ? '<span class="gold-badge absolute top-1.5 left-1.5 w-5 h-5 rounded-full flex items-center justify-center" aria-label="Certified Fresh"><i class="fa-solid fa-award text-micro"></i></span>' : ''}
-                    ${seasonNum(movie) ? `<span class="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded-md bg-black/80 backdrop-blur text-micro font-bold text-neutral-50">S${seasonNum(movie)}</span>` : ''}
-                    ${chip ? `<span class="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 rounded-md bg-black/80 backdrop-blur text-micro font-bold text-neutral-50">${chip}</span>` : ''}
-                </div>
-                <div class="mt-1.5 text-caption font-semibold ${isCertified ? 'gold-text' : 'text-neutral-100'} line-clamp-2 leading-tight">${escapeHtml(movie.judul) || 'Tanpa Judul'}</div>
-            `;
-            return tile;
-        }
-
         function renderMonthsCarousel() {
             const carousel = document.getElementById('months-carousel');
             const emptyState = document.getElementById('empty-state');
@@ -1904,20 +1805,12 @@
                 `;
 
                 const track = document.createElement('div');
-                if (viewMode === 'grid') {
-                    track.className = "grid grid-cols-3 gap-2.5 pb-2";
-                    monthMovies.forEach((movie, i) => track.appendChild(createPosterTile(movie, i)));
-                } else if (viewMode === 'landscape') {
-                    track.className = "flex gap-3 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2 -mx-4 px-4";
-                    monthMovies.forEach((movie, i) => track.appendChild(createLandscapeCard(movie, i)));
-                } else {
-                    track.className = "flex gap-3.5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2 -mx-4 px-4";
-                    monthMovies.forEach((movie, i) => {
-                        const card = createMovieCard(movie, i);
-                        card.className = card.className.replace("overflow-hidden flex flex-col", "overflow-hidden flex flex-col w-36 flex-shrink-0 snap-start");
-                        track.appendChild(card);
-                    });
-                }
+                track.className = "flex gap-3.5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2 -mx-4 px-4";
+                monthMovies.forEach((movie, i) => {
+                    const card = createMovieCard(movie, i);
+                    card.className = card.className.replace("overflow-hidden flex flex-col", "overflow-hidden flex flex-col w-36 flex-shrink-0 snap-start");
+                    track.appendChild(card);
+                });
 
                 row.appendChild(track);
                 carousel.appendChild(row);
@@ -2219,7 +2112,6 @@
                 rating_dia: (watcher === 'both' || watcher === 'micel') && formData.get('rating_dia').trim() !== '' ? formData.get('rating_dia').trim() : null,
                 poster: formData.get('poster')
             };
-            if (backdropAvailable()) payload.backdrop = TMDB_POSTER_RE.test(formData.get('backdrop') || '') ? formData.get('backdrop') : null;
             if (seasonAvailable()) payload.season = Math.min(99, parseInt(formData.get('season'), 10)) || null;
             if (kutipanAvailable()) payload.kutipan = (formData.get('kutipan') || '').trim() || null;
 
@@ -2300,7 +2192,6 @@
             form.review_dia.value = movie.review_dia || '';
             form.kutipan.value = movie.kutipan || '';
             form.season.value = seasonNum(movie) || '';
-            form.backdrop.value = movie.backdrop || '';
             document.getElementById('season-picker').classList.add('hidden');
             document.getElementById('season-field').classList.toggle('hidden', !seasonAvailable());
             document.getElementById('kutipan-field').classList.toggle('hidden', !kutipanAvailable());
@@ -2458,7 +2349,6 @@
         // --- AUTOFILL TMDB ---
         const TMDB_API_KEY = '70e49fe58166973b49c4649822f0b5e9'; // API Key v3 (hanya baca, aman di klien). Kosong = fitur nonaktif.
         const TMDB_IMG = 'https://image.tmdb.org/t/p/w500';
-        const TMDB_BACKDROP = 'https://image.tmdb.org/t/p/w780';
 
         async function searchTmdb(inputId = 'form-judul', boxId = 'tmdb-results', handler = 'applyTmdbResult') {
             const box = document.getElementById(boxId);
@@ -2494,7 +2384,6 @@
             const year = (r.release_date || r.first_air_date || '').slice(0, 4);
             if (year) document.getElementById('form-tahun').value = year;
             document.getElementById('form-poster').value = r.poster_path ? TMDB_IMG + r.poster_path : '';
-            document.getElementById('form-backdrop').value = r.backdrop_path ? TMDB_BACKDROP + r.backdrop_path : '';
             document.getElementById('tmdb-results').classList.add('hidden');
             loadSeasonPicker(r);
         }
@@ -2698,10 +2587,8 @@
                     if (!hit) { skipped.push(`${m.judul}: tidak ada kecocokan tahun`); return; }
                     // Season punya poster sendiri: jangan ditimpa poster series
                     const next = seasonNum(m) && m.poster ? m.poster : TMDB_IMG + hit.poster_path;
-                    const nextBackdrop = backdropAvailable() && hit.backdrop_path ? TMDB_BACKDROP + hit.backdrop_path : '';
-                    const newBackdrop = nextBackdrop && m.backdrop !== nextBackdrop ? nextBackdrop : '';
-                    if (m.poster === next && !newBackdrop) return;
-                    tmdbSyncPlan.push({ id: m.id, judul: m.judul, old: m.poster || '', next, newBackdrop, tmdbTitle: hit.title || hit.name || '' });
+                    if (m.poster === next) return;
+                    tmdbSyncPlan.push({ id: m.id, judul: m.judul, old: m.poster || '', next, tmdbTitle: hit.title || hit.name || '' });
                 } catch (err) {
                     skipped.push(`${m.judul}: gagal menghubungi TMDB`);
                 }
@@ -2716,10 +2603,10 @@
                 <label class="flex items-center gap-2 p-1.5 rounded-lg bg-black border border-neutral-800 cursor-pointer">
                     <input type="checkbox" data-sync="${i}" checked class="accent-amber-400">
                     ${img(x.old)}<i class="fa-solid fa-arrow-right text-micro text-neutral-500"></i>${img(x.next)}
-                    <span class="text-caption text-neutral-200 min-w-0 flex-1 truncate">${escapeHtml(x.judul)}<span class="block text-micro text-neutral-500 truncate">TMDB: ${escapeHtml(x.tmdbTitle)}${x.newBackdrop ? ' · + backdrop' : ''}</span></span>
+                    <span class="text-caption text-neutral-200 min-w-0 flex-1 truncate">${escapeHtml(x.judul)}<span class="block text-micro text-neutral-500 truncate">TMDB: ${escapeHtml(x.tmdbTitle)}</span></span>
                 </label>`).join('');
             const skipNote = skipped.length ? `<p class="text-micro text-neutral-500">Dilewati (${skipped.length}): ${escapeHtml(skipped.join('; '))}</p>` : '';
-            list.innerHTML = (rows || '<p class="text-caption text-neutral-400">Semua poster dan backdrop sudah sama dengan TMDB.</p>') + skipNote;
+            list.innerHTML = (rows || '<p class="text-caption text-neutral-400">Semua poster sudah sama dengan TMDB.</p>') + skipNote;
             applyBtn.classList.toggle('hidden', !tmdbSyncPlan.length);
         }
 
@@ -2727,16 +2614,16 @@
             if (!isAdminUnlocked) { showToast('Akses ditolak!', 'warning'); return; }
             const chosen = [...document.querySelectorAll('#tmdb-sync-list input[data-sync]:checked')].map(c => tmdbSyncPlan[+c.dataset.sync]);
             if (!chosen.length) { showToast('Tidak ada yang dicentang.', 'warning'); return; }
-            if (!confirm(`Perbarui poster/backdrop ${chosen.length} film dari TMDB?`)) return;
+            if (!confirm(`Perbarui poster ${chosen.length} film dari TMDB?`)) return;
             const btn = document.getElementById('tmdb-sync-apply');
             btn.disabled = true;
             let failed = 0;
             for (const x of chosen) {
-                const { error } = await supabaseClient.from(TABLE_NAME).update(x.newBackdrop ? { poster: x.next, backdrop: x.newBackdrop } : { poster: x.next }).eq('id', x.id);
+                const { error } = await supabaseClient.from(TABLE_NAME).update({ poster: x.next }).eq('id', x.id);
                 if (error) { failed++; console.error(error); }
             }
             btn.disabled = false;
-            showToast(failed ? `${chosen.length - failed} berhasil, ${failed} gagal.` : `${chosen.length} film diperbarui!`, failed ? 'warning' : 'success');
+            showToast(failed ? `${chosen.length - failed} berhasil, ${failed} gagal.` : `${chosen.length} poster diperbarui!`, failed ? 'warning' : 'success');
             document.getElementById('tmdb-sync-list').innerHTML = '';
             btn.classList.add('hidden');
             await fetchSupabaseData();
@@ -3121,7 +3008,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             updateLockUI();
             initAdminSession();
-            applyViewModeUI();
             updateScrollUI();
             initSheetDrag('detail-modal-content', closeDetailModal);
             initSheetDrag('add-modal-content', requestCloseAddModal);

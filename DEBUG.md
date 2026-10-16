@@ -12,7 +12,6 @@ Peta untuk debug cepat: ke mana melihat, perintah apa yang jalan, dan jebakan ya
 | `assets/` | Biner: 5 slider, 2 foto profil, ikon PWA, `tmdb-logo.svg`. Jangan dibaca; pakai `file`/`sips` untuk metadata. | Aset 404 |
 | `supabase/watchlist.sql` | Skema tabel `bubi_watchlist` + RLS. Dijalankan user manual. | Watchlist tidak muncul |
 | (tanpa SQL) logo judul | `fetchTmdbExtra` mengambil `images.logos` (en/tanpa teks dulu, suara terbanyak) -> `renderTmdbExtra` mengisi `#detail-logo` dan menyembunyikan `#detail-title` (`sr-only`, tetap untuk aksesibilitas). Tidak disimpan di DB; judul teks jadi cadangan. | Logo tidak muncul / judul hilang |
-| `supabase/backdrop.sql` | Kolom `backdrop` di `bubi_popcorn`. `backdropAvailable()`; diisi `applyTmdbResult` (form) dan `planTmdbSync`/`applyTmdbSync`. `createLandscapeCard` memakai `posterBox(..., 'w780', 'w300')`. Mode tampilan: `viewMode` carousel/grid/landscape (`toggleViewMode`). | Kartu landscape pakai poster, bukan backdrop |
 | `supabase/season.sql` | Kolom `season` di `bubi_popcorn`. Aktif lewat `seasonAvailable()`; `seasonNum(m)` = nomor valid atau null. Picker: `loadSeasonPicker`/`pickSeason`; `fetchTmdbExtra` melonggarkan aturan tahun untuk series bersesi. | Pemilih season / lencana S2 tidak muncul |
 | `supabase/kutipan.sql` | Kolom `kutipan` di `bubi_popcorn`. Fitur aktif otomatis lewat `kutipanAvailable()` (cek key `kutipan` di baris data). | Kolom kutipan tidak muncul di form |
 | `LICENSE` | MIT untuk kode (isi arsip dan foto dikecualikan). | Soal lisensi |
@@ -61,7 +60,7 @@ Baris bergeser setiap edit. Anchor yang stabil:
 - **Sinkron poster (admin):** `planTmdbSync` (pratinjau, tidak menulis) → `applyTmdbSync` (satu-satunya yang menulis kolom `poster`).
 - **Watchlist:** `fetchWatchlist` (set `watchlistAvailable`, tabel hilang = bagian disembunyikan), `renderWatchlist`, `insertWatchlist`, `deleteWatchlistItem`, `markWatchlistWatched` (set `pendingWatchlistId`; dihapus di `handleFormSubmit` setelah simpan sukses).
 - **CSV:** `exportCsv`, `importCsv` (admin; dedup judul+bulan; format sendiri atau Letterboxd), `parseCsv`, `csvCell` (awalan `'` untuk cegah formula injection).
-- **Navigasi dan tampilan:** tab bar bawah `#tab-bar` (`scrollToTop`, `scrollToWatchlist`; tab Antrean ikut visibilitas section watchlist; `#fab-container` = tombol tambah admin di tengah tab bar). `updateScrollUI` (judul header muncul setelah large title keluar layar, tab aktif). Mode tampilan: `toggleViewMode` / `applyViewModeUI` (`bubi_view_mode` di localStorage), `createMovieCard` (karusel) vs `createPosterTile` (grid 3 kolom). Poster: `posterBox`, `tmdbSized`. Bottom sheet: `initSheetDrag` (pointer events; zona `[data-sheet-grab]`).
+- **Navigasi dan tampilan:** tab bar bawah `#tab-bar` (`scrollToTop`, `scrollToWatchlist`; tab Antrean ikut visibilitas section watchlist; `#fab-container` = tombol tambah admin di tengah tab bar). `updateScrollUI` (judul header muncul setelah large title keluar layar, tab aktif). Daftar film hanya karusel per bulan: `renderMonthsCarousel` + `createMovieCard`. Poster: `posterBox`, `tmdbSized`. Bottom sheet: `initSheetDrag` (pointer events; zona `[data-sheet-grab]`).
 - **Bootstrap:** satu `DOMContentLoaded` di akhir file — semuanya dipasang di sini.
 
 ## Cek Kesehatan 30 Detik (mulai dari sini kalau "website rusak")
