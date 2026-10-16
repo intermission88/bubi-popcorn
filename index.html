@@ -2503,12 +2503,16 @@
             }
             let seasonInfo = null;
             if (hit.media_type === 'tv' && seasonNum(movie)) {
-                const sr = await fetch(`https://api.themoviedb.org/3/tv/${hit.id}/season/${seasonNum(movie)}?api_key=${key}&language=id-ID`);
-                if (sr.ok) { const sd = await sr.json(); seasonInfo = { episodes: (sd.episodes || []).length, overview: (sd.overview || '').trim() }; }
+                const sr = await fetch(`https://api.themoviedb.org/3/tv/${hit.id}/season/${seasonNum(movie)}?api_key=${key}&language=id-ID&append_to_response=videos&include_video_language=id,en,null`);
+                if (sr.ok) { const sd = await sr.json(); seasonInfo = { episodes: (sd.episodes || []).length, overview: (sd.overview || '').trim(), videos: sd.videos && sd.videos.results || [] }; }
             }
             if (seasonInfo && seasonInfo.overview) overview = seasonInfo.overview;
-            const videos = (d.videos && d.videos.results || []).filter(v => v.site === 'YouTube' && /^[\w-]{6,20}$/.test(v.key || ''));
-            const trailer = videos.find(v => v.type === 'Trailer' && v.official) || videos.find(v => v.type === 'Trailer') || videos.find(v => v.type === 'Teaser');
+            const pickTrailer = list => {
+                const vids = list.filter(v => v.site === 'YouTube' && /^[\w-]{6,20}$/.test(v.key || ''));
+                return vids.find(v => v.type === 'Trailer' && v.official) || vids.find(v => v.type === 'Trailer') || vids.find(v => v.type === 'Teaser');
+            };
+            // Series bersesi: trailer season itu dulu, baru trailer series sebagai cadangan
+            const trailer = (seasonInfo && pickTrailer(seasonInfo.videos)) || pickTrailer(d.videos && d.videos.results || []);
             const crew = d.credits && d.credits.crew || [];
             const director = hit.media_type === 'tv'
                 ? (d.created_by || []).map(c => c.name).slice(0, 2).join(', ')
