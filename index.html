@@ -1715,7 +1715,7 @@
                 <div class="flex gap-3.5 overflow-hidden">
                     ${Array.from({ length: 3 }).map(() => `
                         <div class="glass-card w-36 flex-shrink-0 rounded-2xl overflow-hidden flex flex-col border border-neutral-800 skeleton-shimmer">
-                            <div class="aspect-[3/4] w-full bg-neutral-900/60"></div>
+                            <div class="aspect-[2/3] w-full bg-neutral-900/60"></div>
                             <div class="p-3 space-y-2">
                                 <div class="h-3 bg-neutral-900 rounded w-3/4"></div>
                                 <div class="h-2 bg-neutral-900 rounded w-1/2"></div>
@@ -1852,7 +1852,7 @@
             }
 
             card.innerHTML = `
-                <div class="relative aspect-[3/4] w-full overflow-hidden bg-black">
+                <div class="relative aspect-[2/3] w-full overflow-hidden bg-black">
                     ${posterBox(posterUrl, movie.judul, 'w-full h-full object-cover')}
                     <span class="absolute top-2.5 right-2.5 bg-black/85 backdrop-blur px-2 py-0.5 rounded-lg text-micro font-bold text-neutral-200 border border-neutral-800 shadow">${escapeHtml(movie.tahun || '')}${seasonNum(movie) ? ` · S${seasonNum(movie)}` : ''}</span>
                     ${watcherBadgeHTML}
@@ -2899,7 +2899,7 @@
             }
             list.innerHTML = watchlistData.map(w => {
                 const id = escapeHtml(w.id);
-                const thumb = w.poster ? `<img src="${escapeHtml(tmdbSized(w.poster, 'w92'))}" alt="" loading="lazy" class="w-9 h-14 rounded object-cover">` : '<div class="w-9 h-14 rounded bg-neutral-800"></div>';
+                const thumb = w.poster ? `<img src="${escapeHtml(tmdbSized(w.poster, 'w92'))}" alt="" loading="lazy" class="w-9 aspect-[2/3] rounded object-cover">` : '<div class="w-9 aspect-[2/3] rounded bg-neutral-800"></div>';
                 const actions = isAdminUnlocked ? `
                     <button type="button" onclick="markWatchlistWatched('${id}')" class="px-2.5 py-1.5 rounded-lg bg-amber-400/10 border border-amber-500/40 text-amber-400 text-micro font-bold tap-scale">Sudah ditonton</button>
                     <button type="button" onclick="deleteWatchlistItem('${id}')" class="px-2 py-1.5 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-red-400 text-micro tap-scale" aria-label="Hapus dari antrean"><i class="fa-solid fa-trash"></i></button>` : '';
