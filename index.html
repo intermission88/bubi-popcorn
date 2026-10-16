@@ -923,17 +923,13 @@
                     <div id="season-picker" class="flex flex-wrap gap-1.5 hidden"></div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-neutral-300 mb-1.5 text-center">Tahun Rilis *</label>
-                        <input type="number" name="tahun" id="form-tahun" required min="1900" max="2030" value="2026" 
-                            class="w-full px-3.5 py-3 bg-black border border-neutral-800 rounded-xl text-xs sm:text-sm text-center focus:outline-none focus:border-amber-400 text-neutral-100 transition shadow-inner">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-neutral-300 mb-1.5 text-center">Bulan Nonton *</label>
-                        <input type="month" name="bulan" id="form-bulan" required 
-                            class="w-full px-3.5 py-3 bg-black border border-neutral-800 rounded-xl text-xs sm:text-sm text-center focus:outline-none focus:border-amber-400 text-neutral-100 transition shadow-inner">
-                    </div>
+                <!-- Tahun rilis diisi otomatis dari TMDB (tidak ditampilkan) -->
+                <input type="hidden" name="tahun" id="form-tahun" value="2026">
+
+                <div>
+                    <label for="form-bulan" class="block text-xs font-semibold text-neutral-300 mb-1.5">Bulan Nonton *</label>
+                    <input type="month" name="bulan" id="form-bulan" required
+                        class="w-full px-3.5 py-3 bg-black border border-neutral-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-neutral-100 transition shadow-inner">
                 </div>
 
                 <div>
@@ -2158,6 +2154,7 @@
             pendingWatchlistId = null;
             document.getElementById('editing_id').value = '';
             document.getElementById('add-movie-form').reset();
+            document.getElementById('form-tahun').dataset.set = '';
             document.getElementById('kutipan-field').classList.toggle('hidden', !kutipanAvailable());
             document.getElementById('season-picker').classList.add('hidden');
             document.getElementById('season-field').classList.toggle('hidden', !seasonAvailable());
@@ -2311,6 +2308,21 @@
             showToast("Data diperbarui! 🔄", "success");
         }
 
+        // Tahun tidak lagi diketik: bila judul diketik manual tanpa memilih hasil TMDB, tahun diambil dari hasil teratas TMDB.
+        async function resolveYearIfMissing() {
+            const y = document.getElementById('form-tahun');
+            if (y.dataset.set === '1' || document.getElementById('editing_id').value || !TMDB_API_KEY) return;
+            const title = document.getElementById('form-judul').value.trim();
+            if (!title) return;
+            try {
+                const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${encodeURIComponent(TMDB_API_KEY)}&query=${encodeURIComponent(title)}&include_adult=false`);
+                if (!res.ok) return;
+                const hit = (await res.json()).results.find(r => r.media_type === 'movie' || r.media_type === 'tv');
+                const yr = hit && (hit.release_date || hit.first_air_date || '').slice(0, 4);
+                if (yr) { y.value = yr; y.dataset.set = '1'; }
+            } catch (err) { /* tetap pakai nilai bawaan */ }
+        }
+
         async function handleFormSubmit(event) {
             event.preventDefault();
             if (!isAdminUnlocked) {
@@ -2319,6 +2331,7 @@
             }
 
             const form = event.target;
+            await resolveYearIfMissing();
             const formData = new FormData(form);
             const editingId = formData.get('editing_id');
             const watcher = formData.get('watched_by');
@@ -2412,6 +2425,7 @@
             form.judul.value = movie.judul || '';
             form.poster.value = movie.poster || '';
             form.tahun.value = movie.tahun || '2026';
+            form.tahun.dataset.set = '1';
             form.bulan.value = parseMonthToInputValue(movie.bulan || '');
             
             const watcher = movie.watched_by || 'both';
@@ -2624,7 +2638,7 @@
             if (!r) return;
             document.getElementById('form-judul').value = r.title || r.name || '';
             const year = (r.release_date || r.first_air_date || '').slice(0, 4);
-            if (year) document.getElementById('form-tahun').value = year;
+            if (year) { document.getElementById('form-tahun').value = year; document.getElementById('form-tahun').dataset.set = '1'; }
             document.getElementById('form-poster').value = r.poster_path ? TMDB_IMG + r.poster_path : '';
             document.getElementById('tmdb-results').classList.add('hidden');
             loadSeasonPicker(r);
@@ -2655,7 +2669,7 @@
             if (!x) return;
             document.getElementById('form-season').value = x.season_number;
             const y = (x.air_date || '').slice(0, 4);
-            if (y) document.getElementById('form-tahun').value = y;
+            if (y) { document.getElementById('form-tahun').value = y; document.getElementById('form-tahun').dataset.set = '1'; }
             const poster = x.poster_path ? TMDB_IMG + x.poster_path : tmdbSeriesPoster;
             if (poster) document.getElementById('form-poster').value = poster;
         }
@@ -2968,6 +2982,7 @@
             pendingWatchlistId = id;
             document.getElementById('form-judul').value = item.judul || '';
             document.getElementById('form-tahun').value = item.tahun || new Date().getFullYear();
+            document.getElementById('form-tahun').dataset.set = item.tahun ? '1' : '';
             document.getElementById('form-poster').value = item.poster || '';
         }
 
