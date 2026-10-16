@@ -212,6 +212,8 @@ Key v3 hanya bisa membaca data publik dan memang terlihat di klien. Kalau bocor,
 | `rating_aku` / `rating_dia` | text | Rating 0–10 |
 | `review_aku` / `review_dia` | text | Ulasan |
 
+Kolom opsional `kutipan` di `bubi_popcorn`: jalankan [`supabase/kutipan.sql`](supabase/kutipan.sql) sekali. Tanpa kolom ini kolom kutipan di form dan detail disembunyikan.
+
 **`bubi_watchlist`**: `id` (`w_<timestamp>`), `judul`, `tahun`, `poster`, `created_at`. Skema lengkap di [`supabase/watchlist.sql`](supabase/watchlist.sql).
 
 ## Struktur Proyek
@@ -223,6 +225,7 @@ Key v3 hanya bisa membaca data publik dan memang terlihat di klien. Kalau bocor,
 | `manifest.json` | Metadata PWA |
 | `assets/` | Gambar slider, foto profil, ikon PWA, logo TMDB, dan `readme/` (aset README) |
 | `supabase/watchlist.sql` | Skema tabel watchlist |
+| `supabase/kutipan.sql` | Kolom `kutipan` (kutipan favorit per film), opsional |
 | `DEBUG.md` · `AGENTS.md` | Guide debug dan konvensi kerja |
 | `LICENSE` | MIT untuk kode |
 
