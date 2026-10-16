@@ -2054,53 +2054,97 @@
             try { renderDetailRelated(); renderHomeRecs(); } catch (err) { console.warn(err); }
         }
 
-        // Rekomendasi di Beranda: hanya film/series MIRIP dari film berskor >= 8 (bagian satu koleksi dibuang); cache 24 jam
-        const RECS_KEY = 'bubi_recs_v2';
-        let homeRecsTimer = null, homeRecsSig = '';
+        // Rekomendasi di Beranda: hanya film/series MIRIP dari film berskor tinggi (bagian satu koleksi dibuang).
+        // Ganti tiap hari Senin (waktu perangkat): seed dipilih acak-tetap dari kunci minggu, jadi sama di semua perangkat.
+        // Hasil per film seed disimpan 30 hari sehingga ganti minggu hanya meminta TMDB untuk seed yang belum pernah dipakai.
+        const RECS_KEY = 'bubi_recs_v3', RECS_SEED_KEY = 'bubi_recs_seed_v1', SEED_TTL = 30 * 864e5;
+        let homeRecsTimer = null, homeRecsWeek = '', homeRecsBusy = false;
+        function weekKey(d = new Date()) { // tanggal Senin pada minggu ini
+            const mon = new Date(d.getFullYear(), d.getMonth(), d.getDate() - ((d.getDay() + 6) % 7));
+            return `${mon.getFullYear()}-${String(mon.getMonth() + 1).padStart(2, '0')}-${String(mon.getDate()).padStart(2, '0')}`;
+        }
+        function seededShuffle(arr, seedStr) {
+            let h = 1779033703 ^ seedStr.length;
+            for (let i = 0; i < seedStr.length; i++) { h = Math.imul(h ^ seedStr.charCodeAt(i), 3432918353); h = (h << 13) | (h >>> 19); }
+            const rand = () => { h = Math.imul(h ^ (h >>> 16), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); h ^= h >>> 16; return (h >>> 0) / 4294967296; };
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) { const k = Math.floor(rand() * (i + 1)); [a[i], a[k]] = [a[k], a[i]]; }
+            return a;
+        }
+        const ratingAvg = m => { const v = [parseRating(m.rating_aku), parseRating(m.rating_dia)].filter(x => x !== null); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : 0; };
+        function pickSeeds(week) {
+            let pool = moviesData.filter(m => ratingAvg(m) >= 8 && !seasonNum(m));
+            if (pool.length < 5) pool = moviesData.filter(m => ratingAvg(m) >= 7.5 && !seasonNum(m));
+            pool = pool.sort((a, b) => String(a.id).localeCompare(String(b.id)));
+            const prev = new Set(seededShuffle(pool, weekKey(new Date(new Date(week + 'T00:00:00').getTime() - 7 * 864e5))).slice(0, 5).map(m => m.id));
+            const order = seededShuffle(pool, week);
+            // utamakan seed yang tidak dipakai minggu lalu
+            return [...order.filter(m => !prev.has(m.id)), ...order.filter(m => prev.has(m.id))].slice(0, 5);
+        }
         function scheduleHomeRecs() {
             clearTimeout(homeRecsTimer);
             homeRecsTimer = setTimeout(loadHomeRecs, 1200);
         }
+        document.addEventListener('visibilitychange', () => { if (!document.hidden && homeRecsWeek && homeRecsWeek !== weekKey()) scheduleHomeRecs(); });
+
+        async function seedRecs(m) { // { items, excl } untuk satu film seed, dari cache 30 hari atau TMDB
+            let id = m.tmdb_id, media = m.tmdb_media === 'tv' ? 'tv' : 'movie';
+            if (!id) {
+                const sr = await tmdbGet('/search/multi', `&query=${encodeURIComponent(m.judul || '')}&include_adult=false`);
+                const hit = sr.results.filter(r => r.media_type === 'movie' || r.media_type === 'tv')
+                    .find(r => !m.tahun || Math.abs((parseInt((r.release_date || r.first_air_date || '').slice(0, 4), 10) || 0) - m.tahun) <= 1);
+                if (!hit) return null;
+                id = hit.id; media = hit.media_type;
+            }
+            const key = `${media}:${id}`;
+            let store = {};
+            try { store = JSON.parse(localStorage.getItem(RECS_SEED_KEY) || '{}'); } catch (e) {}
+            if (store[key] && Date.now() - store[key].t < SEED_TTL) return store[key];
+            const d = await tmdbGet(`/${media}/${id}`, '&append_to_response=recommendations');
+            const excl = [key];
+            if (media === 'movie' && d.belongs_to_collection) { // sekuel/prekuel bukan "mirip": hanya untuk dibuang
+                try { ((await tmdbGet(`/collection/${d.belongs_to_collection.id}`)).parts || []).forEach(p => excl.push(`movie:${p.id}`)); } catch (e) {}
+            }
+            const entry = { t: Date.now(), excl, items: ((d.recommendations && d.recommendations.results) || []).map(r => tmdbItem(r, media)) };
+            try { store = JSON.parse(localStorage.getItem(RECS_SEED_KEY) || '{}'); } catch (e) { store = {}; } // baca ulang: seed lain mungkin menulis saat menunggu
+            store[key] = entry;
+            Object.keys(store).forEach(k => { if (Date.now() - store[k].t > SEED_TTL) delete store[k]; });
+            try { localStorage.setItem(RECS_SEED_KEY, JSON.stringify(store)); } catch (e) {}
+            return entry;
+        }
+
         async function loadHomeRecs() {
             if (!TMDB_API_KEY || !moviesData.length) { homeRecItems = []; renderHomeRecs(); return; }
-            const avg = m => { const v = [parseRating(m.rating_aku), parseRating(m.rating_dia)].filter(x => x !== null); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : 0; };
-            const seeds = moviesData.filter(m => avg(m) >= 8 && !seasonNum(m)).sort((a, b) => avg(b) - avg(a)).slice(0, 5);
-            const sig = seeds.map(m => m.id).join(',') + '|' + moviesData.length;
-            if (!seeds.length || sig === homeRecsSig) return;
-            try {
-                const c = JSON.parse(localStorage.getItem(RECS_KEY) || 'null');
-                if (c && c.sig === sig && Date.now() - c.t < 864e5) { homeRecsSig = sig; homeRecItems = c.items; renderHomeRecs(); return; }
-            } catch (e) {}
+            const week = weekKey();
+            if (week === homeRecsWeek || homeRecsBusy) return;
+            let cached = null;
+            try { cached = JSON.parse(localStorage.getItem(RECS_KEY) || 'null'); } catch (e) {}
+            if (cached && cached.week === week) { homeRecsWeek = week; homeRecItems = cached.items; renderHomeRecs(); return; }
+            const seeds = pickSeeds(week);
+            if (!seeds.length) { homeRecItems = []; renderHomeRecs(); return; }
+            homeRecsBusy = true;
             const pool = new Map(), exclude = new Set();
-            const add = (it, score, reason) => {
-                const k = `${it.media}:${it.id}`, cur = pool.get(k);
-                if (cur) { cur.score += score; return; }
-                pool.set(k, { ...it, score: score + it.vote, reason });
-            };
-            await Promise.all(seeds.map(async m => {
-                try {
-                    let id = m.tmdb_id, media = m.tmdb_media === 'tv' ? 'tv' : 'movie';
-                    if (!id) {
-                        const sr = await tmdbGet('/search/multi', `&query=${encodeURIComponent(m.judul || '')}&include_adult=false`);
-                        const hit = sr.results.filter(r => r.media_type === 'movie' || r.media_type === 'tv')
-                            .find(r => !m.tahun || Math.abs((parseInt((r.release_date || r.first_air_date || '').slice(0, 4), 10) || 0) - m.tahun) <= 1);
-                        if (!hit) return;
-                        id = hit.id; media = hit.media_type;
-                    }
-                    const d = await tmdbGet(`/${media}/${id}`, '&append_to_response=recommendations');
-                    const self = tmdbItem(d, media), why = `Mirip ${m.judul}`;
-                    ((d.recommendations && d.recommendations.results) || []).forEach(r => add(tmdbItem(r, media), 10, why));
-                    exclude.add(`${media}:${self.id}`);
-                    if (media === 'movie' && d.belongs_to_collection) { // sekuel/prekuel bukan "mirip": hanya untuk dibuang
-                        const col = await tmdbGet(`/collection/${d.belongs_to_collection.id}`);
-                        (col.parts || []).forEach(p => exclude.add(`movie:${p.id}`));
-                    }
-                } catch (err) { console.warn('Rekomendasi gagal untuk', m.judul, err); }
-            }));
-            homeRecItems = [...pool.entries()].filter(([k]) => !exclude.has(k)).map(([, v]) => v).sort((a, b) => b.score - a.score).slice(0, 30);
-            homeRecsSig = sig;
-            try { localStorage.setItem(RECS_KEY, JSON.stringify({ sig, t: Date.now(), items: homeRecItems })); } catch (e) {}
-            renderHomeRecs();
+            try {
+                await Promise.all(seeds.map(async m => {
+                    try {
+                        const r = await seedRecs(m);
+                        if (!r) return;
+                        r.excl.forEach(k => exclude.add(k));
+                        r.items.forEach(it => {
+                            const k = `${it.media}:${it.id}`, cur = pool.get(k);
+                            if (cur) cur.score += 10; else pool.set(k, { ...it, score: 10 + it.vote, reason: `Mirip ${m.judul}` });
+                        });
+                    } catch (err) { console.warn('Rekomendasi gagal untuk', m.judul, err); }
+                }));
+                const lastWeek = new Set((cached && cached.items || []).map(it => `${it.media}:${it.id}`)); // jangan ulang isi minggu lalu bila stok cukup
+                let items = [...pool.entries()].filter(([k]) => !exclude.has(k)).map(([, v]) => v).sort((a, b) => b.score - a.score);
+                const fresh = items.filter(it => !lastWeek.has(`${it.media}:${it.id}`));
+                items = (fresh.length >= 12 ? fresh : items).slice(0, 30);
+                if (!items.length) return; // gagal total: biarkan tampilan lama, coba lagi saat data dimuat berikutnya
+                homeRecItems = items; homeRecsWeek = week;
+                try { localStorage.setItem(RECS_KEY, JSON.stringify({ week, items })); } catch (e) {}
+                renderHomeRecs();
+            } finally { homeRecsBusy = false; }
         }
         function renderHomeRecs() {
             const sec = document.getElementById('rekomendasi-section');
