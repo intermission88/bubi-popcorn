@@ -289,9 +289,9 @@
         /* Hover kartu film (hanya perangkat dengan mouse; di HP tetap tap-scale) */
         @media (hover: hover) and (pointer: fine) {
             #months-carousel [id^="movie-card-"] { transition: translate .25s ease, transform .15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow .25s ease, border-color .25s ease; }
-            #months-carousel [id^="movie-card-"]:hover:not(:active) { translate: 0 -5px; box-shadow: 0 16px 28px rgba(0, 0, 0, 0.65); border-color: rgba(250, 204, 21, 0.45); }
+            #months-carousel [id^="movie-card-"]:hover:not(:active) { translate: 0 -5px; box-shadow: 0 10px 16px rgba(0, 0, 0, 0.6); border-color: rgba(250, 204, 21, 0.45); }
             #months-carousel [id^="movie-card-"]:hover .poster-img { transform: scale(1.06); }
-            #months-carousel .certified-card:hover:not(:active) { box-shadow: 0 16px 34px rgba(250, 204, 21, 0.22), 0 10px 24px rgba(0, 0, 0, 0.6); }
+            #months-carousel .certified-card:hover:not(:active) { box-shadow: 0 8px 18px rgba(250, 204, 21, 0.25), 0 8px 14px rgba(0, 0, 0, 0.55); }
         }
         .poster-img.is-loaded { opacity: 1; }
         @media (prefers-reduced-motion: reduce) { .poster-img { transition: none; } }
@@ -993,17 +993,11 @@
                     <i class="fa-solid fa-xmark text-xs"></i>
                 </button>
 
-                <button onclick="triggerHaptic(); copyMovieDetailSummary()" class="absolute top-3 left-3 z-10 px-3 py-1.5 rounded-full bg-black/80 border border-neutral-800 text-amber-300 text-micro font-bold flex items-center gap-1.5 tap-scale shadow" title="Salin Ringkasan Ulasan">
-                    <i class="fa-regular fa-copy text-micro"></i> Salin Ringkasan
-                </button>
-
-                <button type="button" onclick="triggerHaptic(); shareMovieDetail()" class="absolute top-3 right-16 z-10 touch-target rounded-full bg-black/80 border border-neutral-800 text-amber-300 text-caption flex items-center justify-center tap-scale shadow hover:border-amber-400/60 transition" aria-label="Bagikan film">
-                    <i class="fa-solid fa-share-nodes"></i>
-                </button>
-
-                <div class="absolute bottom-3 left-4 right-4 flex items-end justify-between gap-2">
+<div class="absolute bottom-3 left-4 right-4 flex items-end justify-between gap-2">
                     <div>
-                        <div class="flex items-center gap-1.5 mb-1 flex-wrap">
+                        <img id="detail-logo" src="" alt="" class="hidden max-h-20 max-w-[80%] w-auto object-contain object-left drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+                        <h2 id="detail-title" class="text-2xl font-black font-display tracking-tight line-clamp-1 text-white">Title</h2>
+                        <div class="flex items-center gap-1.5 mt-2 flex-wrap">
                             <span id="detail-year" class="text-xs text-neutral-200 font-semibold">2026</span>
                             <span id="detail-watch-month" class="px-2 py-0.5 rounded-lg bg-neutral-900 text-amber-300 text-micro font-semibold">Januari 2026</span>
                             <span id="detail-viewer-badge" class="px-2 py-0.5 rounded-lg bg-neutral-900 text-neutral-200 text-micro font-bold">Nonton Bareng</span>
@@ -1011,8 +1005,6 @@
                                 <i class="fa-solid fa-award text-micro"></i> Certified Fresh
                             </span>
                         </div>
-                        <img id="detail-logo" src="" alt="" class="hidden max-h-16 max-w-[72%] w-auto object-contain object-left drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
-                        <h2 id="detail-title" class="text-2xl font-black font-display tracking-tight line-clamp-1 text-white">Title</h2>
                     </div>
                 </div>
             </div>
@@ -1810,7 +1802,7 @@
                 `;
 
                 const track = document.createElement('div');
-                track.className = "flex gap-3.5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2 -mx-4 px-4";
+                track.className = "flex gap-3.5 overflow-x-auto snap-x snap-mandatory no-scrollbar pt-2 -mt-2 pb-5 -mb-3 -mx-4 px-4"; // ruang untuk efek hover (naik + bayangan)
                 monthMovies.forEach((movie, i) => {
                     const card = createMovieCard(movie, i);
                     card.className = card.className.replace("overflow-hidden flex flex-col", "overflow-hidden flex flex-col w-36 flex-shrink-0 snap-start");
@@ -2009,60 +2001,6 @@
                 }, 50);
             } else {
                 window.scrollTo({ top: lastScrollPosition, behavior: 'instant' });
-            }
-        }
-
-        function buildMovieSummary() {
-            const movie = moviesData.find(m => m.id == currentDetailMovieId);
-            if (!movie) return null;
-
-            const title = movie.judul || 'Tanpa Judul';
-            const year = movie.tahun || '';
-            const month = formatMonthDisplay(movie.bulan) || '';
-            const watcher = movie.watched_by === 'zald' ? 'Zald Picks' : (movie.watched_by === 'micel' ? 'Micel Picks' : 'Nonton Bareng');
-            const rZ = movie.rating_aku ? `Zald: ${movie.rating_aku}/10` : '';
-            const rM = movie.rating_dia ? `Micel: ${movie.rating_dia}/10` : '';
-            const revZ = movie.review_aku ? `\n💬 Zald: "${movie.review_aku}"` : '';
-            const revM = movie.review_dia ? `\n💬 Micel: "${movie.review_dia}"` : '';
-
-            return {
-                movie,
-                text: `🍿 *Bubi's Popcorn Log* 🍿\n🎬 *${title}* (${year})\n📅 Waktu: ${month}\n👥 Kategori: ${watcher}\n⭐ Rating: ${rZ} ${rM}${revZ}${revM}\n\n_Archived by Zald & Micel_`
-            };
-        }
-
-        function copyMovieDetailSummary() {
-            const summary = buildMovieSummary();
-            if (!summary) return;
-
-            navigator.clipboard.writeText(summary.text).then(() => {
-                showToast("Ringkasan film disalin ke clipboard! 📋", "success");
-            }).catch(() => {
-                showToast("Gagal menyalin ringkasan.", "warning");
-            });
-        }
-
-        async function shareMovieDetail() {
-            const summary = buildMovieSummary();
-            if (!summary) return;
-
-            const movie = summary.movie;
-            const shareData = {
-                title: `${movie.judul || 'Tanpa Judul'} — Bubi's Popcorn`,
-                text: summary.text
-            };
-
-            try {
-                if (navigator.share) {
-                    await navigator.share(shareData);
-                } else {
-                    await navigator.clipboard.writeText(summary.text);
-                    showToast("Share tidak didukung, ringkasan disalin! 📋", "success");
-                }
-            } catch (err) {
-                if (err && err.name !== 'AbortError') {
-                    showToast("Gagal membagikan film.", "warning");
-                }
             }
         }
 
