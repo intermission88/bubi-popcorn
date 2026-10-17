@@ -13,6 +13,8 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Google Fonts -->
+    <link rel="preconnect" href="https://image.tmdb.org" crossorigin>
+    <link rel="preload" as="image" href="assets/Slider_1.webp">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
@@ -1737,17 +1739,37 @@
             carousel.appendChild(panel);
         }
 
+        const MOVIES_CACHE_KEY = 'bubi_movies_cache_v1';
+        // Unduh poster terbaru lebih awal ke cache browser/service worker supaya grid tidak menunggu gambar
+        function preloadPosters(rows) {
+            const urls = (rows || []).map(m => m.poster).filter(u => TMDB_POSTER_RE.test(u || ''))
+                .slice(-24).reverse().map(u => tmdbSized(u, 'w342'));
+            const run = () => urls.forEach(u => { const i = new Image(); i.decoding = 'async'; i.src = u; });
+            ('requestIdleCallback' in window) ? requestIdleCallback(run, { timeout: 1500 }) : setTimeout(run, 200);
+        }
+
         async function fetchSupabaseData() {
             try {
                 hasFetchError = false;
                 document.getElementById('error-state')?.classList.add('hidden');
+                if (moviesData.length === 0) {
+                    // Tampil instan dari salinan terakhir (stale-while-revalidate); data segar menggantikan setelah fetch
+                    try {
+                        const cached = JSON.parse(localStorage.getItem(MOVIES_CACHE_KEY) || 'null');
+                        if (Array.isArray(cached) && cached.length) { moviesData = cached; processFilterAndRender(); preloadPosters(moviesData); }
+                    } catch (e) {}
+                }
                 if (moviesData.length === 0) renderSkeletonGrid();
                 let { data, error } = await supabaseClient
                     .from(TABLE_NAME)
                     .select('*');
                 
                 if (error) throw error;
-                if (Array.isArray(data)) moviesData = data;
+                if (Array.isArray(data)) {
+                    moviesData = data;
+                    try { localStorage.setItem(MOVIES_CACHE_KEY, JSON.stringify(data)); } catch (e) {}
+                    preloadPosters(data);
+                }
             } catch (err) {
                 hasFetchError = true;
                 console.warn("Supabase Fetch Failed:", err);

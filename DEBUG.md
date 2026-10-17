@@ -7,7 +7,7 @@ Peta untuk debug cepat: ke mana melihat, perintah apa yang jalan, dan jebakan ya
 | File | Fungsi | Kapan dibuka |
 |---|---|---|
 | `index.html` | Semua markup, CSS, JS (~2800 baris). JANGAN dibaca utuh. | Saat perbaikan perilaku/tampilan |
-| `sw.js` | Service worker: network-first HTML, cache-first aset, Supabase dan TMDB tidak di-cache. | Gejala "perubahan tidak tampil" / offline |
+| `sw.js` | Service worker: network-first HTML, cache-first aset, Supabase dan API TMDB tidak di-cache; gambar `image.tmdb.org` di-cache terpisah (`IMG_CACHE`). Daftar film di-cache di localStorage (`bubi_movies_cache_v1`) agar tampil instan. | Gejala "perubahan tidak tampil" / offline |
 | `manifest.json` | Metadata PWA + ikon (`assets/icon.svg`). | Ikon install salah |
 | `assets/` | Biner: 5 slider, 2 foto profil, ikon PWA, `tmdb-logo.svg`. Jangan dibaca; pakai `file`/`sips` untuk metadata. | Aset 404 |
 | `supabase/watchlist.sql` | Skema tabel `bubi_watchlist` + RLS. Dijalankan user manual. | Watchlist tidak muncul |

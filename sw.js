@@ -1,4 +1,6 @@
-const CACHE_NAME = 'bubi-popcorn-v53';
+const CACHE_NAME = 'bubi-popcorn-v54';
+const IMG_CACHE = 'bubi-tmdb-img-v1'; // tidak ikut dihapus saat CACHE_NAME naik
+const IMG_MAX = 400;
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -23,7 +25,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+      Promise.all(keys.filter((k) => k !== CACHE_NAME && k !== IMG_CACHE).map((k) => caches.delete(k)))
     )
   );
   self.clients.claim();
@@ -34,6 +36,27 @@ self.addEventListener('fetch', (event) => {
 
   // Supabase & API: selalu network (jangan cache data dinamis)
   if (url.hostname.includes('supabase.co') || url.hostname === 'api.themoviedb.org') {
+    return;
+  }
+
+  // Gambar TMDB (poster/logo): cache-first + perbarui di latar; respons opaque (no-cors) ikut disimpan
+  if (url.hostname === 'image.tmdb.org') {
+    event.respondWith(
+      caches.open(IMG_CACHE).then((cache) =>
+        cache.match(event.request).then((cached) => {
+          const net = fetch(event.request).then((response) => {
+            if (response.ok || response.type === 'opaque') {
+              cache.put(event.request, response.clone()).then(() =>
+                cache.keys().then((ks) => { if (ks.length > IMG_MAX) cache.delete(ks[0]); })
+              );
+            }
+            return response;
+          });
+          if (cached) { net.catch(() => {}); return cached; }
+          return net;
+        })
+      )
+    );
     return;
   }
 
