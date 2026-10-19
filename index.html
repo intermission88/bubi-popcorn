@@ -2,8 +2,15 @@
 <html lang="id" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-visual">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-visual">
     <meta name="theme-color" content="#000000">
+    <meta name="color-scheme" content="dark">
+    <!-- iOS: layar penuh dari Layar Utama, konten di bawah Dynamic Island (header memakai safe-area-inset-top) -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Bubi's Popcorn">
+    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
     <title>Bubi's Popcorn - Mobile App Cinema Log</title>
@@ -88,7 +95,11 @@
     </script>
 
     <style>
+        html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; color-scheme: dark; background-color: #000000; scroll-padding-top: calc(4rem + env(safe-area-inset-top)); }
         body { 
+            /* ruang header + tab bar, ditambah area Dynamic Island dan indikator Home */
+            padding-top: calc(4rem + env(safe-area-inset-top));
+            padding-bottom: calc(8rem + env(safe-area-inset-bottom));
             background-color: #000000; 
             color: #fafafa; 
             font-family: 'Inter', sans-serif;
@@ -266,6 +277,7 @@
         }
 
         /* Header: tanpa bar solid; lapisan blur memudar ke bawah (scroll edge) */
+        #app-header { padding-top: calc(env(safe-area-inset-top) + 12px); padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
         #app-header { background: linear-gradient(to bottom, rgba(0,0,0,0.92), rgba(0,0,0,0.5) 70%, rgba(0,0,0,0)); }
         #app-header::before {
             content: ''; position: absolute; inset: 0 0 -16px 0; z-index: -1; pointer-events: none;
@@ -275,7 +287,7 @@
         }
 
         /* Tab bar: kapsul kaca melayang, tab aktif = gelembung kaca emas */
-        #tab-bar { padding: 0 12px calc(env(safe-area-inset-bottom) + 8px); pointer-events: none; }
+        #tab-bar { padding: 0 max(12px, env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + 8px) max(12px, env(safe-area-inset-left)); pointer-events: none; }
         #tab-bar-inner { pointer-events: auto; border-radius: 30px; }
         .tab-item { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 52px; margin: 4px 2px; border-radius: 24px; color: #d4d4d4; font-size: 11px; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,0.65); transition: color .2s, background .25s, box-shadow .25s, transform .15s; -webkit-tap-highlight-color: transparent; }
         .tab-item i { font-size: 18px; }
@@ -350,9 +362,12 @@
         .poster-img.is-loaded { opacity: 1; }
         @media (prefers-reduced-motion: reduce) { .poster-img { transition: none; } }
 
-        @media (max-width: 639px) {
+        /* iOS memperbesar halaman bila input < 16px; berlaku juga di iPhone landscape (lebar > 639px) */
+        @media (max-width: 639px), (pointer: coarse) {
             input, select, textarea { font-size: 16px !important; }
         }
+        /* Scroll di dalam modal tidak tembus ke halaman di belakangnya */
+        [role="dialog"] .overflow-y-auto { overscroll-behavior: contain; }
 
         /* QoL: Respect reduced motion preference */
         @media (prefers-reduced-motion: reduce) {
@@ -365,12 +380,12 @@
         }
     </style>
 </head>
-<body class="min-h-screen pb-32 pt-16 selection:bg-amber-400 selection:text-black">
+<body class="min-h-screen selection:bg-amber-400 selection:text-black">
 
     <!-- Header App Bar -->
     <div id="ptr" aria-hidden="true"><i class="fa-solid fa-rotate-right text-sm"></i></div>
 
-    <header id="app-header" class="fixed top-0 inset-x-0 z-40 px-4 py-3">
+    <header id="app-header" class="fixed top-0 inset-x-0 z-40 pb-3">
         <div class="max-w-md mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl popcorn-gradient flex items-center justify-center text-black text-base shadow-lg flex-shrink-0 font-bold">
@@ -541,7 +556,7 @@
         </section>
 
         <!-- Watchlist: Mau Ditonton -->
-        <section id="watchlist-section" class="pt-6 hidden scroll-mt-16">
+        <section id="watchlist-section" class="pt-6 hidden">
             <div class="film-strip -mx-4"></div>
             <h2 class="mt-5 mb-3 text-xs font-bold text-amber-400 uppercase tracking-[0.25em] font-display flex items-center gap-2">
                 <i class="fa-solid fa-ticket"></i> Mau Ditonton
@@ -558,7 +573,7 @@
         </section>
 
         <!-- SECTION REKOMENDASI (dihitung dari film berskor tinggi; disembunyikan bila kosong) -->
-        <section id="rekomendasi-section" class="hidden scroll-mt-16" aria-label="Rekomendasi">
+        <section id="rekomendasi-section" class="hidden" aria-label="Rekomendasi">
             <h2 class="mb-3 text-xs font-bold text-amber-400 uppercase tracking-[0.25em] font-display flex items-center gap-2">
                 <i class="fa-solid fa-compass"></i> Baru &amp; Sudah Streaming
             </h2>
@@ -781,7 +796,7 @@
 
     <!-- Modal Statistik Kita + Roulette -->
     <div id="stats-modal" role="dialog" aria-modal="true" aria-labelledby="stats-title" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
-        <div id="stats-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] pb-[env(safe-area-inset-bottom)]">
+        <div id="stats-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90dvh] pb-[env(safe-area-inset-bottom)]">
             <div class="sheet-handle sm:hidden" data-sheet-grab aria-hidden="true"></div>
             <div data-sheet-grab class="px-4 py-3 border-b border-neutral-900 flex items-center justify-between bg-neutral-950">
                 <h3 id="stats-title" class="font-bold text-base text-neutral-50 font-display flex items-center gap-1.5">
@@ -904,7 +919,7 @@
 
     <!-- Mobile Bottom Sheet / Modal Form -->
     <div id="add-modal" role="dialog" aria-modal="true" aria-labelledby="modal-form-title" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
-        <div id="add-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[85vh] sm:h-auto sm:max-h-[85vh] transform transition-all pb-[env(safe-area-inset-bottom)]">
+        <div id="add-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[85dvh] sm:h-auto sm:max-h-[85dvh] transform transition-all pb-[env(safe-area-inset-bottom)]">
             <div class="sheet-handle sm:hidden" data-sheet-grab aria-hidden="true"></div>
             <div data-sheet-grab class="px-5 py-3.5 border-b border-neutral-900 flex items-center justify-between flex-shrink-0 bg-neutral-950">
                 <div class="flex items-center gap-2.5">
@@ -1072,7 +1087,7 @@
 
     <!-- Mobile Detail Modal -->
     <div id="detail-modal" role="dialog" aria-modal="true" aria-labelledby="detail-title" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
-        <div id="detail-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col transform transition-all pb-[env(safe-area-inset-bottom)]">
+        <div id="detail-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90dvh] flex flex-col transform transition-all pb-[env(safe-area-inset-bottom)]">
             <div data-sheet-grab class="relative h-48 bg-black overflow-hidden flex-shrink-0">
                 <div class="sheet-handle sm:hidden absolute top-0 inset-x-0 z-10" aria-hidden="true"></div>
                 <img id="detail-banner-img" src="" alt="Banner" class="w-full h-full object-cover opacity-40 blur-sm scale-105" onerror="posterFallback(this)">
@@ -1159,7 +1174,7 @@
     </div>
 
     <!-- Toast Container Mobile -->
-    <div id="toast-container" role="status" aria-live="polite" aria-atomic="true" class="fixed top-16 inset-x-0 z-50 flex flex-col items-center gap-2 pointer-events-none px-4"></div>
+    <div id="toast-container" role="status" aria-live="polite" aria-atomic="true" style="top: calc(4rem + env(safe-area-inset-top))" class="fixed inset-x-0 z-50 flex flex-col items-center gap-2 pointer-events-none px-4"></div>
 
     <script>
         const SUPABASE_URL = 'https://fhpyvnbsreoaiaeqfkvk.supabase.co';

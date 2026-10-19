@@ -183,3 +183,10 @@ INSERT dengan `?on_conflict=id` + `Prefer: resolution=ignore-duplicates` pada id
 - Setelah mengubah `index.html` atau aset yang di-cache, naikkan `CACHE_NAME`.
 - Uji perilaku lewat browser pane bawaan Claude, jangan fungsi yang menulis ke Supabase.
 - Bersihkan server/proses latar setelah verifikasi.
+
+## iOS / iPhone (safe area)
+
+- `env(safe-area-inset-*)` hanya bernilai bila viewport memuat `viewport-fit=cover`. Jangan hapus itu dari meta viewport; tanpanya tab bar menimpa indikator Home dan header tertutup Dynamic Island.
+- Status bar PWA = `black-translucent` (konten di bawah Dynamic Island). Tinggi header = `4rem + env(safe-area-inset-top)`; nilai ini dipakai `body` padding-top, `scroll-padding-top` di `html`, dan `#toast-container`. Ubah ketiganya bersama. Jangan pakai `scroll-mt-*` lagi (terhitung dobel).
+- Tinggi sheet modal pakai `dvh`, bukan `vh` (di Safari `vh` = viewport besar, sheet tertutup toolbar).
+- Browser pane tidak meniru safe area (semua inset 0); cek akhirnya di iPhone sungguhan.
