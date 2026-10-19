@@ -749,6 +749,7 @@
                 <button type="button" onclick="closeRecTrailer()" aria-label="Tutup trailer" class="w-11 h-11 shrink-0 rounded-full bg-white/10 text-neutral-200 tap-scale"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="rec-trailer-frame" class="aspect-video w-full rounded-xl overflow-hidden bg-black flex items-center justify-center text-sm text-neutral-400"></div>
+            <button type="button" id="rec-trailer-queue" onclick="addRecFromTrailer()" class="hidden w-full min-h-[44px] rounded-xl bg-amber-400/10 border border-amber-500/40 text-amber-400 text-xs font-bold tap-scale">+ Antrean</button>
             <a id="rec-trailer-yt" href="#" target="_blank" rel="noopener noreferrer" class="hidden text-micro text-neutral-400 hover:text-neutral-200 underline">Video tidak muncul? Buka di YouTube</a>
         </div>
     </div>
@@ -2046,7 +2047,7 @@
                 <div class="relative aspect-[2/3] rounded-xl overflow-hidden bg-neutral-900 ring-1 ring-white/10">${poster}${soon ? '<span class="absolute inset-x-0 bottom-0 py-1 text-center text-micro font-extrabold uppercase tracking-wider bg-amber-400 text-black">Coming soon</span>' : ''}</div>
                 <div class="mt-1.5 ${home ? 'text-xs' : 'text-caption'} font-semibold text-neutral-100 line-clamp-2 leading-tight">${escapeHtml(it.title)}</div>
                 ${sub ? `<div class="text-micro text-neutral-400 truncate">${escapeHtml(sub)}</div>` : ''}
-                ${home ? `<div class="mt-2 space-y-1.5">${trailerBtn}${action}</div>` : action}</div>`;
+                ${home ? `<div class="mt-2">${trailerBtn}</div>` : action}</div>`;
         }
         function relatedRow(key, list) {
             relatedLists[key] = list;
@@ -2080,13 +2081,29 @@
             box.classList.remove('hidden');
         }
 
-        let recTrailerSeq = 0;
+        let recTrailerSeq = 0, recTrailerItem = null;
+        function syncRecQueueBtn() {
+            const b = document.getElementById('rec-trailer-queue');
+            if (!b) return;
+            const it = recTrailerItem;
+            b.classList.toggle('hidden', !(it && isAdminUnlocked && watchlistAvailable && !isQueued(it)));
+            b.disabled = false;
+        }
+        async function addRecFromTrailer() {
+            const it = recTrailerItem;
+            if (!it) return;
+            const b = document.getElementById('rec-trailer-queue');
+            b.disabled = true; triggerHaptic();
+            if (await insertWatchlist({ judul: it.title, tahun: it.year, poster: it.poster })) closeRecTrailer();
+            else b.disabled = false;
+        }
         async function openRecTrailer(idx) {
             const it = (relatedLists.home || [])[idx];
             if (!it) return;
             triggerHaptic();
             const modal = document.getElementById('rec-trailer-modal'), frame = document.getElementById('rec-trailer-frame'), yt = document.getElementById('rec-trailer-yt');
             const seq = ++recTrailerSeq;
+            recTrailerItem = it; syncRecQueueBtn();
             document.getElementById('rec-trailer-title').textContent = it.title;
             frame.textContent = 'Memuat trailer...'; yt.classList.add('hidden');
             modal.classList.remove('hidden');
@@ -2112,7 +2129,7 @@
             yt.href = `https://www.youtube.com/watch?v=${key}`; yt.classList.remove('hidden');
         }
         function closeRecTrailer() {
-            recTrailerSeq++;
+            recTrailerSeq++; recTrailerItem = null;
             const modal = document.getElementById('rec-trailer-modal');
             document.getElementById('rec-trailer-frame').textContent = ''; // hentikan video
             modal.classList.add('hidden');
