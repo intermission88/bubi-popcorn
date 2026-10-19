@@ -547,9 +547,8 @@
                 <i class="fa-solid fa-ticket"></i> Mau Ditonton
             </h2>
             <div id="watchlist-add" class="hidden mb-3">
-                <input type="text" id="wl-judul" placeholder="Judul film atau series..." maxlength="150" enterkeyhint="search" class="w-full min-h-[44px] px-3.5 py-2.5 bg-black border border-neutral-800 rounded-xl text-base focus:outline-none focus:border-amber-400 text-neutral-100 transition" onkeydown="if(event.key==='Enter'){event.preventDefault();addWatchlistFromInput();}">
+                <input type="text" id="wl-judul" placeholder="Judul + tahun, mis. Carrie 2026" maxlength="150" enterkeyhint="search" class="w-full min-h-[44px] px-3.5 py-2.5 bg-black border border-neutral-800 rounded-xl text-base focus:outline-none focus:border-amber-400 text-neutral-100 transition" onkeydown="if(event.key==='Enter'){event.preventDefault();addWatchlistFromInput();}">
                 <div class="mt-2 flex gap-2">
-                    <input type="text" id="wl-cari-tahun" inputmode="numeric" maxlength="4" placeholder="Tahun" aria-label="Tahun rilis (opsional, untuk mempersempit pencarian)" class="w-20 shrink-0 min-h-[44px] px-2 py-2.5 bg-black border border-neutral-800 rounded-xl text-base text-center focus:outline-none focus:border-amber-400 text-neutral-100 transition shadow-inner">
                     <button type="button" onclick="searchTmdb('wl-judul','wl-tmdb-results','applyTmdbToWatchlist')" class="flex-1 min-h-[44px] rounded-xl bg-neutral-900 border border-neutral-800 text-amber-400 text-xs font-bold tap-scale hover:border-amber-400" aria-label="Cari di TMDB"><i class="fa-solid fa-magnifying-glass mr-1.5"></i>Cari TMDB</button>
                     <button type="button" onclick="addWatchlistFromInput()" class="flex-1 min-h-[44px] rounded-xl popcorn-gradient text-black text-xs font-bold tap-scale">Tambah</button>
                 </div>
@@ -2930,16 +2929,22 @@
         // Judul: film berbahasa Indonesia memakai judul aslinya; lainnya terjemahan id-ID (TMDB mengembalikan judul asli bila tidak ada terjemahan)
         const tmdbTitle = r => (r.original_language === 'id' ? (r.original_title || r.original_name) : '') || r.title || r.name || '';
 
+        // "Carrie 2026" -> { title: 'Carrie', year: 2026 }; tahun opsional di akhir judul
+        function splitTitleYear(q) {
+            const m = (q || '').trim().match(/^(.*\S)\s+((?:19|20)\d{2})$/);
+            return m ? { title: m[1], year: Number(m[2]) } : { title: (q || '').trim(), year: null };
+        }
         async function searchTmdb(inputId = 'form-judul', boxId = 'tmdb-results', handler = 'applyTmdbResult', yearId = inputId === 'wl-judul' ? 'wl-cari-tahun' : 'form-cari-tahun') {
             const box = document.getElementById(boxId);
-            const query = document.getElementById(inputId).value.trim();
+            let query = document.getElementById(inputId).value.trim(), typedYear = null;
+            if (inputId === 'wl-judul') ({ title: query, year: typedYear } = splitTitleYear(query));
             const note = msg => { box.classList.remove('hidden'); box.innerHTML = `<p class="text-caption text-neutral-400">${escapeHtml(msg)}</p>`; };
             if (!TMDB_API_KEY) return note('TMDB belum dikonfigurasi. Isi form secara manual.');
             if (!query) return note('Ketik judul dulu, lalu tekan TMDB.');
             note('Mencari...');
             try {
                 const base = `api_key=${encodeURIComponent(TMDB_API_KEY)}&query=${encodeURIComponent(query)}&language=id-ID&include_adult=false`;
-                const yr = parseInt((document.getElementById(yearId)?.value || '').trim(), 10);
+                const yr = typedYear || parseInt((document.getElementById(yearId)?.value || '').trim(), 10);
                 let results;
                 if (yr >= 1900 && yr <= 2100) {
                     // Dengan tahun: cari film dan series terpisah (TMDB menyaring tahun di endpoint masing-masing), gabung menurut popularitas
@@ -3309,9 +3314,9 @@
 
         async function addWatchlistFromInput() {
             const input = document.getElementById('wl-judul');
-            const judul = input.value.trim();
+            const { title: judul, year: tahun } = splitTitleYear(input.value);
             if (!judul) { showToast('Ketik judulnya dulu.', 'warning'); return; }
-            if (await insertWatchlist({ judul })) {
+            if (await insertWatchlist({ judul, tahun })) {
                 input.value = '';
                 document.getElementById('wl-tmdb-results').classList.add('hidden');
             }
