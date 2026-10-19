@@ -2077,10 +2077,10 @@
         }
 
         // Rekomendasi di Beranda: rilisan BARU (3 bulan terakhir) yang sudah streaming langganan di Indonesia (TMDB Discover + JustWatch),
-        // dengan genre dari film berskor tinggi; sekuel/prekuel film seed dibuang.
+        // urut popularitas (ramai/viral) dengan bonus genre film berskor tinggi, hanya judul berbahasa Inggris (aksara Latin); sekuel/prekuel film seed dibuang.
         // Ganti tiap hari Senin (waktu perangkat): seed dipilih acak-tetap dari kunci minggu, jadi sama di semua perangkat.
         // Hasil per film seed disimpan 30 hari sehingga ganti minggu hanya meminta TMDB untuk seed yang belum pernah dipakai.
-        const RECS_KEY = 'bubi_recs_v4', RECS_SEED_KEY = 'bubi_recs_seed_v2', SEED_TTL = 30 * 864e5;
+        const RECS_KEY = 'bubi_recs_v5', RECS_SEED_KEY = 'bubi_recs_seed_v2', SEED_TTL = 30 * 864e5;
         const STREAM_REGION = 'ID', NEW_WINDOW_DAYS = 90;
         let homeRecsTimer = null, homeRecsWeek = '', homeRecsBusy = false;
         function weekKey(d = new Date()) { // tanggal Senin pada minggu ini
@@ -2164,12 +2164,12 @@
                     const genres = topGenres(media);
                     // series tanpa seed series: tanpa filter genre (genre film dan TV memakai ID berbeda)
                     const dateKey = media === 'movie' ? 'primary_release_date' : 'first_air_date';
-                    const params = `&watch_region=${STREAM_REGION}&with_watch_monetization_types=flatrate&${dateKey}.gte=${day(NEW_WINDOW_DAYS)}&${dateKey}.lte=${day(0)}&sort_by=popularity.desc&vote_count.gte=20&include_adult=false`
+                    const params = `&watch_region=${STREAM_REGION}&with_watch_monetization_types=flatrate&${dateKey}.gte=${day(NEW_WINDOW_DAYS)}&${dateKey}.lte=${day(0)}&with_original_language=en&sort_by=popularity.desc&vote_count.gte=100&include_adult=false`
                         + (genres.length ? `&with_genres=${genres.join('|')}` : '');
                     try {
                         ((await tmdbGet(`/discover/${media}`, params)).results || []).forEach(r => {
-                            const it = { ...tmdbItem(r, media), score: (r.genre_ids || []).filter(g => (genreCount[media][g] || 0) > 0).length * 10 + (r.vote_average || 0) };
-                            if (!exclude.has(`${media}:${it.id}`) && it.poster) found.set(`${media}:${it.id}`, it);
+                            const it = { ...tmdbItem(r, media), score: (r.popularity || 0) * (1 + 0.25 * (r.genre_ids || []).filter(g => (genreCount[media][g] || 0) > 0).length) };
+                            if (!exclude.has(`${media}:${it.id}`) && it.poster && /^[\x20-\x7E\u00C0-\u024F\u2018-\u201D\u2013\u2014\u2026]+$/.test(it.title)) found.set(`${media}:${it.id}`, it);
                         });
                     } catch (err) { console.warn('Discover gagal:', media, err); }
                 }));
