@@ -42,7 +42,7 @@ Aplikasi web **mobile-first** untuk mengarsipkan film yang ditonton bersama oleh
 
 - Catat judul, tahun, poster, bulan nonton, serta rating dan ulasan **terpisah** untuk Zald dan Micel
 - **Karusel per bulan:** geser ke samping untuk bulan dan kartu film
-- **Nuansa iOS:** gelembung tab yang meluncur dan tab bar yang mengecil saat scroll, filter penonton bergaya segmented control, halaman mengecil di belakang bottom sheet, tarik-untuk-muat-ulang, geser baris antrean untuk menghapus (admin), haptic di iPhone, petunjuk "Tambah ke Layar Utama", menu tekan-tahan pada kartu (buka, salin judul, edit, hapus), warna status bar yang mengikuti sheet, dan haptic saat karusel berpindah kartu
+- **Nuansa iOS:** tab bar kaca yang mengecil saat scroll, bottom sheet yang bisa digeser, tarik-untuk-muat-ulang, geser baris antrean untuk hapus (admin), haptic, dan menu tekan-tahan pada kartu
 - Filter `Semua` · `Nonton Bareng` · `Zald Picks` · `Micel Picks` · `Top 9+`
 - Pencarian judul atau bulan, mendukung nama bulan Indonesia
 - **Certified Fresh:** film favorit tampil dalam emas metalik
@@ -69,6 +69,7 @@ Aplikasi web **mobile-first** untuk mengarsipkan film yang ditonton bersama oleh
 - Detail film: genre, durasi, rating, sinopsis, sutradara, pemeran, streaming di Indonesia
 - **Trailer** langsung tampil di modal (tap play)
 - Sinkron poster massal dengan pratinjau dan centang per film
+- **Rekomendasi:** "Lanjut nonton" di detail (koleksi dan season) serta **Baru & Sudah Streaming** di Beranda; berganti tiap Senin
 
 </td>
 <td width="50%" valign="top">
@@ -96,19 +97,7 @@ Hitam dan putih sebagai dasar, **emas** sebagai aksen brand, **biru hanya untuk 
 
 ### Tipografi
 
-Satu skala untuk iPhone, didefinisikan di `tailwind.config`. Teks terkecil 11 px; input 16 px agar iOS tidak memperbesar layar sendiri.
-
-| Peran | Ukuran | Dipakai untuk |
-|---|---:|---|
-| `micro` | 11 px | Label dan overline huruf kapital |
-| `caption` | 12 px | Keterangan |
-| `xs` | 13 px | Teks sekunder |
-| `sm` | 15 px | Isi, ulasan, sinopsis |
-| `base` | 16 px | Judul modal, input |
-| `2xl` | 24 px | Judul film di detail |
-| Display | 48 px+ | Hitungan hari bersama |
-
-Font: **Anton** (judul), **Outfit** (display), **Inter** (isi).
+Skala tunggal untuk iPhone di `tailwind.config`: `micro` 11 px (label), `caption` 12, `xs` 13, `sm` 15 (isi), `base` 16 (judul modal, input; mencegah zoom otomatis iOS), lalu skala bawaan Tailwind. Font: **Anton** (judul), **Outfit** (display), **Inter** (isi).
 
 ### Material dan gerak
 
@@ -119,6 +108,7 @@ Font: **Anton** (judul), **Outfit** (display), **Inter** (isi).
 | **Bottom sheet** | Handle dan geser ke bawah untuk menutup modal |
 | **Poster bertahap** | Versi kecil buram dulu, lalu poster tajam memudar masuk |
 | **Gerak** | Menghormati `prefers-reduced-motion` dan `prefers-reduced-transparency` |
+| **Aksesibilitas** | Elemen native, modal menahan fokus dan menutup dengan Escape, target sentuh min. 44×44 px |
 
 <img src="assets/readme/divider.svg" alt="" width="100%">
 
@@ -134,7 +124,18 @@ Pakai server lokal (bukan `file://`), karena ada service worker:
 python3 -m http.server 4173
 ```
 
-Buka <http://localhost:4173>. Konfigurasi ada di `index.html`: cari `SUPABASE_URL`, `SUPABASE_KEY`, `TABLE_NAME`, `ADMIN_EMAIL`, dan `TMDB_API_KEY`.
+Buka <http://localhost:4173>. Tidak ada langkah build atau dependensi untuk dipasang.
+
+### Konfigurasi
+
+Semua konstanta ada di bagian atas script `index.html`:
+
+| Konstanta | Isi |
+|---|---|
+| `SUPABASE_URL` · `SUPABASE_KEY` | Proyek Supabase dan publishable key (aman untuk publik, asal RLS aktif) |
+| `TABLE_NAME` | Tabel utama, `bubi_popcorn` |
+| `ADMIN_EMAIL` | Email akun admin; UI hanya meminta password |
+| `TMDB_API_KEY` | API Key v3, hanya-baca. Kosong = fitur TMDB nonaktif |
 
 ## Setup
 
@@ -213,11 +214,13 @@ Key v3 hanya bisa membaca data publik dan memang terlihat di klien. Kalau bocor,
 | `rating_aku` / `rating_dia` | text | Rating 0–10 |
 | `review_aku` / `review_dia` | text | Ulasan |
 
-Kolom opsional `kutipan` di `bubi_popcorn`: jalankan [`supabase/kutipan.sql`](supabase/kutipan.sql) sekali. Tanpa kolom ini kolom kutipan di form dan detail disembunyikan.
+**Kolom opsional** (jalankan SQL-nya sekali di SQL Editor; tanpa kolom, fiturnya otomatis tersembunyi):
 
-Kolom opsional `season` di `bubi_popcorn`: jalankan [`supabase/season.sql`](supabase/season.sql) sekali. Admin memilih season dari daftar TMDB saat menambah series; lencana "S2" tampil di kartu dan detail. Tanpa kolom ini fiturnya tersembunyi.
-
-Kolom opsional `tmdb_id` dan `tmdb_media`: jalankan [`supabase/tmdb_id.sql`](supabase/tmdb_id.sql) sekali, lalu lengkapi film lama lewat tombol sinkron TMDB (admin; periksa daftar sebelum menerapkan). **Rekomendasi:** modal detail punya blok "Lanjut nonton" yang hanya berisi bagian sebelumnya dan lanjutan (koleksi film dan season series, yang belum rilis diberi label Coming soon), sedangkan Beranda punya bagian **Baru & Sudah Streaming**: rilisan 3 bulan terakhir yang tersedia di layanan streaming langganan di Indonesia (TMDB Discover + JustWatch), dengan genre dari film berskor 8 ke atas dan nama layanan di kartu. Sekuel/prekuel film seed tidak ikut. Isinya **berganti tiap hari Senin** (waktu perangkat); seed dipilih dari kunci minggu sehingga sama di semua perangkat. Keduanya tetap jalan tanpa kolom tersebut (pencocokan judul + tahun); admin bisa menekan "+ Antrean" pada kartu.
+| SQL | Kolom | Fungsi |
+|---|---|---|
+| [`kutipan.sql`](supabase/kutipan.sql) | `kutipan` | Kutipan favorit per film |
+| [`season.sql`](supabase/season.sql) | `season` | Season series, lencana "S2" di kartu dan detail |
+| [`tmdb_id.sql`](supabase/tmdb_id.sql) | `tmdb_id`, `tmdb_media` | Pencocokan rekomendasi yang akurat; lengkapi film lama lewat sinkron TMDB (admin). Tanpa ini pencocokan memakai judul + tahun |
 
 **`bubi_watchlist`**: `id` (`w_<timestamp>`), `judul`, `tahun`, `poster`, `created_at`. Skema lengkap di [`supabase/watchlist.sql`](supabase/watchlist.sql).
 
@@ -240,12 +243,7 @@ Kolom opsional `tmdb_id` dan `tmdb_media`: jalankan [`supabase/tmdb_id.sql`](sup
 
 - Push ke `main` otomatis dideploy ke Vercel. `push.bat` tersedia untuk Windows.
 - Setelah mengubah `index.html` atau aset yang di-cache, naikkan `CACHE_NAME` di `sw.js`.
-- Semua data dari database yang masuk `innerHTML` wajib lewat `escapeHtml()`, dan modal wajib lewat `activateModal()` / `deactivateModal()`.
 - Konvensi dan cara uji: [`AGENTS.md`](AGENTS.md). Peta kode dan resep debug: [`DEBUG.md`](DEBUG.md).
-
-## Aksesibilitas
-
-Kontrol memakai elemen native, kartu film bisa dibuka dengan Enter atau Space, modal menahan fokus dan menutup dengan Escape, target sentuh minimal 44×44 px, dan layout kolom tunggal di semua ukuran layar.
 
 ## Lisensi dan Kredit
 
