@@ -546,11 +546,11 @@
             <h2 class="mt-5 mb-3 text-xs font-bold text-amber-400 uppercase tracking-[0.25em] font-display flex items-center gap-2">
                 <i class="fa-solid fa-ticket"></i> Mau Ditonton
             </h2>
-            <div id="watchlist-add" class="hidden mb-3">
-                <input type="text" id="wl-judul" placeholder="Judul + tahun, mis. Carrie 2026" maxlength="150" enterkeyhint="search" class="w-full min-h-[44px] px-3.5 py-2.5 bg-black border border-neutral-800 rounded-xl text-base focus:outline-none focus:border-amber-400 text-neutral-100 transition" onkeydown="if(event.key==='Enter'){event.preventDefault();addWatchlistFromInput();}">
-                <div class="mt-2 flex gap-2">
-                    <button type="button" onclick="searchTmdb('wl-judul','wl-tmdb-results','applyTmdbToWatchlist')" class="flex-1 min-h-[44px] rounded-xl bg-neutral-900 border border-neutral-800 text-amber-400 text-xs font-bold tap-scale hover:border-amber-400" aria-label="Cari di TMDB"><i class="fa-solid fa-magnifying-glass mr-1.5"></i>Cari TMDB</button>
-                    <button type="button" onclick="addWatchlistFromInput()" class="flex-1 min-h-[44px] rounded-xl popcorn-gradient text-black text-xs font-bold tap-scale">Tambah</button>
+            <div id="watchlist-add" class="hidden mb-4">
+                <div class="flex items-center gap-2">
+                    <input type="text" id="wl-judul" placeholder="Judul film / series + tahun" maxlength="150" enterkeyhint="search" class="min-w-0 flex-1 min-h-[44px] px-3.5 py-2.5 bg-neutral-900 border border-neutral-800 rounded-xl text-base focus:outline-none focus:border-amber-400 text-neutral-100 placeholder:text-neutral-400 transition" onkeydown="if(event.key==='Enter'){event.preventDefault();searchTmdb('wl-judul','wl-tmdb-results','applyTmdbToWatchlist');}">
+                    <button type="button" onclick="searchTmdb('wl-judul','wl-tmdb-results','applyTmdbToWatchlist')" class="shrink-0 w-11 h-11 rounded-xl bg-neutral-900 border border-neutral-800 text-amber-400 tap-scale hover:border-amber-400" aria-label="Cari di TMDB"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    <button type="button" onclick="addWatchlistFromInput()" class="shrink-0 w-11 h-11 rounded-xl popcorn-gradient text-black tap-scale" aria-label="Tambah ke antrean"><i class="fa-solid fa-plus"></i></button>
                 </div>
                 <div id="wl-tmdb-results" class="mt-2 space-y-1.5 max-h-72 overflow-y-auto overscroll-contain hidden" aria-live="polite"></div>
             </div>
@@ -3301,12 +3301,12 @@
             }
             list.innerHTML = watchlistData.map(w => {
                 const id = escapeHtml(w.id);
-                const thumb = w.poster ? `<img src="${escapeHtml(tmdbSized(w.poster, 'w92'))}" alt="" loading="lazy" class="w-12 shrink-0 aspect-[2/3] rounded-lg object-cover">` : '<div class="w-12 shrink-0 aspect-[2/3] rounded-lg bg-neutral-800"></div>';
-                const actions = isAdminUnlocked ? `<div class="mt-2 flex items-center gap-2">
-                    <button type="button" onclick="markWatchlistWatched('${id}')" class="min-h-[44px] px-3.5 rounded-xl bg-amber-400/10 border border-amber-500/40 text-amber-400 text-xs font-bold tap-scale">Sudah ditonton</button>
-                    <button type="button" onclick="deleteWatchlistItem('${id}')" class="w-11 h-11 rounded-xl bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-red-400 text-xs tap-scale" aria-label="Hapus dari antrean"><i class="fa-solid fa-trash"></i></button></div>` : '';
-                const rowHtml = `<div class="flex items-center gap-3 p-2.5 rounded-xl bg-neutral-950 border border-neutral-800 ${isAdminUnlocked ? 'swipe-row' : ''}">${thumb}
-                    <div class="min-w-0 flex-1"><div class="text-sm font-bold text-neutral-50 line-clamp-2 leading-snug">${escapeHtml(w.judul)}</div><div class="text-caption text-neutral-400">${escapeHtml(String(w.tahun || ''))}</div>${actions}</div></div>`;
+                const thumb = w.poster ? `<img src="${escapeHtml(tmdbSized(w.poster, 'w92'))}" alt="" loading="lazy" class="w-14 shrink-0 aspect-[2/3] rounded-lg object-cover">` : '<div class="w-14 shrink-0 aspect-[2/3] rounded-lg bg-neutral-800"></div>';
+                const actions = isAdminUnlocked ? `
+                    <button type="button" onclick="markWatchlistWatched('${id}')" class="shrink-0 w-11 h-11 rounded-full bg-amber-400/10 border border-amber-500/40 text-amber-400 tap-scale" aria-label="Sudah ditonton"><i class="fa-solid fa-check"></i></button>
+                    <button type="button" onclick="deleteWatchlistItem('${id}')" class="shrink-0 w-11 h-11 rounded-full text-neutral-400 hover:text-red-400 tap-scale" aria-label="Hapus dari antrean"><i class="fa-solid fa-trash text-xs"></i></button>` : '';
+                const rowHtml = `<div class="flex items-center gap-3 p-2.5 pr-1.5 rounded-2xl bg-neutral-950 border border-neutral-800 ${isAdminUnlocked ? 'swipe-row' : ''}">${thumb}
+                    <div class="min-w-0 flex-1"><div class="text-sm font-bold text-neutral-50 line-clamp-2 leading-snug">${escapeHtml(w.judul)}</div><div class="mt-0.5 text-xs text-neutral-400">${escapeHtml(String(w.tahun || ''))}</div></div>${actions}</div>`;
                 return isAdminUnlocked
                     ? `<div class="swipe-wrap"><button type="button" class="swipe-action" onclick="deleteWatchlistItem('${id}')" aria-label="Hapus dari antrean"><i class="fa-solid fa-trash"></i> Hapus</button>${rowHtml}</div>`
                     : rowHtml;
