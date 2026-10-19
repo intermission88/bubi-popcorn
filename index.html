@@ -1854,10 +1854,8 @@
             };
 
             let watcherBadgeHTML = '';
-            if (watcher === 'zald') {
-                watcherBadgeHTML = `<img src="assets/pfp_zald.png" alt="Zald Picks" title="Zald Picks" class="absolute top-2.5 left-2.5 w-7 h-7 rounded-full object-cover ring-2 ring-sky-400 shadow-lg">`;
-            } else if (watcher === 'micel') {
-                watcherBadgeHTML = `<img src="assets/pfp_micel.png" alt="Micel Picks" title="Micel Picks" class="absolute top-2.5 left-2.5 w-7 h-7 rounded-full object-cover ring-2 ring-pink-400 shadow-lg">`;
+            if (watcher === 'zald' || watcher === 'micel') {
+                // penanda pemilik sudah ada di pil rating di bawah judul; tidak diulang di poster
             } else if (isCertified) {
                 watcherBadgeHTML = `<span class="absolute top-2.5 left-2.5 gold-badge px-2 py-0.5 rounded-lg text-micro font-extrabold flex items-center gap-1"><i class="fa-solid fa-award text-micro"></i> FRESH</span>`;
             }
