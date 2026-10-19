@@ -743,6 +743,16 @@
     </main>
 
     <!-- Tab Bar Bawah (menggantikan tombol melayang) -->
+    <div id="rec-trailer-modal" role="dialog" aria-modal="true" aria-labelledby="rec-trailer-title" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 hidden" onclick="if (event.target === this) closeRecTrailer()">
+        <div class="w-full max-w-md bg-neutral-900 border border-white/10 rounded-2xl p-4 space-y-3">
+            <div class="flex items-center justify-between gap-3">
+                <h2 id="rec-trailer-title" class="text-base font-bold text-neutral-50 truncate">Trailer</h2>
+                <button type="button" onclick="closeRecTrailer()" aria-label="Tutup trailer" class="w-9 h-9 rounded-full bg-white/10 text-neutral-200 tap-scale"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="rec-trailer-frame" class="aspect-video w-full rounded-xl overflow-hidden bg-black flex items-center justify-center text-sm text-neutral-400"></div>
+            <a id="rec-trailer-yt" href="#" target="_blank" rel="noopener noreferrer" class="hidden text-micro text-neutral-400 hover:text-neutral-200 underline">Video tidak muncul? Buka di YouTube</a>
+        </div>
+    </div>
     <div id="ctx-scrim" class="hidden" onclick="closeCtxMenu()"></div>
     <div id="ctx-menu" class="hidden" role="menu" aria-label="Aksi film"></div>
 
@@ -1241,6 +1251,7 @@
                 else if (activeModal.id === 'add-modal') requestCloseAddModal();
                 else if (activeModal.id === 'detail-modal') closeDetailModal();
                 else if (activeModal.id === 'stats-modal') closeStatsModal();
+                else if (activeModal.id === 'rec-trailer-modal') closeRecTrailer();
                 return;
             }
             if (event.key !== 'Tab') return;
@@ -2028,11 +2039,12 @@
             const action = it.noQueue ? '' : queued
                 ? '<div class="mt-1 text-micro text-neutral-400">Di antrean</div>'
                 : (isAdminUnlocked && watchlistAvailable ? `<button type="button" onclick="addRelated('${key}', ${idx})" class="mt-1 px-2 py-1 rounded-lg bg-amber-400/10 border border-amber-500/40 text-amber-400 text-micro font-bold tap-scale">+ Antrean</button>` : '');
+            const trailerBtn = key === 'home' ? `<button type="button" onclick="openRecTrailer(${idx})" class="mt-1 mr-1 px-2 py-1 rounded-lg bg-white/10 border border-white/20 text-neutral-100 text-micro font-bold tap-scale"><i class="fa-solid fa-play text-micro"></i> Trailer</button>` : '';
             return `<div class="w-24 shrink-0 snap-start">
                 <div class="relative aspect-[2/3] rounded-xl overflow-hidden bg-neutral-900 ring-1 ring-white/10">${poster}${soon ? '<span class="absolute inset-x-0 bottom-0 py-1 text-center text-micro font-extrabold uppercase tracking-wider bg-amber-400 text-black">Coming soon</span>' : ''}</div>
                 <div class="mt-1.5 text-caption font-semibold text-neutral-100 line-clamp-2 leading-tight">${escapeHtml(it.title)}</div>
                 ${sub ? `<div class="text-micro text-neutral-400 truncate">${escapeHtml(sub)}</div>` : ''}
-                ${action}</div>`;
+                ${trailerBtn}${action}</div>`;
         }
         function relatedRow(key, list) {
             relatedLists[key] = list;
@@ -2064,6 +2076,45 @@
             box.innerHTML = groups.map(([label, key, list]) => `<div class="space-y-2">
                 <h3 class="text-micro font-bold text-amber-300 uppercase tracking-wider">${label}</h3>${relatedRow('detail-' + key, list)}</div>`).join('');
             box.classList.remove('hidden');
+        }
+
+        let recTrailerSeq = 0;
+        async function openRecTrailer(idx) {
+            const it = (relatedLists.home || [])[idx];
+            if (!it) return;
+            triggerHaptic();
+            const modal = document.getElementById('rec-trailer-modal'), frame = document.getElementById('rec-trailer-frame'), yt = document.getElementById('rec-trailer-yt');
+            const seq = ++recTrailerSeq;
+            document.getElementById('rec-trailer-title').textContent = it.title;
+            frame.textContent = 'Memuat trailer...'; yt.classList.add('hidden');
+            modal.classList.remove('hidden');
+            activateModal(modal, modal.querySelector('button'));
+            let key = '';
+            try {
+                const vids = (await tmdbGet(`/${it.media}/${it.id}/videos`, '&include_video_language=en,null')).results || [];
+                const yts = vids.filter(v => v.site === 'YouTube');
+                const v = yts.find(v => v.type === 'Trailer' && v.official) || yts.find(v => v.type === 'Trailer') || yts.find(v => v.type === 'Teaser');
+                key = v ? v.key : '';
+            } catch (err) { console.warn('Trailer gagal', err); }
+            if (seq !== recTrailerSeq) return;
+            if (!/^[\w-]{6,20}$/.test(key)) { frame.textContent = 'Trailer belum tersedia.'; return; }
+            frame.textContent = '';
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://www.youtube-nocookie.com/embed/${key}?rel=0&playsinline=1&autoplay=1`;
+            iframe.title = `Trailer ${it.title}`;
+            iframe.className = 'w-full h-full';
+            iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+            iframe.allowFullscreen = true;
+            iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+            frame.appendChild(iframe);
+            yt.href = `https://www.youtube.com/watch?v=${key}`; yt.classList.remove('hidden');
+        }
+        function closeRecTrailer() {
+            recTrailerSeq++;
+            const modal = document.getElementById('rec-trailer-modal');
+            document.getElementById('rec-trailer-frame').textContent = ''; // hentikan video
+            modal.classList.add('hidden');
+            deactivateModal(modal);
         }
 
         async function addRelated(key, idx) {
