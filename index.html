@@ -2058,11 +2058,11 @@
                 ? '<div class="mt-1 text-micro text-neutral-400">Di antrean</div>'
                 : (isAdminUnlocked && watchlistAvailable ? `<button type="button" onclick="addRelated('${key}', ${idx})" class="${btn} bg-amber-400/10 border border-amber-500/40 text-amber-400">+ Antrean</button>` : '');
             const trailerBtn = home ? `<button type="button" onclick="openRecTrailer(${idx})" class="${btn} bg-white/10 border border-white/20 text-neutral-100"><i class="fa-solid fa-play text-micro mr-1"></i>Trailer</button>` : '';
-            return `<div class="${home ? 'w-36' : 'w-24'} shrink-0 snap-start">
+            return `<div class="${home ? 'w-36 flex flex-col' : 'w-24'} shrink-0 snap-start">
                 <div class="relative aspect-[2/3] rounded-xl overflow-hidden bg-neutral-900 ring-1 ring-white/10">${poster}${soon ? '<span class="absolute inset-x-0 bottom-0 py-1 text-center text-micro font-extrabold uppercase tracking-wider bg-amber-400 text-black">Coming soon</span>' : ''}</div>
                 <div class="mt-1.5 ${home ? 'text-xs' : 'text-caption'} font-semibold text-neutral-100 line-clamp-2 leading-tight">${escapeHtml(it.title)}</div>
                 ${sub ? `<div class="text-micro text-neutral-400 truncate">${escapeHtml(sub)}</div>` : ''}
-                ${home ? `<div class="mt-2">${trailerBtn}</div>` : action}</div>`;
+                ${home ? `<div class="mt-auto pt-2">${trailerBtn}</div>` : action}</div>`; // Beranda: tombol menempel di dasar kartu agar sejajar walau judul 1 atau 2 baris
         }
         function relatedRow(key, list) {
             relatedLists[key] = list;
