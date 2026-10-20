@@ -1808,7 +1808,7 @@
         }
 
         function processFilterAndRender() {
-            const searchVal = (document.getElementById('search-input').value || '').toLowerCase();
+            const searchVal = (document.getElementById('search-input').value || '').trim().toLowerCase();
 
             let filtered = moviesData.filter(movie => {
                 const watcher = movie.watched_by || 'both';
@@ -1931,8 +1931,10 @@
             if (!carousel) return;
 
             carousel.innerHTML = '';
-            errorState.classList.toggle('hidden', !hasFetchError);
-            if (hasFetchError) {
+            // Gagal ambil tapi ada salinan cache: tetap tampilkan film (mode offline)
+            const showError = hasFetchError && moviesData.length === 0;
+            errorState.classList.toggle('hidden', !showError);
+            if (showError) {
                 emptyState.classList.add('hidden');
                 return;
             }
@@ -3714,22 +3716,6 @@
                     document.getElementById('search-input').focus();
                 }
             });
-
-            // Pull-to-refresh gesture
-            let touchStartY = 0;
-            document.addEventListener('touchstart', (e) => {
-                if (window.scrollY <= 0) touchStartY = e.touches[0].clientY;
-            }, { passive: true });
-            document.addEventListener('touchend', (e) => {
-                if (window.scrollY <= 0 && touchStartY > 0 && !activeModal) {
-                    const pull = e.changedTouches[0].clientY - touchStartY;
-                    if (pull > 120) {
-                        showToast("Menyegarkan data film...", "info");
-                        fetchSupabaseData();
-                    }
-                }
-                touchStartY = 0;
-            }, { passive: true });
 
             // Master timer tunggal: jam, hari hubungan, countdown ultah
             updateRelationshipCounter();

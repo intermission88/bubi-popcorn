@@ -154,7 +154,8 @@ Pola assertion yang sudah terbukti: render kartu uji via `createMovieCard({...})
 16. **Detail TMDB punya penjaga balapan.** `loadTmdbExtra` membandingkan `currentDetailMovieId`; kalau modal berpindah film sebelum fetch selesai, hasil lama dibuang.
 17. **`requestAnimationFrame` bisa dijeda di browser pane**, jadi efek scroll (`updateScrollUI`) tidak terpicu saat uji. Panggil `updateScrollUI()` manual setelah `scrollTo`.
 18. **Uji geser-tutup** lewat `PointerEvent` sintetis di `[data-sheet-grab]` (`pointerdown` lalu beberapa `pointermove` lalu `pointerup`, `pointerType: 'touch'`). Geser >120px (atau >30px dengan kecepatan terkini >0.5 px/ms; tahan sebentar sebelum lepas = bukan lemparan) menutup; tarik ke atas memakai efek karet 0.25x; kurang dari itu kembali. Animasi `animate-slideUp` dilepas saat drag dan dipasang lagi saat modal dibuka.
-19. **Pull-to-refresh** (touchend di `DOMContentLoaded`) dimatikan saat `activeModal` ada, supaya geser-tutup tidak memicu refresh data.
+19. **Pull-to-refresh** hanya satu: `initPullToRefresh` (dimatikan saat `body.modal-lock`, supaya geser-tutup tidak memicu refresh). Dulu ada handler `touchend` kedua di bootstrap yang membuat fetch dobel; jangan ditambahkan lagi.
+22. **Offline:** `renderMonthsCarousel` menampilkan `error-state` hanya bila fetch gagal DAN `moviesData` kosong; bila ada salinan `bubi_movies_cache_v1`, film tetap tampil.
 20. **Kaca tidak terlihat?** `backdrop-filter` hanya tampak bila ada konten berwarna di belakangnya (di atas latar hitam polos hasilnya gelap). Cek dengan scroll ke area poster. Header memakai pseudo-elemen `::before` untuk blur bermasker agar tombol di dalamnya tidak ikut memudar.
 21. **`.certified-card` memakai tiga lapis `background` (`padding-box` + `border-box`) untuk bingkai gradien.** Jangan tambahkan `border-color` atau `background-color` Tailwind pada kartu itu; akan menimpa bingkai. Lencana emas memakai `!important` agar tidak kalah oleh utilitas `shadow-*`.
 
