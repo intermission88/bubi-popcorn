@@ -2112,9 +2112,28 @@
             if (await insertWatchlist({ judul: it.title, tahun: it.year, poster: it.poster })) closeRecTrailer();
             else b.disabled = false;
         }
-        async function openRecTrailer(idx) {
+        function openRecTrailer(idx) {
             const it = (relatedLists.home || [])[idx];
-            if (!it) return;
+            if (it) openTrailerFor(it);
+        }
+        // Antrean hanya menyimpan judul + tahun: ID TMDB dicari sekali lalu diingat selama sesi
+        const queueTmdbCache = new Map();
+        async function resolveQueueTmdb(w) {
+            if (queueTmdbCache.has(w.id)) return queueTmdbCache.get(w.id);
+            const sr = await tmdbGet('/search/multi', `&query=${encodeURIComponent(w.judul || '')}&include_adult=false`);
+            const cands = (sr.results || []).filter(r => r.media_type === 'movie' || r.media_type === 'tv');
+            const yr = r => parseInt((r.release_date || r.first_air_date || '').slice(0, 4), 10) || 0;
+            const hit = cands.find(r => !w.tahun || Math.abs(yr(r) - w.tahun) <= 1) || null;
+            const res = hit ? { id: hit.id, media: hit.media_type } : null;
+            queueTmdbCache.set(w.id, res);
+            return res;
+        }
+        function openQueueTrailer(id) {
+            const w = watchlistData.find(x => x.id == id);
+            if (!w) return;
+            openTrailerFor({ title: w.judul || 'Trailer', titles: [w.judul || ''], year: w.tahun || null, poster: w.poster || '', queue: w });
+        }
+        async function openTrailerFor(it) {
             triggerHaptic();
             const modal = document.getElementById('rec-trailer-modal'), frame = document.getElementById('rec-trailer-frame'), yt = document.getElementById('rec-trailer-yt');
             const seq = ++recTrailerSeq;
@@ -2125,6 +2144,12 @@
             activateModal(modal, modal.querySelector('button'));
             let key = '';
             try {
+                if (it.queue) { // item antrean: cari ID TMDB dulu
+                    const found = TMDB_API_KEY ? await resolveQueueTmdb(it.queue) : null;
+                    if (seq !== recTrailerSeq) return;
+                    if (!found) { frame.textContent = 'Trailer belum tersedia.'; return; }
+                    it.id = found.id; it.media = found.media;
+                }
                 const vids = (await tmdbGet(`/${it.media}/${it.id}/videos`, '&include_video_language=en,null')).results || [];
                 const yts = vids.filter(v => v.site === 'YouTube');
                 const v = yts.find(v => v.type === 'Trailer' && v.official) || yts.find(v => v.type === 'Trailer') || yts.find(v => v.type === 'Teaser');
@@ -3360,7 +3385,10 @@
             }
             list.innerHTML = watchlistData.map(w => {
                 const id = escapeHtml(w.id);
-                const thumb = w.poster ? `<img src="${escapeHtml(tmdbSized(w.poster, 'w92'))}" alt="" loading="lazy" class="w-14 shrink-0 aspect-[2/3] rounded-lg object-cover">` : '<div class="w-14 shrink-0 aspect-[2/3] rounded-lg bg-neutral-800"></div>';
+                const img = w.poster ? `<img src="${escapeHtml(tmdbSized(w.poster, 'w92'))}" alt="" loading="lazy" class="w-full h-full object-cover">` : '';
+                const thumb = TMDB_API_KEY
+                    ? `<button type="button" onclick="openQueueTrailer('${id}')" class="relative w-14 shrink-0 aspect-[2/3] rounded-lg overflow-hidden bg-neutral-800 tap-scale" aria-label="Putar trailer ${escapeHtml(w.judul)}">${img}<span class="absolute inset-0 flex items-center justify-center bg-black/35"><span class="w-7 h-7 rounded-full bg-black/70 border border-white/30 flex items-center justify-center"><i class="fa-solid fa-play text-micro text-neutral-50 ml-0.5"></i></span></span></button>`
+                    : `<div class="w-14 shrink-0 aspect-[2/3] rounded-lg overflow-hidden bg-neutral-800">${img}</div>`;
                 const actions = isAdminUnlocked ? `
                     <button type="button" onclick="markWatchlistWatched('${id}')" class="shrink-0 w-11 h-11 rounded-full bg-amber-400/10 border border-amber-500/40 text-amber-400 tap-scale" aria-label="Sudah ditonton"><i class="fa-solid fa-check"></i></button>
                     <button type="button" onclick="deleteWatchlistItem('${id}')" class="shrink-0 w-11 h-11 rounded-full text-neutral-400 hover:text-red-400 tap-scale" aria-label="Hapus dari antrean"><i class="fa-solid fa-trash text-xs"></i></button>` : '';

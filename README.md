@@ -52,7 +52,7 @@ Aplikasi web **mobile-first** untuk mengarsipkan film yang ditonton bersama oleh
 
 ### 💞 Bareng-bareng
 
-- **Mau Ditonton:** antrean film, tombol "Sudah ditonton" langsung membuka form ulasan
+- **Mau Ditonton:** antrean film, tombol "Sudah ditonton" langsung membuka form ulasan; ketuk poster untuk memutar trailer
 - **Statistik Kita:** rata-rata rating, favorit berdua, selera paling beda, bulan tersibuk
 - **Roulette Nobar:** pilih film acak untuk malam ini
 - **Tahun dalam Film:** recap tahunan yang bisa dibagikan
