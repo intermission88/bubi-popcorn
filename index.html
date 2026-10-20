@@ -939,7 +939,7 @@
                 <div>
                     <label class="block text-xs font-semibold text-neutral-300 mb-1.5">Judul Film *</label>
                     <div class="flex gap-2">
-                        <input type="text" name="judul" id="form-judul" required placeholder="Judul film..." 
+                        <input type="text" name="judul" id="form-judul" required placeholder="Judul film..." oninput="onFormTitleInput()" 
                             class="w-full px-3.5 py-3 bg-black border border-neutral-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-neutral-100 transition shadow-inner">
                         <input type="text" id="form-cari-tahun" inputmode="numeric" maxlength="4" placeholder="Tahun" aria-label="Tahun rilis (opsional, untuk mempersempit pencarian)" class="w-[4.5rem] shrink-0 px-2 py-3 bg-black border border-neutral-800 rounded-xl text-xs text-center focus:outline-none focus:border-amber-400 text-neutral-100 transition shadow-inner">
                         <button type="button" onclick="searchTmdb()" class="shrink-0 px-3 rounded-xl bg-neutral-900 border border-neutral-800 text-amber-400 text-caption font-bold tap-scale hover:border-amber-400" title="Isi otomatis dari TMDB">
@@ -1522,13 +1522,14 @@
 
             const startTime = performance.now();
             try {
-                await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_NAME}?select=id&limit=1`, {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_NAME}?select=id&limit=1`, {
                     method: 'GET',
                     headers: {
                         'apikey': SUPABASE_KEY,
                         'Authorization': `Bearer ${SUPABASE_KEY}`
                     }
                 });
+                if (!res.ok) throw new Error(res.status);
                 const endTime = performance.now();
                 const duration = Math.round(endTime - startTime);
 
@@ -1585,7 +1586,8 @@
             const diffSecs = Math.floor((diffTime / 1000) % 60);
 
             const countdownEl = document.getElementById(countdownElementId);
-            if (countdownEl) countdownEl.innerText = `${diffDays} hari ${diffHours}j ${diffMins}m ${diffSecs}d`;
+            const isToday = now.getMonth() === birthDate.getMonth() && now.getDate() === birthDate.getDate();
+            if (countdownEl) countdownEl.innerText = isToday ? 'Hari ini! 🎂' : `${diffDays} hari ${diffHours}j ${diffMins}m ${diffSecs}d`;
         }
 
         function updatePersonalDetails() {
@@ -1617,7 +1619,7 @@
 
         function setViewerFilter(filterType, btnEl) {
             currentViewerFilter = filterType;
-            localStorage.setItem('bubi_viewer_filter', filterType);
+            try { localStorage.setItem('bubi_viewer_filter', filterType); } catch (e) {}
             syncViewerSeg(btnEl);
             processFilterAndRender();
         }
@@ -1817,10 +1819,8 @@
                 }
 
                 if (isTopRatedActive) {
-                    const rZ = parseRating(movie.rating_aku) || 0;
-                    const rM = parseRating(movie.rating_dia) || 0;
-                    const avg = (watcher === 'zald') ? rZ : (watcher === 'micel' ? rM : ((rZ + rM) / (movie.rating_aku && movie.rating_dia ? 2 : 1)));
-                    if (avg < 9) return false;
+                    const own = watcher === 'zald' ? parseRating(movie.rating_aku) : watcher === 'micel' ? parseRating(movie.rating_dia) : ratingAvg(movie);
+                    if ((own || 0) < 9) return false;
                 }
 
                 const judul = (movie.judul || '').toLowerCase();
@@ -1989,7 +1989,7 @@
             document.getElementById('search-input').value = '';
             toggleClearSearchBtn();
             currentViewerFilter = 'all';
-            localStorage.removeItem('bubi_viewer_filter');
+            try { localStorage.removeItem('bubi_viewer_filter'); } catch (e) {}
             isTopRatedActive = false;
             
             const topRatedBtn = document.getElementById('top-rated-btn');
@@ -2499,6 +2499,7 @@
             lastScrollPosition = window.pageYOffset || document.documentElement.scrollTop;
 
             pendingWatchlistId = null;
+            tmdbPick = null;
             document.getElementById('editing_id').value = '';
             document.getElementById('add-movie-form').reset();
             document.getElementById('form-tahun').dataset.set = '';
@@ -2652,7 +2653,8 @@
             if (icon) icon.classList.add('refresh-spin');
             await fetchSupabaseData();
             if (icon) icon.classList.remove('refresh-spin');
-            showToast("Data diperbarui! 🔄", "success");
+            if (hasFetchError) showToast("Gagal memuat. Menampilkan data tersimpan.", "warning");
+            else showToast("Data diperbarui! 🔄", "success");
         }
 
         // Tahun tidak lagi diketik: bila judul diketik manual tanpa memilih hasil TMDB, tahun diambil dari hasil teratas TMDB.
@@ -2678,7 +2680,11 @@
             }
 
             const form = event.target;
+            const submitBtn = document.getElementById('submit-btn');
+            if (submitBtn.disabled) return; // cegah simpan dobel saat ketuk dua kali
+            submitBtn.disabled = true;
             await resolveYearIfMissing();
+            submitBtn.disabled = false;
             const formData = new FormData(form);
             const editingId = formData.get('editing_id');
             const watcher = formData.get('watched_by');
@@ -2705,7 +2711,7 @@
             const payload = {
                 bulan: rawBulan,
                 judul: formData.get('judul'),
-                tahun: parseInt(formData.get('tahun')) || 2026,
+                tahun: parseInt(formData.get('tahun')) || new Date().getFullYear(),
                 watched_by: watcher,
                 is_certified: isCertifiedChecked,
                 review_aku: (watcher === 'both' || watcher === 'zald') ? formData.get('review_aku') : null,
@@ -2721,7 +2727,6 @@
             if (seasonAvailable()) payload.season = Math.min(99, parseInt(formData.get('season'), 10)) || null;
             if (kutipanAvailable()) payload.kutipan = (formData.get('kutipan') || '').trim() || null;
 
-            const submitBtn = document.getElementById('submit-btn');
             submitBtn.disabled = true;
 
             let saved = false;
@@ -2752,7 +2757,8 @@
             }
             if (saved) {
                 if (pendingWatchlistId && !editingId) {
-                    await supabaseClient.from(WATCHLIST_TABLE).delete().eq('id', pendingWatchlistId);
+                    const { error: wlErr } = await supabaseClient.from(WATCHLIST_TABLE).delete().eq('id', pendingWatchlistId);
+                    if (wlErr) { console.error(wlErr); showToast('Ulasan tersimpan, tapi gagal menghapus dari antrean.', 'warning'); }
                 }
                 pendingWatchlistId = null;
                 closeAddModal();
@@ -2770,12 +2776,13 @@
             if (!movie) return;
 
             closeDetailModal();
+            tmdbPick = null;
 
             document.getElementById('editing_id').value = movie.id;
             const form = document.getElementById('add-movie-form');
             form.judul.value = movie.judul || '';
             form.poster.value = movie.poster || '';
-            form.tahun.value = movie.tahun || '2026';
+            form.tahun.value = movie.tahun || new Date().getFullYear();
             form.tahun.dataset.set = '1';
             form.bulan.value = parseMonthToInputValue(movie.bulan || '');
             
@@ -2913,7 +2920,7 @@
             });
 
             const perMonth = {};
-            moviesData.forEach(m => { if (m.bulan) perMonth[m.bulan] = (perMonth[m.bulan] || 0) + 1; });
+            moviesData.forEach(m => { const k = convertToComparableMonth(m.bulan); if (m.bulan) perMonth[k] = (perMonth[k] || 0) + 1; });
             const bestMonth = Object.entries(perMonth).sort((a, b) => b[1] - a[1])[0];
 
             const cards = [
@@ -2977,6 +2984,8 @@
             if (!TMDB_API_KEY) return note('TMDB belum dikonfigurasi. Isi form secara manual.');
             if (!query) return note('Ketik judul dulu, lalu tekan TMDB.');
             note('Mencari...');
+            const seq = tmdbSearchSeq[boxId] = (tmdbSearchSeq[boxId] || 0) + 1;
+            const stale = () => seq !== tmdbSearchSeq[boxId]; // pencarian yang lebih baru sudah berjalan
             try {
                 const base = `api_key=${encodeURIComponent(TMDB_API_KEY)}&query=${encodeURIComponent(query)}&language=id-ID&include_adult=false`;
                 const yr = typedYear || parseInt((document.getElementById(yearId)?.value || '').trim(), 10);
@@ -3002,8 +3011,9 @@
                     if (!res.ok) throw new Error(res.status);
                     items = (await res.json()).results.filter(r => r.media_type === 'movie' || r.media_type === 'tv').slice(0, 20);
                 }
+                if (stale()) return;
                 if (!items.length) return note(yr ? `Tidak ada hasil untuk tahun ${yr}.` : 'Tidak ada hasil.');
-                tmdbItems = items;
+                tmdbItemsByBox[boxId] = items;
                 box.innerHTML = items.map((r, i) => {
                     const title = tmdbTitle(r);
                     const year = (r.release_date || r.first_air_date || '').slice(0, 4);
@@ -3013,15 +3023,17 @@
                 box.classList.remove('hidden');
             } catch (err) {
                 console.warn('TMDB gagal:', err);
-                note('Gagal menghubungi TMDB. Isi form secara manual.');
+                if (!stale()) note('Gagal menghubungi TMDB. Isi form secara manual.');
             }
         }
 
-        let tmdbItems = [];
+        const tmdbItemsByBox = {}, tmdbSearchSeq = {};
+        let tmdbPick = null; // pilihan TMDB terakhir di form: { title, poster, season }
         function applyTmdbResult(i) {
-            const r = tmdbItems[i];
+            const r = (tmdbItemsByBox['tmdb-results'] || [])[i];
             if (!r) return;
             document.getElementById('form-judul').value = tmdbTitle(r);
+            tmdbPick = { title: tmdbTitle(r), poster: r.poster_path ? TMDB_IMG + r.poster_path : '', season: '' };
             const year = (r.release_date || r.first_air_date || '').slice(0, 4);
             if (year) { document.getElementById('form-tahun').value = year; document.getElementById('form-tahun').dataset.set = '1'; }
             document.getElementById('form-poster').value = r.poster_path ? TMDB_IMG + r.poster_path : '';
@@ -3029,6 +3041,18 @@
             document.getElementById('form-tmdb-media').value = r.media_type === 'tv' ? 'tv' : 'movie';
             document.getElementById('tmdb-results').classList.add('hidden');
             loadSeasonPicker(r);
+        }
+
+        // Judul diubah setelah memilih hasil TMDB: data pilihan itu (ID, poster, season, tahun) tidak lagi berlaku
+        function onFormTitleInput() {
+            if (!tmdbPick || document.getElementById('form-judul').value.trim() === tmdbPick.title) return;
+            const f = document.getElementById('add-movie-form');
+            f.tmdb_id.value = ''; f.tmdb_media.value = '';
+            if (f.poster.value === tmdbPick.poster) f.poster.value = '';
+            if (tmdbPick.season && f.season.value === tmdbPick.season) f.season.value = '';
+            document.getElementById('form-tahun').dataset.set = '';
+            document.getElementById('season-picker').classList.add('hidden');
+            tmdbPick = null;
         }
 
         // Series: ambil daftar season dari TMDB (/tv/{id} -> seasons[]), pilih satu untuk mengisi season, tahun, dan poster.
@@ -3059,6 +3083,7 @@
             if (y) { document.getElementById('form-tahun').value = y; document.getElementById('form-tahun').dataset.set = '1'; }
             const poster = x.poster_path ? TMDB_IMG + x.poster_path : tmdbSeriesPoster;
             if (poster) document.getElementById('form-poster').value = poster;
+            if (tmdbPick) { tmdbPick.season = String(x.season_number); if (poster) tmdbPick.poster = poster; }
         }
 
         // --- DETAIL TAMBAHAN DARI TMDB (diambil saat detail dibuka, tidak disimpan) ---
@@ -3150,8 +3175,10 @@
             }
             if (x.backdrop) {
                 const banner = document.getElementById('detail-banner-img');
-                const pre = new Image();
-                pre.onload = () => { banner.src = pre.src; banner.className = 'w-full h-full object-cover opacity-80 transition-opacity duration-500'; };
+                const pre = new Image(), forId = currentDetailMovieId;
+                pre.onload = () => {
+                    if (currentDetailMovieId !== forId || document.getElementById('detail-modal').classList.contains('hidden')) return;
+                    banner.src = pre.src; banner.className = 'w-full h-full object-cover opacity-80 transition-opacity duration-500'; };
                 pre.src = `https://image.tmdb.org/t/p/w780${x.backdrop}`;
             }
             const chip = t => `<span class="px-2 py-0.5 rounded-lg bg-neutral-900 text-neutral-200 text-micro font-semibold">${escapeHtml(t)}</span>`;
@@ -3245,6 +3272,14 @@
             const year = r => parseInt((r.release_date || r.first_air_date || '').slice(0, 4)) || null;
             const lookup = async m => {
                 try {
+                    if (m.tmdb_id) { // ID tersimpan: ambil poster langsung, tanpa menebak dari judul
+                        const media = m.tmdb_media === 'tv' ? 'tv' : 'movie';
+                        const d = await tmdbGet(`/${media}/${Number(m.tmdb_id)}`);
+                        if (!d.poster_path) { skipped.push(`${m.judul}: TMDB tanpa poster`); return; }
+                        const next = seasonNum(m) && m.poster ? m.poster : TMDB_IMG + d.poster_path;
+                        if (m.poster !== next) tmdbSyncPlan.push({ id: m.id, judul: m.judul, old: m.poster || '', next, tmdbTitle: tmdbTitle(d), newId: 0, newMedia: media });
+                        return;
+                    }
                     const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${encodeURIComponent(TMDB_API_KEY)}&query=${encodeURIComponent(m.judul || '')}&include_adult=false`);
                     if (!res.ok) throw new Error(res.status);
                     const cands = (await res.json()).results.filter(r => (r.media_type === 'movie' || r.media_type === 'tv') && r.poster_path);
@@ -3364,7 +3399,7 @@
         }
 
         async function applyTmdbToWatchlist(i) {
-            const r = tmdbItems[i];
+            const r = (tmdbItemsByBox['wl-tmdb-results'] || [])[i];
             if (!r) return;
             const ok = await insertWatchlist({
                 judul: tmdbTitle(r),
@@ -3402,7 +3437,7 @@
         let lastRecapText = '';
         function initRecap() {
             const sel = document.getElementById('recap-year');
-            const years = [...new Set(moviesData.map(m => (m.bulan || '').slice(0, 4)).filter(y => /^\d{4}$/.test(y)))].sort().reverse();
+            const years = [...new Set(moviesData.map(m => convertToComparableMonth(m.bulan).slice(0, 4)).filter(y => /^\d{4}$/.test(y) && y !== '0000'))].sort().reverse();
             sel.innerHTML = years.map(y => `<option value="${escapeHtml(y)}">${escapeHtml(y)}</option>`).join('');
             renderRecap();
         }
@@ -3410,19 +3445,19 @@
         function renderRecap() {
             const box = document.getElementById('recap-box');
             const year = document.getElementById('recap-year').value;
-            const list = moviesData.filter(m => (m.bulan || '').startsWith(year + '-'));
+            const list = moviesData.filter(m => convertToComparableMonth(m.bulan).startsWith(year + '-'));
             if (!list.length) { box.textContent = 'Belum ada data.'; lastRecapText = ''; return; }
             const mean = arr => arr.length ? (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(1) : '-';
             const rZ = list.map(m => parseRating(m.rating_aku)).filter(v => v !== null);
             const rM = list.map(m => parseRating(m.rating_dia)).filter(v => v !== null);
             const together = list.filter(m => (m.watched_by || 'both') === 'both');
-            const certified = list.filter(m => m.is_certified);
+            const certified = list.filter(m => m.is_certified === true || m.is_certified === 'true' || m.is_certified === 'TRUE');
             const scored = list.map(m => {
                 const v = [parseRating(m.rating_aku), parseRating(m.rating_dia)].filter(x => x !== null);
                 return { m, avg: v.length ? v.reduce((a, b) => a + b, 0) / v.length : -1 };
             }).filter(x => x.avg >= 0).sort((a, b) => b.avg - a.avg).slice(0, 3);
             const perMonth = {};
-            list.forEach(m => { perMonth[m.bulan] = (perMonth[m.bulan] || 0) + 1; });
+            list.forEach(m => { const k = convertToComparableMonth(m.bulan); perMonth[k] = (perMonth[k] || 0) + 1; });
             const best = Object.entries(perMonth).sort((a, b) => b[1] - a[1])[0];
 
             const lines = [
@@ -3449,7 +3484,7 @@
         }
 
         // --- CSV ---
-        const CSV_COLUMNS = ['id', 'judul', 'tahun', 'bulan', 'watched_by', 'is_certified', 'rating_aku', 'review_aku', 'rating_dia', 'review_dia', 'poster', 'season'];
+        const CSV_COLUMNS = ['id', 'judul', 'tahun', 'bulan', 'watched_by', 'is_certified', 'rating_aku', 'review_aku', 'rating_dia', 'review_dia', 'poster', 'season', 'kutipan', 'tmdb_id', 'tmdb_media'];
 
         function csvCell(v) {
             let t = v === null || v === undefined ? '' : String(v);
@@ -3530,6 +3565,11 @@
                             poster: /^https?:\/\//.test(get(r, 'poster')) ? get(r, 'poster') : ''
                         };
                         if (seasonAvailable()) m.season = parseInt(get(r, 'season'), 10) || null;
+                        if (kutipanAvailable()) m.kutipan = unq(get(r, 'kutipan')) || null;
+                        if (tmdbIdAvailable()) {
+                            m.tmdb_id = parseInt(get(r, 'tmdb_id'), 10) || null;
+                            m.tmdb_media = m.tmdb_id ? (get(r, 'tmdb_media') === 'tv' ? 'tv' : 'movie') : null;
+                        }
                     }
                     const key = `${m.judul.toLowerCase()}|${m.bulan}`;
                     if (!m.judul || !/^\d{4}-\d{2}$/.test(m.bulan) || existing.has(key)) { skipped++; return; }
@@ -3582,7 +3622,14 @@
                 if (dy > 120 || (dy > 30 && vel > 0.5)) {
                     el.style.transition = 'transform .2s ease-out';
                     el.style.transform = 'translateY(100%)';
-                    setTimeout(() => { closeFn(); el.style.transition = ''; el.style.transform = ''; }, 180);
+                    setTimeout(() => {
+                        closeFn();
+                        if (el.closest('.hidden')) { el.style.transition = ''; el.style.transform = ''; return; }
+                        // penutupan dibatalkan (mis. form belum disimpan): sheet meluncur kembali
+                        el.style.transition = 'transform .25s cubic-bezier(.16, 1, .3, 1)';
+                        el.style.transform = '';
+                        setTimeout(() => { el.style.transition = ''; }, 260);
+                    }, 180);
                 } else {
                     el.style.transition = 'transform .25s cubic-bezier(.16, 1, .3, 1)';
                     el.style.transform = '';
@@ -3701,7 +3748,9 @@
             }
 
             // Restore filter tersimpan
-            const savedFilter = localStorage.getItem('bubi_viewer_filter');
+            let savedFilter = null;
+            try { savedFilter = localStorage.getItem('bubi_viewer_filter'); } catch (e) {}
+            if (savedFilter && !['all', 'both', 'zald', 'micel'].includes(savedFilter)) savedFilter = null;
             if (savedFilter) {
                 const targetBtn = Array.from(document.querySelectorAll('.filter-btn'))[
                     { all: 0, both: 1, zald: 2, micel: 3 }[savedFilter] || 0
