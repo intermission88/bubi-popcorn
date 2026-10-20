@@ -386,7 +386,7 @@
     <div id="ptr" aria-hidden="true"><i class="fa-solid fa-rotate-right text-sm"></i></div>
 
     <header id="app-header" class="fixed top-0 inset-x-0 z-40 pb-3">
-        <div class="max-w-md mx-auto flex items-center justify-between">
+        <div class="max-w-md md:max-w-3xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl popcorn-gradient flex items-center justify-center text-black text-base shadow-lg flex-shrink-0 font-bold">
                     <i class="fa-solid fa-bowl-food"></i>
@@ -412,7 +412,7 @@
     </header>
 
     <!-- Main Container -->
-    <main id="main-content" class="max-w-md mx-auto px-4 space-y-4 mt-3">
+    <main id="main-content" class="max-w-md md:max-w-3xl mx-auto px-4 md:px-6 space-y-4 mt-3">
 
         <!-- Petunjuk pasang ke Layar Utama (hanya iPhone/iPad Safari, bisa ditutup) -->
         <aside id="a2hs" class="hidden flex items-start gap-3 p-3.5 rounded-2xl bg-neutral-900 border border-neutral-800" role="note">
@@ -569,7 +569,7 @@
                 </div>
                 <div id="wl-tmdb-results" class="mt-2 space-y-1.5 max-h-72 overflow-y-auto overscroll-contain hidden" aria-live="polite"></div>
             </div>
-            <div id="watchlist-list" class="space-y-2"></div>
+            <div id="watchlist-list" class="space-y-2 md:space-y-0 md:grid md:grid-cols-2 md:gap-2"></div>
         </section>
 
         <!-- SECTION REKOMENDASI (dihitung dari film berskor tinggi; disembunyikan bila kosong) -->
@@ -758,7 +758,7 @@
 
     <!-- Tab Bar Bawah (menggantikan tombol melayang) -->
     <div id="rec-trailer-modal" role="dialog" aria-modal="true" aria-labelledby="rec-trailer-title" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 hidden" onclick="if (event.target === this) closeRecTrailer()">
-        <div class="w-full max-w-md bg-neutral-900 border border-white/10 rounded-2xl p-4 space-y-3">
+        <div class="w-full max-w-md md:max-w-2xl bg-neutral-900 border border-white/10 rounded-2xl p-4 space-y-3">
             <div class="flex items-center justify-between gap-3">
                 <h2 id="rec-trailer-title" class="text-base font-bold text-neutral-50 truncate">Trailer</h2>
                 <button type="button" onclick="closeRecTrailer()" aria-label="Tutup trailer" class="w-11 h-11 shrink-0 rounded-full bg-white/10 text-neutral-200 tap-scale"><i class="fa-solid fa-xmark"></i></button>
@@ -772,7 +772,7 @@
     <div id="ctx-menu" class="hidden" role="menu" aria-label="Aksi film"></div>
 
     <nav id="tab-bar" aria-label="Navigasi utama" class="fixed bottom-0 inset-x-0 z-40">
-        <div id="tab-bar-inner" class="glass max-w-md mx-auto grid grid-flow-col auto-cols-fr items-center px-1">
+        <div id="tab-bar-inner" class="glass max-w-md md:max-w-lg mx-auto grid grid-flow-col auto-cols-fr items-center px-1">
             <span id="tab-indicator" aria-hidden="true"></span>
             <button type="button" id="tab-home" onclick="triggerHaptic(); scrollToTop()" class="tab-item" aria-current="true">
                 <i class="fa-solid fa-house"></i><span>Beranda</span>
@@ -796,7 +796,7 @@
 
     <!-- Modal Statistik Kita + Roulette -->
     <div id="stats-modal" role="dialog" aria-modal="true" aria-labelledby="stats-title" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
-        <div id="stats-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90dvh] pb-[env(safe-area-inset-bottom)]">
+        <div id="stats-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md md:max-w-lg rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90dvh] pb-[env(safe-area-inset-bottom)]">
             <div class="sheet-handle sm:hidden" data-sheet-grab aria-hidden="true"></div>
             <div data-sheet-grab class="px-4 py-3 border-b border-neutral-900 flex items-center justify-between bg-neutral-950">
                 <h3 id="stats-title" class="font-bold text-base text-neutral-50 font-display flex items-center gap-1.5">
@@ -807,7 +807,7 @@
                 </button>
             </div>
             <div class="p-4 space-y-4 overflow-y-auto">
-                <div id="stats-grid" class="grid grid-cols-2 gap-2.5"></div>
+                <div id="stats-grid" class="grid grid-cols-2 md:grid-cols-4 gap-2.5"></div>
                 <div class="p-3.5 rounded-2xl bg-neutral-900/60 border border-neutral-800 space-y-3 text-center">
                     <div class="text-caption font-bold text-amber-400 uppercase tracking-[0.2em]">Roulette Nobar</div>
                     <p class="text-caption text-neutral-400">Dari daftar Mau Ditonton dan film yang baru ditonton salah satu dari kalian.</p>
@@ -919,7 +919,7 @@
 
     <!-- Mobile Bottom Sheet / Modal Form -->
     <div id="add-modal" role="dialog" aria-modal="true" aria-labelledby="modal-form-title" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
-        <div id="add-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[85dvh] sm:h-auto sm:max-h-[85dvh] transform transition-all pb-[env(safe-area-inset-bottom)]">
+        <div id="add-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md md:max-w-lg rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[85dvh] sm:h-auto sm:max-h-[85dvh] transform transition-all pb-[env(safe-area-inset-bottom)]">
             <div class="sheet-handle sm:hidden" data-sheet-grab aria-hidden="true"></div>
             <div data-sheet-grab class="px-5 py-3.5 border-b border-neutral-900 flex items-center justify-between flex-shrink-0 bg-neutral-950">
                 <div class="flex items-center gap-2.5">
@@ -1087,7 +1087,7 @@
 
     <!-- Mobile Detail Modal -->
     <div id="detail-modal" role="dialog" aria-modal="true" aria-labelledby="detail-title" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-end sm:items-center justify-center hidden">
-        <div id="detail-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90dvh] flex flex-col transform transition-all pb-[env(safe-area-inset-bottom)]">
+        <div id="detail-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md md:max-w-xl rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90dvh] flex flex-col transform transition-all pb-[env(safe-area-inset-bottom)]">
             <div data-sheet-grab class="relative h-48 bg-black overflow-hidden flex-shrink-0">
                 <div class="sheet-handle sm:hidden absolute top-0 inset-x-0 z-10" aria-hidden="true"></div>
                 <img id="detail-banner-img" src="" alt="Banner" class="w-full h-full object-cover opacity-40 blur-sm scale-105" onerror="posterFallback(this)">
@@ -1754,7 +1754,7 @@
                 <div class="h-10 w-44 bg-neutral-900 rounded-lg animate-pulseSlow mb-3"></div>
                 <div class="flex gap-3.5 overflow-hidden">
                     ${Array.from({ length: 3 }).map(() => `
-                        <div class="glass-card w-36 flex-shrink-0 rounded-2xl overflow-hidden flex flex-col border border-neutral-800 skeleton-shimmer">
+                        <div class="glass-card w-36 md:w-44 flex-shrink-0 rounded-2xl overflow-hidden flex flex-col border border-neutral-800 skeleton-shimmer">
                             <div class="aspect-[2/3] w-full bg-neutral-900/60"></div>
                             <div class="p-3 space-y-2">
                                 <div class="h-3 bg-neutral-900 rounded w-3/4"></div>
@@ -1975,7 +1975,7 @@
                 track.className = "flex gap-3.5 overflow-x-auto snap-x snap-mandatory no-scrollbar pt-2 -mt-2 pb-5 -mb-3 -mx-4 px-4"; // ruang untuk efek hover (naik + bayangan)
                 monthMovies.forEach((movie, i) => {
                     const card = createMovieCard(movie, i);
-                    card.className = card.className.replace("overflow-hidden flex flex-col", "overflow-hidden flex flex-col w-36 flex-shrink-0 snap-start");
+                    card.className = card.className.replace("overflow-hidden flex flex-col", "overflow-hidden flex flex-col w-36 md:w-44 flex-shrink-0 snap-start");
                     track.appendChild(card);
                 });
 
@@ -2058,7 +2058,7 @@
                 ? '<div class="mt-1 text-micro text-neutral-400">Di antrean</div>'
                 : (isAdminUnlocked && watchlistAvailable ? `<button type="button" onclick="addRelated('${key}', ${idx})" class="${btn} bg-amber-400/10 border border-amber-500/40 text-amber-400">+ Antrean</button>` : '');
             const trailerBtn = home ? `<button type="button" onclick="openRecTrailer(${idx})" class="${btn} bg-white/10 border border-white/20 text-neutral-100"><i class="fa-solid fa-play text-micro mr-1"></i>Trailer</button>` : '';
-            return `<div class="${home ? 'w-36 flex flex-col' : 'w-24'} shrink-0 snap-start">
+            return `<div class="${home ? 'w-36 md:w-44 flex flex-col' : 'w-24'} shrink-0 snap-start">
                 <div class="relative aspect-[2/3] rounded-xl overflow-hidden bg-neutral-900 ring-1 ring-white/10">${poster}${soon ? '<span class="absolute inset-x-0 bottom-0 py-1 text-center text-micro font-extrabold uppercase tracking-wider bg-amber-400 text-black">Coming soon</span>' : ''}</div>
                 <div class="mt-1.5 ${home ? 'text-xs' : 'text-caption'} font-semibold text-neutral-100 line-clamp-2 leading-tight">${escapeHtml(it.title)}</div>
                 ${sub ? `<div class="text-micro text-neutral-400 truncate">${escapeHtml(sub)}</div>` : ''}
@@ -3807,7 +3807,8 @@
                     { all: 0, both: 1, zald: 2, micel: 3 }[savedFilter] || 0
                 ];
                 if (targetBtn) setViewerFilter(savedFilter, targetBtn);
-            }
+            } else syncViewerSeg(); // sorotan "Semua" harus terpasang sejak awal (lebar thumb bawaan 0)
+            document.fonts?.ready.then(() => syncViewerSeg([...document.querySelectorAll('#viewer-seg .seg-btn')].find(b => b.getAttribute('aria-pressed') === 'true')));
 
             // Shortcut: tekan "/" untuk fokus ke pencarian
             document.addEventListener('keydown', (e) => {

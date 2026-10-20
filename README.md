@@ -28,7 +28,7 @@ Aplikasi web **mobile-first** untuk mengarsipkan film yang ditonton bersama oleh
 
 | 📱 Mobile-first | 🗂 Satu file | ⚡ Tanpa build |
 |:---:|:---:|:---:|
-| Kolom tunggal `max-w-md`, target sentuh 44 px | Semua ada di [`index.html`](index.html) | HTML, CSS, JS murni via CDN |
+| Kolom tunggal `max-w-md` (HP), melebar di iPad, target sentuh 44 px | Semua ada di [`index.html`](index.html) | HTML, CSS, JS murni via CDN |
 
 <img src="assets/readme/divider.svg" alt="" width="100%">
 
