@@ -2142,7 +2142,7 @@
             frame.textContent = 'Memuat trailer...'; yt.classList.add('hidden');
             modal.classList.remove('hidden');
             activateModal(modal, modal.querySelector('button'));
-            let key = '';
+            let keys = [];
             try {
                 if (it.queue) { // item antrean: cari ID TMDB dulu
                     const found = TMDB_API_KEY ? await resolveQueueTmdb(it.queue) : null;
@@ -2150,23 +2150,11 @@
                     if (!found) { frame.textContent = 'Trailer belum tersedia.'; return; }
                     it.id = found.id; it.media = found.media;
                 }
-                const vids = (await tmdbGet(`/${it.media}/${it.id}/videos`, '&include_video_language=en,null')).results || [];
-                const yts = vids.filter(v => v.site === 'YouTube');
-                const v = yts.find(v => v.type === 'Trailer' && v.official) || yts.find(v => v.type === 'Trailer') || yts.find(v => v.type === 'Teaser');
-                key = v ? v.key : '';
+                keys = ytTrailerKeys((await tmdbGet(`/${it.media}/${it.id}/videos`, '&include_video_language=en,null')).results || []);
             } catch (err) { console.warn('Trailer gagal', err); }
             if (seq !== recTrailerSeq) return;
-            if (!/^[\w-]{6,20}$/.test(key)) { frame.textContent = 'Trailer belum tersedia.'; return; }
-            frame.textContent = '';
-            const iframe = document.createElement('iframe');
-            iframe.src = `https://www.youtube-nocookie.com/embed/${key}?rel=0&playsinline=1&autoplay=1`;
-            iframe.title = `Trailer ${it.title}`;
-            iframe.className = 'w-full h-full';
-            iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
-            iframe.allowFullscreen = true;
-            iframe.referrerPolicy = 'strict-origin-when-cross-origin';
-            frame.appendChild(iframe);
-            yt.href = `https://www.youtube.com/watch?v=${key}`; yt.classList.remove('hidden');
+            if (!keys.length) { frame.textContent = 'Trailer belum tersedia.'; return; }
+            mountYouTube(frame, keys, { autoplay: true, title: `Trailer ${it.title}`, link: yt });
         }
         function closeRecTrailer() {
             recTrailerSeq++; recTrailerItem = null;
@@ -3142,12 +3130,8 @@
                 if (sr.ok) { const sd = await sr.json(); seasonInfo = { episodes: (sd.episodes || []).length, overview: (sd.overview || '').trim(), videos: sd.videos && sd.videos.results || [] }; }
             }
             if (seasonInfo && seasonInfo.overview) overview = seasonInfo.overview;
-            const pickTrailer = list => {
-                const vids = list.filter(v => v.site === 'YouTube' && /^[\w-]{6,20}$/.test(v.key || ''));
-                return vids.find(v => v.type === 'Trailer' && v.official) || vids.find(v => v.type === 'Trailer') || vids.find(v => v.type === 'Teaser');
-            };
             // Series bersesi: trailer season itu dulu, baru trailer series sebagai cadangan
-            const trailer = (seasonInfo && pickTrailer(seasonInfo.videos)) || pickTrailer(d.videos && d.videos.results || []);
+            const trailerKeys = ytTrailerKeys([...(seasonInfo ? seasonInfo.videos : []), ...(d.videos && d.videos.results || [])]);
             // Logo judul: utamakan en/tanpa teks, lalu suara terbanyak
             // Film Indonesia: logo berbahasa Indonesia dulu (cocok dengan judul asli), lalu tanpa teks bahasa, baru Inggris.
             // Lainnya: Inggris, lalu tanpa teks bahasa.
@@ -3177,7 +3161,7 @@
                 tmdbRating: d.vote_average && d.vote_count > 20 ? d.vote_average.toFixed(1) : '',
                 type: hit.media_type === 'tv' ? 'Series' : 'Film',
                 director, cast, stream,
-                trailerKey: trailer ? trailer.key : '',
+                trailerKeys,
                 episodes: seasonInfo ? seasonInfo.episodes : 0,
                 logo: logoItem ? logoItem.file_path : '',
                 media: hit.media_type, self: tmdbItem(d, hit.media_type), collection, tvSeasons,
@@ -3228,7 +3212,7 @@
             st.classList.toggle('hidden', !x.stream);
             box.classList.remove('hidden');
             more.classList.toggle('hidden', ov.scrollHeight <= ov.clientHeight + 1);
-            showTrailer(x.trailerKey || '');
+            showTrailer(x.trailerKeys || []);
         }
 
         function toggleOverview() {
@@ -3245,21 +3229,60 @@
             document.getElementById('detail-tmdb-player')?.classList.add('hidden');
         }
 
-        function showTrailer(key) {
+        function showTrailer(keys) {
             stopTrailer();
-            if (!/^[\w-]{6,20}$/.test(key)) return;
-            const iframe = document.createElement('iframe');
-            iframe.src = `https://www.youtube-nocookie.com/embed/${key}?rel=0&playsinline=1`;
-            iframe.title = 'Trailer film';
-            iframe.className = 'w-full h-full';
-            iframe.loading = 'lazy';
-            iframe.allow = 'encrypted-media; picture-in-picture; fullscreen';
-            iframe.allowFullscreen = true;
-            iframe.referrerPolicy = 'strict-origin-when-cross-origin';
-            document.getElementById('detail-tmdb-frame').appendChild(iframe);
-            document.getElementById('detail-tmdb-yt-link').href = `https://www.youtube.com/watch?v=${key}`;
+            if (!keys.length) return;
+            mountYouTube(document.getElementById('detail-tmdb-frame'), keys, { title: 'Trailer film', link: document.getElementById('detail-tmdb-yt-link') });
             document.getElementById('detail-tmdb-player').classList.remove('hidden');
         }
+
+        // --- PEMUTAR YOUTUBE DENGAN CADANGAN ---
+        // Banyak trailer resmi diblokir per negara oleh pengunggahnya (mis. tidak tersedia di Indonesia).
+        // Tidak diakali: pemutar mendengarkan onError dari iframe (protokol postMessage YouTube, enablejsapi=1)
+        // lalu pindah ke video kandidat berikutnya dari TMDB (trailer resmi -> trailer lain -> teaser).
+        function ytTrailerKeys(videos) {
+            const vids = (videos || []).filter(v => v.site === 'YouTube' && /^[\w-]{6,20}$/.test(v.key || ''));
+            const rank = v => (v.type === 'Trailer' ? (v.official ? 0 : 1) : v.type === 'Teaser' ? 2 : 9);
+            return [...new Set(vids.filter(v => rank(v) < 9).sort((a, b) => rank(a) - rank(b)).map(v => v.key))].slice(0, 6);
+        }
+        const ytPlayers = new Map(); // frame -> { iframe, keys, i, opts }
+        function mountYouTube(frame, keys, opts = {}) {
+            const st = { keys, i: 0, opts, iframe: null };
+            ytPlayers.set(frame, st);
+            ytLoad(frame, st);
+        }
+        function ytLoad(frame, st) {
+            const key = st.keys[st.i];
+            frame.textContent = '';
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://www.youtube-nocookie.com/embed/${key}?rel=0&playsinline=1&enablejsapi=1&origin=${encodeURIComponent(location.origin)}${st.opts.autoplay ? '&autoplay=1' : ''}`;
+            iframe.title = st.opts.title || 'Trailer';
+            iframe.className = 'w-full h-full';
+            iframe.allow = `${st.opts.autoplay ? 'autoplay; ' : ''}encrypted-media; picture-in-picture; fullscreen`;
+            iframe.allowFullscreen = true;
+            iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+            if (!st.opts.autoplay) iframe.loading = 'lazy';
+            // minta iframe mengirim event (termasuk onError) ke halaman ini
+            iframe.addEventListener('load', () => { try { iframe.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: key, channel: 'widget' }), '*'); } catch (e) {} });
+            st.iframe = iframe;
+            frame.appendChild(iframe);
+            if (st.opts.link) { st.opts.link.href = `https://www.youtube.com/watch?v=${key}`; st.opts.link.classList.remove('hidden'); }
+        }
+        window.addEventListener('message', e => {
+            if (!/^https:\/\/www\.youtube(-nocookie)?\.com$/.test(e.origin)) return;
+            let data; try { data = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch (err) { return; }
+            if (!data || data.event !== 'onError') return;
+            for (const [frame, st] of ytPlayers) {
+                if (!st.iframe || st.iframe.contentWindow !== e.source) continue;
+                if (!frame.isConnected || !frame.contains(st.iframe)) { ytPlayers.delete(frame); return; }
+                if (++st.i < st.keys.length) ytLoad(frame, st);
+                else {
+                    ytPlayers.delete(frame);
+                    frame.textContent = 'Trailer tidak bisa diputar di sini (dibatasi pengunggah).';
+                }
+                return;
+            }
+        });
 
         async function loadTmdbExtra(movie) {
             const box = document.getElementById('detail-tmdb');
