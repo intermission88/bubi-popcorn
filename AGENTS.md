@@ -19,6 +19,17 @@ Repo ini dikerjakan dari dua mesin: macOS (rumah) dan Windows (apartemen).
 - Edit pakai konteks sependek mungkin yang tetap unik. Hindari menulis ulang seluruh file untuk perubahan kecil.
 - Perubahan desain: langsung eksekusi, jangan tulis mockup markdown.
 
+## Orkestrasi model (Opus = boss)
+Instruksi ini adalah izin tetap dari user untuk memakai subagent (tool `Agent`) dengan parameter `model`.
+
+- **Opus (sesi utama) = boss:** pahami permintaan, rencanakan, bagi tugas, putuskan desain/arsitektur, review hasil subagent, lalu edit akhir, verifikasi, commit, dan push. Keputusan dan tanggung jawab akhir tetap di Opus.
+- **Sonnet (`model: "sonnet"`) = pekerja:** implementasi yang lingkupnya jelas, refactor terarah, menulis/memperbarui `README.md`/`DEBUG.md`, investigasi bug multi-langkah, review kode kedua.
+- **Haiku (`model: "haiku"`) = pesuruh cepat:** pencarian/`grep` luas (pakai `subagent_type: "Explore"`), merangkum file atau log, cek statis sederhana, membaca data publik Supabase/TMDB.
+- Brief subagent wajib mandiri: file/baris terkait, tujuan, batasan dari dokumen ini yang relevan (palet, tipografi, `escapeHtml`, larangan secret, larangan tulis Supabase), dan bentuk laporan yang diminta (ringkas, bukan dump file).
+- Tugas independen boleh dijalankan paralel, tetapi dua subagent TIDAK boleh mengedit file yang sama (praktis: hanya satu penulis untuk `index.html` sekaligus).
+- Subagent tidak commit/push dan tidak membuka browser GUI. Hasil subagent = laporan, bukan bukti: Opus mengecek diff/hasilnya sebelum melapor ke user.
+- Tugas kecil (satu edit, satu pertanyaan, beberapa tool call) dikerjakan langsung oleh Opus, jangan didelegasikan.
+
 ## Verifikasi hemat
 - Perubahan sepele (teks, warna, spasi, label): cukup cek statis (`grep`/python assert). Jangan buka browser.
 - Perubahan perilaku (JS, modal, form, auth, fetch): verifikasi SEKALI di browser pane bawaan Claude. Jalankan `python3 -m http.server 4173 --bind 127.0.0.1`, buka dengan `navigate`, satu skrip gabungan lewat `javascript_tool`, error lewat `read_console_messages`. Jangan ulang per kasus.
