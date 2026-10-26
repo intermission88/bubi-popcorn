@@ -369,6 +369,23 @@
         /* Scroll di dalam modal tidak tembus ke halaman di belakangnya */
         [role="dialog"] .overflow-y-auto { overscroll-behavior: contain; }
 
+        /* Dinding poster di belakang judul besar: baris miring yang berjalan terus (loop mulus: isi baris digandakan, geser -50%) */
+        .poster-wall {
+            position: absolute; top: -55%; left: -30%; right: -30%;
+            display: flex; flex-direction: column; gap: 8px;
+            transform: rotate(-10deg); opacity: 0; transition: opacity .8s ease;
+        }
+        .poster-wall.is-ready { opacity: .5; }
+        .poster-row { display: flex; width: max-content; animation: wallScroll 90s linear infinite; will-change: transform; }
+        .poster-row:nth-child(even) { animation-direction: reverse; animation-duration: 110s; }
+        .poster-tile { position: relative; flex-shrink: 0; width: 76px; aspect-ratio: 2 / 3; margin-right: 8px; border-radius: .5rem; overflow: hidden; }
+        @keyframes wallScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        .poster-wall-fade {
+            position: absolute; inset: 0; pointer-events: none;
+            background: linear-gradient(to bottom, #000 0%, rgba(0,0,0,.3) 22%, rgba(0,0,0,.55) 55%, #000 100%),
+                        linear-gradient(to right, rgba(0,0,0,.7) 0%, transparent 70%);
+        }
+
         /* QoL: Respect reduced motion preference */
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
@@ -422,9 +439,14 @@
         </aside>
 
         <!-- Large Title (mengecil jadi judul kecil di header saat scroll) -->
-        <section id="large-title" class="px-1 pt-1">
-            <h1 class="font-display text-4xl text-neutral-50 tracking-tight leading-none">Bubi's Popcorn</h1>
-            <p class="mt-1.5 text-xs text-neutral-300">Cinema log archive by <span class="text-sky-400 font-semibold">Zald</span> &amp; <span class="text-pink-400 font-semibold">Micel</span></p>
+        <section id="large-title" class="relative -mx-4 md:-mx-6 px-5 md:px-7 pt-16 pb-5 overflow-hidden">
+            <!-- Dinding poster (dekoratif, diisi renderPosterWall) -->
+            <div id="poster-wall" class="poster-wall" aria-hidden="true"></div>
+            <div class="poster-wall-fade" aria-hidden="true"></div>
+            <div class="relative">
+                <h1 class="font-display text-4xl text-neutral-50 tracking-tight leading-none">Bubi's Popcorn</h1>
+                <p class="mt-1.5 text-xs text-neutral-200">Cinema log archive by <span class="text-sky-400 font-semibold">Zald</span> &amp; <span class="text-pink-400 font-semibold">Micel</span></p>
+            </div>
         </section>
 
         <!-- SECTION: AUTO SLIDE INFINITE (1000x324 Aspect Ratio) -->
@@ -1354,7 +1376,7 @@
         function updateScrollUI() {
             scrollTicking = false;
             const y = window.scrollY;
-            document.getElementById('header-title').classList.toggle('opacity-0', y < 56);
+            document.getElementById('header-title').classList.toggle('opacity-0', y < 100);
             const wl = document.getElementById('watchlist-section');
             let onWatchlist = false;
             if (wl && !wl.classList.contains('hidden')) {
@@ -1839,6 +1861,7 @@
             if (totalCountEl) totalCountEl.innerText = moviesData.length;
 
             renderMonthsCarousel();
+            renderPosterWall();
         }
 
         function createMovieCard(movie, index) {
@@ -2951,6 +2974,23 @@
                     <div class="text-micro text-neutral-400 uppercase tracking-wider">${escapeHtml(label)}</div>
                     <div class="mt-1 text-xs font-bold text-neutral-50 break-words">${escapeHtml(String(value))}</div>
                 </div>`).join('');
+        }
+
+        // Dinding poster di belakang judul besar: poster diacak, 4 baris berjalan bolak-balik arah
+        function renderPosterWall() {
+            const wall = document.getElementById('poster-wall');
+            if (!wall || wall.dataset.filled) return;
+            const urls = [...new Set(moviesData.map(m => (m.poster || '').trim()).filter(u => TMDB_POSTER_RE.test(u)))];
+            if (urls.length < 4) return;
+            urls.sort(() => Math.random() - 0.5);
+            const ROWS = 4, PER_ROW = 16;
+            const tile = u => `<div class="poster-tile">${posterBox(u, '', 'w-full h-full object-cover')}</div>`;
+            wall.innerHTML = Array.from({ length: ROWS }, (_, r) => {
+                const set = Array.from({ length: PER_ROW }, (_, i) => tile(urls[(r * PER_ROW + i) % urls.length])).join('');
+                return `<div class="poster-row">${set}${set}</div>`;
+            }).join('');
+            wall.dataset.filled = '1';
+            requestAnimationFrame(() => wall.classList.add('is-ready'));
         }
 
         let rouletteTimer = null;

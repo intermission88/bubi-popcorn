@@ -106,6 +106,7 @@ Skala tunggal untuk iPhone di `tailwind.config`: `micro` 11 px (label), `caption
 | **Liquid Glass** | Tab bar kapsul melayang dan tombol header berbahan kaca buram, versi CSS yang jalan di Safari |
 | **Emas metalik** | Film *Certified Fresh*: bingkai gradien, kilau yang menyapu pelan, lencana logam |
 | **Bottom sheet** | Handle dan geser ke bawah untuk menutup modal |
+| **Dinding poster** | Poster koleksi berjalan miring di belakang judul, baris bolak-balik arah, loop tanpa putus |
 | **Poster bertahap** | Versi kecil buram dulu, lalu poster tajam memudar masuk |
 | **Gerak** | Menghormati `prefers-reduced-motion` dan `prefers-reduced-transparency` |
 | **Aksesibilitas** | Elemen native, modal menahan fokus dan menutup dengan Escape, target sentuh min. 44×44 px |

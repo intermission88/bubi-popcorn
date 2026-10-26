@@ -28,6 +28,7 @@ Baris bergeser setiap edit. Anchor yang stabil:
 | Bagian | Cari dengan |
 |---|---|
 | Header app bar | `grep -n 'Header App Bar'` |
+| Judul besar + dinding poster berjalan (`renderPosterWall`, CSS `.poster-row`) | `grep -n 'poster-wall'` |
 | Hero slider (5 slide) | `grep -n 'hero-slider'` |
 | Kartu "Now Showing" + Hari Bersama + jam ganda | `grep -n 'ticket-card'` |
 | Mau Ditonton (watchlist, di atas pencarian) | `grep -n 'watchlist-section'` |
@@ -49,7 +50,7 @@ Baris bergeser setiap edit. Anchor yang stabil:
 ## Fungsi JS per Fitur
 
 - **Modal (semua modal memakai helper ini):** `activateModal` / `deactivateModal` — simpan pemicu, fokus awal, restore fokus. Escape + trap Tab di satu listener `keydown` global. Perubahan perilaku modal di sini saja.
-- **Data:** `fetchSupabaseData` (ambil semua, set `hasFetchError`) → `processFilterAndRender` (filter + search + hitung) → `renderMonthsCarousel` → `createMovieCard` (satu-satunya tempat `innerHTML` untuk data; semua data WAJIB lewat `escapeHtml`).
+- **Data:** `fetchSupabaseData` (ambil semua, set `hasFetchError`) → `processFilterAndRender` (filter + search + hitung) → `renderMonthsCarousel` (+ `renderPosterWall`, sekali isi) → `createMovieCard` (satu-satunya tempat `innerHTML` untuk data; semua data WAJIB lewat `escapeHtml`).
 - **Filter:** `setViewerFilter`, `toggleTopRatedFilter`, `onSearchInput` (debounce 250 ms), `clearSearchInput`, `resetSearch`.
 - **Form:** `openAddModal`, `handleFormSubmit` (perhatikan alur sukses/gagal; tombol simpan dikunci sebelum `resolveYearIfMissing` agar tidak tersimpan dobel), `editCurrentMovie`, `requestCloseAddModal`, `validateRatingInput`, `clampRatingOnBlur`.
 - **Admin:** `handleLockClick`, `openPasswordModal`, `handlePasswordSubmit` (`signInWithPassword`, email dari `ADMIN_EMAIL`), `initAdminSession` (`getSession` + `onAuthStateChange`), `updateLockUI`.
