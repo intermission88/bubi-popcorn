@@ -19,12 +19,13 @@ Repo ini dikerjakan dari dua mesin: macOS (rumah) dan Windows (apartemen).
 - Edit pakai konteks sependek mungkin yang tetap unik. Hindari menulis ulang seluruh file untuk perubahan kecil.
 - Perubahan desain: langsung eksekusi, jangan tulis mockup markdown.
 
-## Orkestrasi model (Opus = boss)
+## Orkestrasi model (Opus = otak, Haiku = pekerja utama)
 Instruksi ini adalah izin tetap dari user untuk memakai subagent (tool `Agent`) dengan parameter `model`.
 
-- **Opus (sesi utama) = boss:** pahami permintaan, rencanakan, bagi tugas, putuskan desain/arsitektur, review hasil subagent, lalu edit akhir, verifikasi, commit, dan push. Keputusan dan tanggung jawab akhir tetap di Opus.
-- **Sonnet (`model: "sonnet"`) = pekerja:** implementasi yang lingkupnya jelas, refactor terarah, menulis/memperbarui `README.md`/`DEBUG.md`, investigasi bug multi-langkah, review kode kedua.
-- **Haiku (`model: "haiku"`) = pesuruh cepat:** pencarian/`grep` luas (pakai `subagent_type: "Explore"`), merangkum file atau log, cek statis sederhana, membaca data publik Supabase/TMDB.
+- **Opus (sesi utama) = otak dan juru kunci:** pahami permintaan, rencanakan, bagi tugas, putuskan desain/arsitektur, review hasil subagent, lalu edit akhir, verifikasi, commit, dan push. Keputusan dan tanggung jawab akhir tetap di Opus; hanya Opus yang commit/push.
+- **Haiku (`model: "haiku"`) = pekerja utama (default):** semua tugas yang didelegasikan dikirim ke Haiku dulu: implementasi yang lingkupnya jelas, refactor terarah, menulis/memperbarui `README.md`/`DEBUG.md`, pencarian/`grep` luas (pakai `subagent_type: "Explore"`), merangkum file atau log, cek statis, membaca data publik Supabase/TMDB.
+- **Sonnet (`model: "sonnet"`) = cadangan, naik kelas bila Haiku gagal:** pakai hanya kalau hasil Haiku salah/tidak lengkap setelah di-review Opus, Haiku menyerah, atau tugasnya jelas di luar kemampuan Haiku (investigasi bug multi-langkah yang rumit, perubahan lintas banyak bagian `index.html`, review kode kedua). Saat naik ke Sonnet, sertakan di brief apa yang sudah dicoba Haiku dan kenapa gagal.
+- Urutan eskalasi: Haiku → Sonnet → Opus mengerjakan sendiri. Jangan langsung loncat ke Sonnet tanpa alasan.
 - Brief subagent wajib mandiri: file/baris terkait, tujuan, batasan dari dokumen ini yang relevan (palet, tipografi, `escapeHtml`, larangan secret, larangan tulis Supabase), dan bentuk laporan yang diminta (ringkas, bukan dump file).
 - Tugas independen boleh dijalankan paralel, tetapi dua subagent TIDAK boleh mengedit file yang sama (praktis: hanya satu penulis untuk `index.html` sekaligus).
 - Subagent tidak commit/push dan tidak membuka browser GUI. Hasil subagent = laporan, bukan bukti: Opus mengecek diff/hasilnya sebelum melapor ke user.
