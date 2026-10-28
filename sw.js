@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bubi-popcorn-v72';
+const CACHE_NAME = 'bubi-popcorn-v73';
 const IMG_CACHE = 'bubi-tmdb-img-v1'; // tidak ikut dihapus saat CACHE_NAME naik
 const IMG_MAX = 400;
 const CORE_ASSETS = [
