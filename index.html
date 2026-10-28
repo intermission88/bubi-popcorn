@@ -24,7 +24,7 @@
     <link rel="preload" as="image" href="assets/Slider_1.webp">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0"></script>
 
@@ -42,7 +42,7 @@
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
-                        display: ['Anton', 'sans-serif'],
+                        display: ['"Bricolage Grotesque"', 'sans-serif'],
                     },
                     colors: {
                         // Emas tunggal: amber disamakan dengan kuning #facc15 (brand)
@@ -106,7 +106,7 @@
             font-size: 15px;
             -webkit-tap-highlight-color: transparent;
         }
-        .font-display { font-family: 'Outfit', sans-serif; }
+        .font-display { font-family: 'Bricolage Grotesque', sans-serif; }
         .font-anton { font-family: 'Anton', sans-serif; }
         /* Cinema signage: marquee bulb dots on both sides of a section label */
         .marquee-label {
@@ -438,7 +438,7 @@
             <div id="poster-wall" class="poster-wall" aria-hidden="true"></div>
             <div class="poster-wall-fade" aria-hidden="true"></div>
             <div class="relative">
-                <h1 class="font-display text-4xl text-neutral-50 tracking-tight leading-none">Bubi's Popcorn</h1>
+                <h1 class="font-display font-bold text-4xl text-neutral-50 tracking-tight leading-none">Bubi's Popcorn</h1>
                 <p class="mt-1.5 text-xs text-neutral-200">Cinema log archive by <span class="text-sky-400 font-semibold">Zald</span> &amp; <span class="text-pink-400 font-semibold">Micel</span></p>
             </div>
         </section>
@@ -508,7 +508,7 @@
                             <span class="text-micro font-medium text-neutral-300 whitespace-nowrap">UTC+5:30</span>
                         </div>
                         <div class="flex items-baseline justify-between">
-                            <div id="zald-clock" class="font-display text-lg text-sky-200 tracking-wide leading-none">--:-- --</div>
+                            <div id="zald-clock" class="font-display font-bold text-lg text-sky-200 tracking-wide leading-none">--:-- --</div>
                             <span id="zald-date" class="text-micro text-neutral-200">-- ---</span>
                         </div>
                     </div>
@@ -523,7 +523,7 @@
                             <span class="text-micro font-medium text-neutral-300 whitespace-nowrap">UTC+9:00</span>
                         </div>
                         <div class="flex items-baseline justify-between">
-                            <div id="micel-clock" class="font-display text-lg text-pink-200 tracking-wide leading-none">--:-- --</div>
+                            <div id="micel-clock" class="font-display font-bold text-lg text-pink-200 tracking-wide leading-none">--:-- --</div>
                             <span id="micel-date" class="text-micro text-neutral-200">-- ---</span>
                         </div>
                     </div>
@@ -608,7 +608,7 @@
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
-                <span id="movie-count-badge" class="flex-shrink-0 px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-neutral-800 font-display text-sm text-amber-400 tracking-[0.15em] uppercase">0 Film</span>
+                <span id="movie-count-badge" class="flex-shrink-0 px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-neutral-800 font-display font-bold text-sm text-amber-400 tracking-[0.15em] uppercase">0 Film</span>
                 <button onclick="triggerHaptic(); refreshData(this)" title="Muat ulang data"
                     class="touch-target flex-shrink-0 rounded-xl bg-neutral-950 border border-neutral-800 hover:border-amber-400/60 text-neutral-300 hover:text-amber-400 flex items-center justify-center transition tap-scale shadow-sm">
                     <i id="refresh-icon" class="fa-solid fa-rotate-right text-xs"></i>
@@ -633,7 +633,7 @@
         <!-- Movies: Horizontal Month Carousel (Swipe Right for Older Months) -->
         <section class="space-y-3">
             <div class="flex items-center justify-between px-1">
-                <h2 class="marquee-label font-display text-sm text-neutral-300 uppercase tracking-[0.25em] leading-none pt-1">Bulan Tayang</h2>
+                <h2 class="marquee-label font-display font-bold text-sm text-neutral-300 uppercase tracking-[0.25em] leading-none pt-1">Bulan Tayang</h2>
                 <div class="flex items-center gap-2">
                     <span id="swipe-hint" class="text-caption text-neutral-300 flex items-center gap-1.5">
                         <i class="fa-solid fa-arrows-left-right text-amber-400/70 text-micro"></i> Geser antar bulan
@@ -671,7 +671,7 @@
             <div class="film-strip -mx-4"></div>
             <div class="mt-5 space-y-1.5">
                 <div class="text-caption font-bold text-neutral-300 uppercase tracking-[0.3em]">Total Movies Watched</div>
-                <div id="total-movies-count" class="font-display text-5xl text-neutral-50 leading-none tracking-wider">0</div>
+                <div id="total-movies-count" class="font-display font-bold text-5xl text-neutral-50 leading-none tracking-wider">0</div>
                 <p class="text-caption text-neutral-400 italic">"Every film is a memory we keep forever."</p>
             </div>
         </section>
@@ -763,7 +763,7 @@
                         <div class="pt-1.5 border-t border-neutral-900 space-y-1">
                             <p><a href="https://tailwindcss.com/" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">Tailwind CSS</a>: lisensi MIT.</p>
                             <p><a href="https://fontawesome.com/license/free" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">Font Awesome Free</a>: ikon CC BY 4.0, font SIL OFL 1.1, kode MIT.</p>
-                            <p><a href="https://fonts.google.com/" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">Google Fonts</a>: Anton, Inter, Outfit, lisensi SIL Open Font License 1.1.</p>
+                            <p><a href="https://fonts.google.com/" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">Google Fonts</a>: Anton, Bricolage Grotesque, Inter, lisensi SIL Open Font License 1.1.</p>
                             <p><a href="https://github.com/supabase/supabase-js" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">Supabase JS</a>: lisensi MIT.</p>
                         </div>
                     </div>
@@ -1933,7 +1933,7 @@
                 </div>
                 <div class="p-3 flex flex-col justify-between flex-grow space-y-2.5">
                     <div>
-                        <h3 class="font-display text-base ${isCertified ? 'gold-text' : 'text-neutral-50'} line-clamp-1 tracking-wide uppercase">${escapeHtml(movie.judul) || 'Tanpa Judul'}</h3>
+                        <h3 class="font-display font-bold text-base ${isCertified ? 'gold-text' : 'text-neutral-50'} line-clamp-1 tracking-wide uppercase">${escapeHtml(movie.judul) || 'Tanpa Judul'}</h3>
                     </div>
                     ${ratingsHTML}
                 </div>
@@ -1980,9 +1980,9 @@
                 const row = document.createElement('div');
                 row.innerHTML = `
                     <div class="flex items-end gap-2.5 mb-3 px-0.5">
-                        <span class="font-display text-5xl leading-[0.8] stroke-number">${String(panelNumber).padStart(2, '0')}</span>
+                        <span class="font-display font-bold text-5xl leading-[0.8] stroke-number">${String(panelNumber).padStart(2, '0')}</span>
                         <div class="pb-0.5">
-                            <div class="font-display text-lg text-amber-300 uppercase tracking-[0.15em] leading-none">${escapeHtml(formatMonthDisplay(key))}</div>
+                            <div class="font-display font-bold text-lg text-amber-300 uppercase tracking-[0.15em] leading-none">${escapeHtml(formatMonthDisplay(key))}</div>
                             <div class="text-caption text-neutral-300 mt-1">${monthMovies.length} film</div>
                         </div>
                     </div>
