@@ -24,7 +24,7 @@
     <link rel="preload" as="image" href="assets/Slider_1.webp">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Figtree:wght@300..900&display=swap" rel="stylesheet">
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0"></script>
 
@@ -41,7 +41,7 @@
                         sm: ['15px', { lineHeight: '1.5' }]
                     },
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
+                        sans: ['Figtree', 'sans-serif'],
                         display: ['"Bricolage Grotesque"', 'sans-serif'],
                     },
                     colors: {
@@ -102,12 +102,11 @@
             padding-bottom: calc(8rem + env(safe-area-inset-bottom));
             background-color: #000000; 
             color: #fafafa; 
-            font-family: 'Inter', sans-serif;
+            font-family: 'Figtree', sans-serif;
             font-size: 15px;
             -webkit-tap-highlight-color: transparent;
         }
         .font-display { font-family: 'Bricolage Grotesque', sans-serif; }
-        .font-anton { font-family: 'Anton', sans-serif; }
         /* Cinema signage: marquee bulb dots on both sides of a section label */
         .marquee-label {
             display: inline-flex;
@@ -485,13 +484,13 @@
         <section class="glass-card rounded-2xl p-3.5 border border-neutral-800 bg-gradient-to-br from-black via-neutral-950 to-black space-y-3 relative overflow-hidden">
             <!-- NOW SHOWING Header -->
             <div class="text-center pb-0.5">
-                <div class="marquee-label justify-center font-anton text-xl tracking-[0.2em] text-amber-400 uppercase leading-none">Now Showing</div>
+                <div class="marquee-label justify-center font-display font-extrabold text-xl tracking-[0.2em] text-amber-400 uppercase leading-none">Now Showing</div>
             </div>
 
             <!-- Ticket: total hari bersama -->
             <div class="ticket-card projector-glow flex flex-col items-center gap-1.5 rounded-xl border border-dashed border-amber-500/40 px-4 py-4 shadow-inner">
-                <div class="text-caption font-bold text-neutral-300 uppercase tracking-[0.3em]">Hari Bersama</div>
-                <div id="relationship-days" class="font-anton text-6xl gold-text counting-glow leading-none">0</div>
+                <div class="text-micro font-semibold text-neutral-300 uppercase tracking-widest">Hari Bersama</div>
+                <div id="relationship-days" class="font-display font-extrabold text-6xl gold-text counting-glow leading-none">0</div>
                 <div class="text-caption font-semibold text-neutral-300">Sejak 5 April 2025</div>
             </div>
 
@@ -505,7 +504,7 @@
                                 <img src="assets/pfp_zald.webp" alt="Zald" class="w-5 h-5 rounded-md object-cover shadow-sm">
                                 <span class="text-caption font-bold text-sky-400 uppercase tracking-wide">Zald</span>
                             </div>
-                            <span class="text-micro font-medium text-neutral-300 whitespace-nowrap">UTC+5:30</span>
+                            <span class="text-micro font-semibold text-neutral-300 whitespace-nowrap">UTC+5:30</span>
                         </div>
                         <div class="flex items-baseline justify-between">
                             <div id="zald-clock" class="font-display font-bold text-lg text-sky-200 tracking-wide leading-none">--:-- --</div>
@@ -520,7 +519,7 @@
                                 <img src="assets/pfp_micel.webp" alt="Micel" class="w-5 h-5 rounded-md object-cover shadow-sm">
                                 <span class="text-caption font-bold text-pink-400 uppercase tracking-wide">Micel</span>
                             </div>
-                            <span class="text-micro font-medium text-neutral-300 whitespace-nowrap">UTC+9:00</span>
+                            <span class="text-micro font-semibold text-neutral-300 whitespace-nowrap">UTC+9:00</span>
                         </div>
                         <div class="flex items-baseline justify-between">
                             <div id="micel-clock" class="font-display font-bold text-lg text-pink-200 tracking-wide leading-none">--:-- --</div>
@@ -574,8 +573,8 @@
         <!-- Watchlist: Mau Ditonton -->
         <section id="watchlist-section" class="pt-6 hidden">
             <div class="film-strip -mx-4"></div>
-            <h2 class="mt-5 mb-3 text-xs font-bold text-amber-400 uppercase tracking-wide font-display flex items-center gap-2">
-                <i class="fa-solid fa-ticket"></i> Mau Ditonton
+            <h2 class="mt-5 mb-3 text-xl font-bold text-neutral-50 tracking-tight font-display flex items-center gap-2">
+                <i class="fa-solid fa-ticket text-amber-400 text-base"></i> Mau Ditonton
             </h2>
             <div id="watchlist-add" class="hidden mb-4">
                 <div class="flex items-center gap-2">
@@ -590,8 +589,8 @@
 
         <!-- SECTION REKOMENDASI (dihitung dari film berskor tinggi; disembunyikan bila kosong) -->
         <section id="rekomendasi-section" class="hidden" aria-label="Rekomendasi">
-            <h2 class="mb-3 text-xs font-bold text-amber-400 uppercase tracking-wide font-display flex items-center gap-2">
-                <i class="fa-solid fa-compass"></i> Baru &amp; Sudah Streaming
+            <h2 class="mb-3 text-xl font-bold text-neutral-50 tracking-tight font-display flex items-center gap-2">
+                <i class="fa-solid fa-compass text-amber-400 text-base"></i> Baru &amp; Sudah Streaming
             </h2>
             <div id="rekomendasi-list" class="flex gap-3 overflow-x-auto snap-x no-scrollbar -mx-4 px-4 pb-1"></div>
         </section>
@@ -608,7 +607,7 @@
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
-                <span id="movie-count-badge" class="flex-shrink-0 px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-neutral-800 font-display font-bold text-sm text-amber-400 tracking-[0.15em] uppercase">0 Film</span>
+                <span id="movie-count-badge" class="flex-shrink-0 px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-neutral-800 font-display font-bold text-sm text-amber-400">0 Film</span>
                 <button onclick="triggerHaptic(); refreshData(this)" title="Muat ulang data"
                     class="touch-target flex-shrink-0 rounded-xl bg-neutral-950 border border-neutral-800 hover:border-amber-400/60 text-neutral-300 hover:text-amber-400 flex items-center justify-center transition tap-scale shadow-sm">
                     <i id="refresh-icon" class="fa-solid fa-rotate-right text-xs"></i>
@@ -633,7 +632,7 @@
         <!-- Movies: Horizontal Month Carousel (Swipe Right for Older Months) -->
         <section class="space-y-3">
             <div class="flex items-center justify-between px-1">
-                <h2 class="marquee-label font-display font-bold text-sm text-neutral-300 uppercase tracking-[0.25em] leading-none pt-1">Bulan Tayang</h2>
+                <h2 class="font-display font-bold text-xl text-neutral-50 tracking-tight leading-none">Bulan Tayang</h2>
                 <div class="flex items-center gap-2">
                     <span id="swipe-hint" class="text-caption text-neutral-300 flex items-center gap-1.5">
                         <i class="fa-solid fa-arrows-left-right text-amber-400/70 text-micro"></i> Geser antar bulan
@@ -659,7 +658,7 @@
                     <i class="fa-solid fa-clapperboard"></i>
                 </div>
                 <div class="space-y-1">
-                    <p class="font-anton text-base tracking-[0.3em] text-neutral-100 uppercase pl-[0.3em]">Intermission</p>
+                    <p class="font-display font-extrabold text-base tracking-[0.3em] text-neutral-100 uppercase pl-[0.3em]">Intermission</p>
                     <p class="text-xs text-neutral-300">Belum ada film di layar ini. Coba ubah pencarian atau reset filter.</p>
                 </div>
                 <button onclick="triggerHaptic(); resetSearch()" class="px-4 py-2 bg-neutral-900 hover:bg-neutral-800 text-amber-400 text-xs font-bold rounded-xl tap-scale shadow-md transition">Reset Pencarian</button>
@@ -670,7 +669,7 @@
         <section class="pt-6 text-center">
             <div class="film-strip -mx-4"></div>
             <div class="mt-5 space-y-1.5">
-                <div class="text-caption font-bold text-neutral-300 uppercase tracking-[0.3em]">Total Movies Watched</div>
+                <div class="text-micro font-semibold text-neutral-300 uppercase tracking-widest">Total Movies Watched</div>
                 <div id="total-movies-count" class="font-display font-bold text-5xl text-neutral-50 leading-none tracking-wider">0</div>
                 <p class="text-caption text-neutral-400 italic">"Every film is a memory we keep forever."</p>
             </div>
@@ -682,8 +681,8 @@
             <!-- ADMIN-ONLY ABOUT SECTION -->
             <div id="admin-about-section" class="hidden mb-4 space-y-3 text-left p-4 rounded-2xl bg-neutral-950 border border-neutral-800 shadow-inner">
                 <div class="flex items-center gap-2 pb-2 border-b border-neutral-900">
-                    <i class="fa-solid fa-user-shield text-amber-400 text-xs"></i>
-                    <h3 class="text-xs font-bold text-neutral-100 uppercase tracking-wider font-display">About Zald &amp; Micel</h3>
+                    <i class="fa-solid fa-user-shield text-amber-400 text-base"></i>
+                    <h3 class="text-xl font-bold text-neutral-50 tracking-tight font-display">About Zald &amp; Micel</h3>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -742,7 +741,7 @@
             </div>
 
             <div class="space-y-1.5">
-                <div class="font-anton text-xs tracking-[0.45em] text-neutral-400 uppercase pl-[0.45em]">The End</div>
+                <div class="font-display font-extrabold text-xs tracking-[0.45em] text-neutral-400 uppercase pl-[0.45em]">The End</div>
                 <p class="text-caption text-neutral-300">
                     Cinema log archive by <span class="text-sky-400 font-semibold">Zald</span> &amp; <span class="text-pink-400 font-semibold">Micel</span>
                 </p>
@@ -763,7 +762,7 @@
                         <div class="pt-1.5 border-t border-neutral-900 space-y-1">
                             <p><a href="https://tailwindcss.com/" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">Tailwind CSS</a>: lisensi MIT.</p>
                             <p><a href="https://fontawesome.com/license/free" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">Font Awesome Free</a>: ikon CC BY 4.0, font SIL OFL 1.1, kode MIT.</p>
-                            <p><a href="https://fonts.google.com/" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">Google Fonts</a>: Anton, Bricolage Grotesque, Inter, lisensi SIL Open Font License 1.1.</p>
+                            <p><a href="https://fonts.google.com/" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">Google Fonts</a>: Bricolage Grotesque, Figtree, lisensi SIL Open Font License 1.1.</p>
                             <p><a href="https://github.com/supabase/supabase-js" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">Supabase JS</a>: lisensi MIT.</p>
                         </div>
                     </div>
@@ -1120,7 +1119,7 @@
                             <span id="detail-year" class="text-xs text-neutral-200 font-semibold">2026</span>
                             <span id="detail-watch-month" class="px-2 py-0.5 rounded-lg bg-neutral-900 text-amber-300 text-micro font-semibold">Januari 2026</span>
                             <span id="detail-viewer-badge" class="px-2 py-0.5 rounded-lg bg-neutral-900 text-neutral-200 text-micro font-bold">Nonton Bareng</span>
-                            <span id="detail-badge-wrapper" class="hidden px-2 py-0.5 rounded-lg gold-badge text-micro font-extrabold flex items-center gap-1 shadow-md">
+                            <span id="detail-badge-wrapper" class="hidden px-2 py-0.5 rounded-lg gold-badge text-micro font-bold flex items-center gap-1 shadow-md">
                                 <i class="fa-solid fa-award text-micro"></i> Certified Fresh
                             </span>
                         </div>
@@ -1135,7 +1134,7 @@
                             <img src="assets/pfp_zald.webp" alt="Zald" class="w-8 h-8 rounded-xl object-cover">
                             <span class="text-sm font-bold text-sky-400">Zald</span>
                             <span class="ml-auto flex items-baseline gap-0.5">
-                                <span id="detail-zald-score" class="text-xl font-black text-sky-400 leading-none">-</span>
+                                <span id="detail-zald-score" class="text-xl font-bold text-sky-400 leading-none">-</span>
                                 <span id="detail-zald-max" class="text-xs text-neutral-400">/10</span>
                             </span>
                         </div>
@@ -1146,7 +1145,7 @@
                             <img src="assets/pfp_micel.webp" alt="Micel" class="w-8 h-8 rounded-xl object-cover">
                             <span class="text-sm font-bold text-pink-400">Micel</span>
                             <span class="ml-auto flex items-baseline gap-0.5">
-                                <span id="detail-micel-score" class="text-xl font-black text-pink-400 leading-none">-</span>
+                                <span id="detail-micel-score" class="text-xl font-bold text-pink-400 leading-none">-</span>
                                 <span id="detail-micel-max" class="text-xs text-neutral-400">/10</span>
                             </span>
                         </div>
@@ -1889,7 +1888,7 @@
             if (watcher === 'zald' || watcher === 'micel') {
                 // penanda pemilik sudah ada di pil rating di bawah judul; tidak diulang di poster
             } else if (isCertified) {
-                watcherBadgeHTML = `<span class="absolute top-2.5 left-2.5 gold-badge px-2 py-0.5 rounded-lg text-micro font-extrabold flex items-center gap-1"><i class="fa-solid fa-award text-micro"></i> FRESH</span>`;
+                watcherBadgeHTML = `<span class="absolute top-2.5 left-2.5 gold-badge px-2 py-0.5 rounded-lg text-micro font-bold flex items-center gap-1"><i class="fa-solid fa-award text-micro"></i> FRESH</span>`;
             }
 
             let ratingsHTML = '';
@@ -1898,7 +1897,7 @@
                     <div class="flex items-center justify-center gap-2 rounded-xl bg-sky-400/10 border border-sky-400/20 py-1.5 shadow-inner">
                         <img src="assets/pfp_zald.webp" class="w-4 h-4 rounded-full object-cover shadow-sm">
                         <span class="text-caption font-bold text-sky-400 uppercase">Zald</span>
-                        <span class="font-black text-neutral-50 text-sm leading-none">${escapeHtml(dispZ)}</span>
+                        <span class="font-bold text-neutral-50 text-sm leading-none">${escapeHtml(dispZ)}</span>
                     </div>
                 `;
             } else if (watcher === 'micel') {
@@ -1906,7 +1905,7 @@
                     <div class="flex items-center justify-center gap-2 rounded-xl bg-pink-400/10 border border-pink-400/20 py-1.5 shadow-inner">
                         <img src="assets/pfp_micel.webp" class="w-4 h-4 rounded-full object-cover shadow-sm">
                         <span class="text-caption font-bold text-pink-400 uppercase">Micel</span>
-                        <span class="font-black text-neutral-50 text-sm leading-none">${escapeHtml(dispM)}</span>
+                        <span class="font-bold text-neutral-50 text-sm leading-none">${escapeHtml(dispM)}</span>
                     </div>
                 `;
             } else {
@@ -1914,12 +1913,12 @@
                     <div class="flex items-stretch rounded-xl bg-neutral-900/60 border border-neutral-800 shadow-inner overflow-hidden">
                         <div class="flex-1 flex items-center justify-center gap-1.5 py-1.5">
                             <img src="assets/pfp_zald.webp" class="w-4 h-4 rounded-full ring-1 ring-sky-400/60 object-cover">
-                            <span class="font-black text-neutral-50 text-sm leading-none">${escapeHtml(dispZ)}</span>
+                            <span class="font-bold text-neutral-50 text-sm leading-none">${escapeHtml(dispZ)}</span>
                         </div>
                         <div class="w-[1px] bg-neutral-800"></div>
                         <div class="flex-1 flex items-center justify-center gap-1.5 py-1.5">
                             <img src="assets/pfp_micel.webp" class="w-4 h-4 rounded-full ring-1 ring-pink-400/60 object-cover">
-                            <span class="font-black text-neutral-50 text-sm leading-none">${escapeHtml(dispM)}</span>
+                            <span class="font-bold text-neutral-50 text-sm leading-none">${escapeHtml(dispM)}</span>
                         </div>
                     </div>
                 `;
@@ -1933,7 +1932,7 @@
                 </div>
                 <div class="p-3 flex flex-col justify-between flex-grow space-y-2.5">
                     <div>
-                        <h3 class="font-display font-bold text-base ${isCertified ? 'gold-text' : 'text-neutral-50'} line-clamp-1 tracking-wide uppercase">${escapeHtml(movie.judul) || 'Tanpa Judul'}</h3>
+                        <h3 class="font-display font-bold text-base ${isCertified ? 'gold-text' : 'text-neutral-50'} line-clamp-1">${escapeHtml(movie.judul) || 'Tanpa Judul'}</h3>
                     </div>
                     ${ratingsHTML}
                 </div>
@@ -1982,7 +1981,7 @@
                     <div class="flex items-end gap-2.5 mb-3 px-0.5">
                         <span class="font-display font-bold text-5xl leading-[0.8] stroke-number">${String(panelNumber).padStart(2, '0')}</span>
                         <div class="pb-0.5">
-                            <div class="font-display font-bold text-lg text-amber-300 uppercase tracking-[0.15em] leading-none">${escapeHtml(formatMonthDisplay(key))}</div>
+                            <div class="font-display font-bold text-lg text-amber-300 tracking-tight leading-none">${escapeHtml(formatMonthDisplay(key))}</div>
                             <div class="text-caption text-neutral-300 mt-1">${monthMovies.length} film</div>
                         </div>
                     </div>

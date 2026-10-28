@@ -97,7 +97,7 @@ Hitam dan putih sebagai dasar, **emas** sebagai aksen brand, **biru hanya untuk 
 
 ### Tipografi
 
-Skala tunggal untuk iPhone di `tailwind.config`: `micro` 11 px (label), `caption` 12, `xs` 13, `sm` 15 (isi), `base` 16 (judul modal, input; mencegah zoom otomatis iOS), lalu skala bawaan Tailwind. Font: **Anton** (judul), **Bricolage Grotesque** (display), **Inter** (isi).
+Skala tunggal untuk iPhone di `tailwind.config`: `micro` 11 px (label), `caption` 12, `xs` 13, `sm` 15 (isi), `base` 16 (judul modal, input; mencegah zoom otomatis iOS), lalu skala bawaan Tailwind. Font: **Bricolage Grotesque** (judul dan display; ExtraBold untuk papan bioskop), **Figtree** (isi).
 
 ### Material dan gerak
 
@@ -251,7 +251,7 @@ Key v3 hanya bisa membaca data publik dan memang terlihat di klien. Kalau bocor,
 - **Kode:** [MIT](LICENSE). Isi arsip pribadi (judul yang dicatat, rating, ulasan) dan foto di `assets/` tidak termasuk dan tetap hak pemiliknya.
 - **TMDB:** This product uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB. Logo resmi dipakai apa adanya di footer. Data streaming dari JustWatch lewat TMDB.
 - **Poster, gambar, dan trailer** adalah hak cipta pemilik masing-masing, ditampilkan untuk arsip pribadi nonkomersial. Pemutar trailer tunduk pada Ketentuan Layanan YouTube.
-- **Pustaka:** Tailwind CSS (MIT), Font Awesome Free (ikon CC BY 4.0, font SIL OFL 1.1, kode MIT), Google Fonts Anton, Bricolage Grotesque, Inter (SIL OFL 1.1), Supabase JS (MIT).
+- **Pustaka:** Tailwind CSS (MIT), Font Awesome Free (ikon CC BY 4.0, font SIL OFL 1.1, kode MIT), Google Fonts Bricolage Grotesque, Figtree (SIL OFL 1.1), Supabase JS (MIT).
 
 Daftar yang sama tampil di footer situs, bagian **Kredit & Lisensi**.
 
