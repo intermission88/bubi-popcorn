@@ -106,7 +106,7 @@
             font-size: 15px;
             -webkit-tap-highlight-color: transparent;
         }
-        .font-display { font-family: 'Bricolage Grotesque', sans-serif; }
+        .font-display { font-family: 'Bricolage Grotesque', sans-serif; font-variant-numeric: tabular-nums; }
         /* Cinema signage: marquee bulb dots on both sides of a section label */
         .marquee-label {
             display: inline-flex;
@@ -507,7 +507,7 @@
                             <span class="text-micro font-semibold text-neutral-300 whitespace-nowrap">UTC+5:30</span>
                         </div>
                         <div class="flex items-baseline justify-between">
-                            <div id="zald-clock" class="font-display font-bold text-lg text-sky-200 tracking-wide leading-none">--:-- --</div>
+                            <div id="zald-clock" class="font-display font-bold text-lg text-sky-200 leading-none">--:-- --</div>
                             <span id="zald-date" class="text-micro text-neutral-200">-- ---</span>
                         </div>
                     </div>
@@ -522,7 +522,7 @@
                             <span class="text-micro font-semibold text-neutral-300 whitespace-nowrap">UTC+9:00</span>
                         </div>
                         <div class="flex items-baseline justify-between">
-                            <div id="micel-clock" class="font-display font-bold text-lg text-pink-200 tracking-wide leading-none">--:-- --</div>
+                            <div id="micel-clock" class="font-display font-bold text-lg text-pink-200 leading-none">--:-- --</div>
                             <span id="micel-date" class="text-micro text-neutral-200">-- ---</span>
                         </div>
                     </div>
@@ -670,7 +670,7 @@
             <div class="film-strip -mx-4"></div>
             <div class="mt-5 space-y-1.5">
                 <div class="text-micro font-semibold text-neutral-300 uppercase tracking-widest">Total Movies Watched</div>
-                <div id="total-movies-count" class="font-display font-bold text-5xl text-neutral-50 leading-none tracking-wider">0</div>
+                <div id="total-movies-count" class="font-display font-bold text-5xl text-neutral-50 leading-none tracking-tight">0</div>
                 <p class="text-caption text-neutral-400 italic">"Every film is a memory we keep forever."</p>
             </div>
         </section>
@@ -1978,9 +1978,9 @@
 
                 const row = document.createElement('div');
                 row.innerHTML = `
-                    <div class="flex items-end gap-2.5 mb-3 px-0.5">
-                        <span class="font-display font-bold text-5xl leading-[0.8] stroke-number">${String(panelNumber).padStart(2, '0')}</span>
-                        <div class="pb-0.5">
+                    <div class="flex items-center gap-3 mb-3 px-0.5">
+                        <span class="font-display font-bold text-5xl leading-none stroke-number">${String(panelNumber).padStart(2, '0')}</span>
+                        <div>
                             <div class="font-display font-bold text-lg text-amber-300 tracking-tight leading-none">${escapeHtml(formatMonthDisplay(key))}</div>
                             <div class="text-caption text-neutral-300 mt-1">${monthMovies.length} film</div>
                         </div>
