@@ -34,7 +34,7 @@ Baris bergeser setiap edit. Anchor yang stabil:
 | Mau Ditonton (watchlist, di bawah daftar film; maks 5 + `showMoreWatchlist`, durasi `fillWatchlistDurations`) | `grep -n 'watchlist-section'` |
 | Modal Statistik + Roulette + Recap + CSV + sinkron TMDB | `grep -n 'id="stats-modal"'` |
 | Kotak info TMDB + trailer di modal detail | `grep -n 'id="detail-tmdb"'` |
-| Footer: identitas, tautan Jelajahi/Sumber data, atribusi TMDB, Kredit & Lisensi | `grep -n 'tmdb-logo\|Kredit'` |
+| Footer: kartu identitas + tombol ke atas + atribusi TMDB, baris hak cipta + Kredit & Lisensi | `grep -n 'tmdb-logo\|Kredit'` |
 | Search + filter viewer + Top 9+ | `grep -n 'search-section'` |
 | Karusel film per bulan | `grep -n 'months-carousel'` |
 | Empty state / error state | `grep -n 'empty-state\|error-state'` |
