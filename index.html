@@ -393,8 +393,9 @@
             </div>
         </section>
 
-        <!-- Foto jadi layar utama: slider persegi, hari bersama ditulis di atas foto -->
-        <section class="relative w-full aspect-square md:aspect-[16/10] rounded-2xl overflow-hidden border border-neutral-800 bg-neutral-950">
+        <!-- Slider foto ukuran asli (1000x324), hari bersama di bawahnya -->
+        <section>
+        <div class="relative w-full aspect-[1000/324] rounded-2xl overflow-hidden border border-neutral-800 bg-neutral-950">
             <div id="hero-slider" class="flex h-full transition-transform duration-700 ease-in-out w-full">
                 <div class="w-full flex-shrink-0">
                     <img src="assets/Slider_1.webp" alt="Foto Zald dan Micel 1" class="w-full h-full object-cover">
@@ -412,18 +413,21 @@
                     <img src="assets/Slider_5.webp" alt="Foto Zald dan Micel 5" loading="lazy" class="w-full h-full object-cover">
                 </div>
             </div>
-            <div class="absolute inset-x-0 bottom-0 px-5 pt-16 pb-1 bg-gradient-to-b from-transparent to-black/90 pointer-events-none">
-                <div class="text-micro font-bold uppercase tracking-widest text-neutral-200">Hari ke</div>
-                <div id="relationship-days" class="font-display font-extrabold text-6xl text-amber-400 leading-none">0</div>
-                <div class="mt-1 text-xs text-neutral-200">bersama, sejak 5 April 2025</div>
-                <div class="-ml-3 flex items-center pointer-events-auto" aria-label="Pilih slide">
-                    <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(0)" aria-label="Slide 1"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
-                    <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(1)" aria-label="Slide 2"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
-                    <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(2)" aria-label="Slide 3"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
-                    <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(3)" aria-label="Slide 4"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
-                    <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(4)" aria-label="Slide 5"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
-                </div>
+            <div class="absolute inset-x-0 bottom-0 flex justify-center items-center bg-gradient-to-b from-transparent to-black/60" aria-label="Pilih slide">
+                <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(0)" aria-label="Slide 1"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
+                <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(1)" aria-label="Slide 2"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
+                <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(2)" aria-label="Slide 3"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
+                <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(3)" aria-label="Slide 4"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
+                <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(4)" aria-label="Slide 5"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
             </div>
+        </div>
+        <div class="mt-4 px-1 flex items-end justify-between gap-4">
+            <div>
+                <div class="text-micro font-bold uppercase tracking-widest text-neutral-400">Hari ke</div>
+                <div id="relationship-days" class="font-display font-extrabold text-5xl text-amber-400 leading-none">0</div>
+            </div>
+            <div class="pb-1 text-right text-xs text-neutral-300">bersama, sejak<br><span class="text-neutral-200">5 April 2025</span></div>
+        </div>
         </section>
 
         <!-- Jam Zald & Micel (ketuk = konverter waktu) + satu kutipan -->
@@ -433,7 +437,6 @@
                     <div class="flex items-center gap-2.5 min-w-0">
                         <img src="assets/pfp_zald.webp" alt="" class="w-7 h-7 rounded-full object-cover">
                         <span class="text-sm font-semibold text-sky-400">Zald</span>
-                        <span class="text-xs text-neutral-400 truncate">Colombo · <span id="zald-date">-- ---</span></span>
                     </div>
                     <div id="zald-clock" class="font-display font-bold text-xl text-sky-200 leading-none whitespace-nowrap">--:-- --</div>
                 </div>
@@ -441,7 +444,6 @@
                     <div class="flex items-center gap-2.5 min-w-0">
                         <img src="assets/pfp_micel.webp" alt="" class="w-7 h-7 rounded-full object-cover">
                         <span class="text-sm font-semibold text-pink-400">Micel</span>
-                        <span class="text-xs text-neutral-400 truncate">Tokyo · <span id="micel-date">-- ---</span></span>
                     </div>
                     <div id="micel-clock" class="font-display font-bold text-xl text-pink-200 leading-none whitespace-nowrap">--:-- --</div>
                 </div>
@@ -1514,14 +1516,10 @@
         function updateDualClocks() {
             const now = new Date();
             const zaldTime = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Colombo', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
-            const zaldDate = now.toLocaleDateString('id-ID', { timeZone: 'Asia/Colombo', day: 'numeric', month: 'short' });
             const micelTime = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Tokyo', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
-            const micelDate = now.toLocaleDateString('id-ID', { timeZone: 'Asia/Tokyo', day: 'numeric', month: 'short' });
 
             document.getElementById('zald-clock').innerText = zaldTime;
-            document.getElementById('zald-date').innerText = zaldDate;
             document.getElementById('micel-clock').innerText = micelTime;
-            document.getElementById('micel-date').innerText = micelDate;
         }
 
         function syncViewerSeg(activeBtn) {
