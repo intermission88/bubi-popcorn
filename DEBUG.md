@@ -38,7 +38,7 @@ Baris bergeser setiap edit. Anchor yang stabil:
 | Search + filter viewer + Top 9+ | `grep -n 'search-section'` |
 | Karusel film per bulan | `grep -n 'months-carousel'` |
 | Empty state / error state | `grep -n 'empty-state\|error-state'` |
-| Baru & Sudah Streaming: slider backdrop di bawah tiket jam (`initRecSlider`, `#rec-track`) | `grep -n 'rekomendasi-section'` |
+| Baru & Sudah Streaming: slider backdrop di bawah tiket jam (`initRecSlider`, `#rec-track`, logo judul `fillRecLogos`) | `grep -n 'rekomendasi-section'` |
 | Bulan tayang maks 4 + `showMoreMonths`; tombol muat lagi bersama `loadMoreBtn` | `grep -n 'MONTHS_PAGE'` |
 | Footer + panel admin | `grep -n 'Footer Section'` |
 | FAB (konverter, tambah, scroll-top) | `grep -n 'Floating Action'` |

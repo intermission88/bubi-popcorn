@@ -2264,6 +2264,7 @@
                     <div class="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-b from-transparent to-black/90 pointer-events-none"></div>
                     <div class="absolute inset-x-0 bottom-0 flex items-end gap-3 p-3.5">
                         <div class="min-w-0 flex-1">
+                            <img data-rec-logo="${i}" alt="${escapeHtml(it.title)}" class="hidden max-h-12 max-w-[80%] w-auto object-contain object-left drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]" onload="this.classList.remove('hidden'); this.nextElementSibling.classList.add('hidden')">
                             <div class="text-base font-bold text-neutral-50 leading-tight line-clamp-2">${escapeHtml(it.title)}</div>
                             ${it.sub ? `<div class="mt-0.5 text-caption text-neutral-200 truncate">${escapeHtml(it.sub)}</div>` : ''}
                         </div>
@@ -2275,6 +2276,26 @@
                 <div id="rec-track" class="flex overflow-x-auto snap-x snap-mandatory no-scrollbar rounded-2xl border border-neutral-800">${slides}</div>
                 <span id="rec-counter" class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-black/70 text-caption font-semibold text-neutral-100 pointer-events-none">1 / ${list.length}</span>`;
             initRecSlider();
+            fillRecLogos(list);
+        }
+
+        // Logo judul asli dari TMDB untuk slide rekomendasi (en lalu tanpa teks, suara terbanyak); judul teks jadi cadangan
+        const recLogoCache = new Map();
+        async function fillRecLogos(list) {
+            await Promise.all(list.map(async (it, i) => {
+                const key = `${it.media}:${it.id}`;
+                try {
+                    if (!recLogoCache.has(key)) {
+                        const logos = ((await tmdbGet(`/${it.media}/${it.id}/images`, '&include_image_language=en,null')).logos || [])
+                            .filter(l => /^\/[\w.-]+\.(png|svg)$/.test(l.file_path || ''))
+                            .sort((a, b) => (b.iso_639_1 === 'en') - (a.iso_639_1 === 'en') || (b.vote_average || 0) - (a.vote_average || 0));
+                        recLogoCache.set(key, logos[0] ? `https://image.tmdb.org/t/p/w300${logos[0].file_path}` : '');
+                    }
+                    const url = recLogoCache.get(key);
+                    const img = document.querySelector(`#rec-track [data-rec-logo="${i}"]`);
+                    if (url && img) img.src = url;
+                } catch (err) { console.warn('Logo rekomendasi gagal:', it.title, err); }
+            }));
         }
 
         // Slider rekomendasi: geser manual (scroll-snap), maju sendiri tiap 5 detik, jeda 10 detik setelah disentuh
