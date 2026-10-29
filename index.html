@@ -479,7 +479,7 @@
                 </div>
                 <div id="wl-tmdb-results" class="mt-2 space-y-1.5 max-h-72 overflow-y-auto overscroll-contain hidden" aria-live="polite"></div>
             </div>
-            <div id="watchlist-list" class="space-y-2 md:space-y-0 md:grid md:grid-cols-2 md:gap-2"></div>
+            <div id="watchlist-list" class="space-y-1.5 md:space-y-0 md:grid md:grid-cols-2 md:gap-1.5"></div>
         </section>
 
         <!-- SECTION REKOMENDASI (dihitung dari film berskor tinggi; disembunyikan bila kosong) -->
@@ -3364,13 +3364,13 @@
                 const id = escapeHtml(w.id);
                 const img = w.poster ? `<img src="${escapeHtml(tmdbSized(w.poster, 'w92'))}" alt="" loading="lazy" class="w-full h-full object-cover">` : '';
                 const thumb = TMDB_API_KEY
-                    ? `<button type="button" onclick="openQueueTrailer('${id}')" class="relative w-14 shrink-0 aspect-[2/3] rounded-lg overflow-hidden bg-neutral-800 tap-scale" aria-label="Putar trailer ${escapeHtml(w.judul)}">${img}<span class="absolute inset-0 flex items-center justify-center bg-black/35"><span class="w-7 h-7 rounded-full bg-black/70 border border-white/30 flex items-center justify-center"><i class="fa-solid fa-play text-micro text-neutral-50 ml-0.5"></i></span></span></button>`
-                    : `<div class="w-14 shrink-0 aspect-[2/3] rounded-lg overflow-hidden bg-neutral-800">${img}</div>`;
+                    ? `<button type="button" onclick="openQueueTrailer('${id}')" class="relative w-10 shrink-0 aspect-[2/3] rounded-md overflow-hidden bg-neutral-800 tap-scale" aria-label="Putar trailer ${escapeHtml(w.judul)}">${img}<span class="absolute inset-0 flex items-center justify-center bg-black/35"><i class="fa-solid fa-play text-micro text-neutral-50"></i></span></button>`
+                    : `<div class="w-10 shrink-0 aspect-[2/3] rounded-md overflow-hidden bg-neutral-800">${img}</div>`;
                 const actions = isAdminUnlocked ? `
-                    <button type="button" onclick="markWatchlistWatched('${id}')" class="shrink-0 w-11 h-11 rounded-full bg-amber-400/10 border border-amber-500/40 text-amber-400 tap-scale" aria-label="Sudah ditonton"><i class="fa-solid fa-check"></i></button>
+                    <button type="button" onclick="markWatchlistWatched('${id}')" class="shrink-0 w-11 h-11 rounded-full text-amber-400 hover:bg-amber-400/10 tap-scale" aria-label="Sudah ditonton"><i class="fa-solid fa-check"></i></button>
                     <button type="button" onclick="deleteWatchlistItem('${id}')" class="shrink-0 w-11 h-11 rounded-full text-neutral-400 hover:text-red-400 tap-scale" aria-label="Hapus dari antrean"><i class="fa-solid fa-trash text-xs"></i></button>` : '';
-                const rowHtml = `<div class="flex items-center gap-3 p-2.5 pr-1.5 rounded-2xl bg-neutral-950 border border-neutral-800 ${isAdminUnlocked ? 'swipe-row' : ''}">${thumb}
-                    <div class="min-w-0 flex-1"><div class="text-sm font-bold text-neutral-50 line-clamp-2 leading-snug">${escapeHtml(w.judul)}</div><div class="mt-0.5 text-xs text-neutral-400">${escapeHtml(String(w.tahun || ''))}</div></div>${actions}</div>`;
+                const rowHtml = `<div class="flex items-center gap-3 p-2 pr-1 rounded-xl bg-neutral-900 ${isAdminUnlocked ? 'swipe-row' : ''}">${thumb}
+                    <div class="min-w-0 flex-1"><div class="text-sm font-semibold text-neutral-50 truncate">${escapeHtml(w.judul)}</div><div class="text-caption text-neutral-400">${escapeHtml(String(w.tahun || ''))}</div></div>${actions}</div>`;
                 return isAdminUnlocked
                     ? `<div class="swipe-wrap"><button type="button" class="swipe-action" onclick="deleteWatchlistItem('${id}')" aria-label="Hapus dari antrean"><i class="fa-solid fa-trash"></i> Hapus</button>${rowHtml}</div>`
                     : rowHtml;
