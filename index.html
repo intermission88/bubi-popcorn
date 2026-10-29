@@ -393,8 +393,7 @@
             </div>
         </section>
 
-        <!-- Slider foto ukuran asli (1000x324), hari bersama di bawahnya -->
-        <section>
+        <!-- Slider foto ukuran asli (1000x324): hari bersama di kiri bawah, titik slide di kanan bawah -->
         <div class="relative w-full aspect-[1000/324] rounded-2xl overflow-hidden border border-neutral-800 bg-neutral-950">
             <div id="hero-slider" class="flex h-full transition-transform duration-700 ease-in-out w-full">
                 <div class="w-full flex-shrink-0">
@@ -413,22 +412,19 @@
                     <img src="assets/Slider_5.webp" alt="Foto Zald dan Micel 5" loading="lazy" class="w-full h-full object-cover">
                 </div>
             </div>
-            <div class="absolute inset-x-0 bottom-0 flex justify-center items-center bg-gradient-to-b from-transparent to-black/60" aria-label="Pilih slide">
-                <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(0)" aria-label="Slide 1"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
-                <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(1)" aria-label="Slide 2"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
-                <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(2)" aria-label="Slide 3"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
-                <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(3)" aria-label="Slide 4"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
-                <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(4)" aria-label="Slide 5"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
+            <div class="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-b from-transparent to-black/80 pointer-events-none"></div>
+            <div class="absolute left-3.5 bottom-2.5 pointer-events-none">
+                <div class="flex items-baseline gap-1.5 leading-none"><span id="relationship-days" class="font-display font-extrabold text-3xl text-amber-400">0</span><span class="text-sm font-semibold text-neutral-50">hari</span></div>
+                <div class="mt-1 text-caption text-neutral-200">sejak 5 April 2025</div>
+            </div>
+            <div class="absolute right-1.5 bottom-0 flex items-center" aria-label="Pilih slide">
+                <button type="button" class="slider-dot w-6 h-11 flex items-center justify-center" onclick="currentSlide(0)" aria-label="Slide 1"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
+                <button type="button" class="slider-dot w-6 h-11 flex items-center justify-center" onclick="currentSlide(1)" aria-label="Slide 2"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
+                <button type="button" class="slider-dot w-6 h-11 flex items-center justify-center" onclick="currentSlide(2)" aria-label="Slide 3"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
+                <button type="button" class="slider-dot w-6 h-11 flex items-center justify-center" onclick="currentSlide(3)" aria-label="Slide 4"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
+                <button type="button" class="slider-dot w-6 h-11 flex items-center justify-center" onclick="currentSlide(4)" aria-label="Slide 5"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
             </div>
         </div>
-        <div class="mt-4 px-1 flex items-end justify-between gap-4">
-            <div>
-                <div class="text-micro font-bold uppercase tracking-widest text-neutral-400">Hari ke</div>
-                <div id="relationship-days" class="font-display font-extrabold text-5xl text-amber-400 leading-none">0</div>
-            </div>
-            <div class="pb-1 text-right text-xs text-neutral-300">bersama, sejak<br><span class="text-neutral-200">5 April 2025</span></div>
-        </div>
-        </section>
 
         <!-- Jam Zald & Micel (ketuk = konverter waktu) + satu kutipan -->
         <section>
@@ -1193,7 +1189,7 @@
                 const indicator = dot.firstElementChild;
                 const isActive = idx === currentSlideIndex;
                 dot.setAttribute('aria-current', isActive ? 'true' : 'false');
-                indicator.className = `${isActive ? 'w-5 bg-amber-400' : 'w-2 bg-white/50'} h-2 rounded-full transition-all duration-300`;
+                indicator.className = `${isActive ? 'w-4 bg-amber-400' : 'w-2 bg-white/50'} h-2 rounded-full transition-all duration-300`;
             });
         }
 
