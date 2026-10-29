@@ -474,50 +474,52 @@
             <div id="rekomendasi-list" class="relative"></div>
         </section>
 
-        <!-- SECTION SEARCH & VIEWER FILTER -->
-        <section id="search-section" class="space-y-3">
-            <div class="flex items-center gap-2.5">
-                <div class="relative flex-grow">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-xs"></i>
-                    <label for="search-input" class="sr-only">Cari judul film atau bulan</label>
-                    <input type="text" id="search-input" oninput="onSearchInput(); toggleClearSearchBtn()" placeholder="Cari judul film atau bulan..." 
-                        class="w-full min-h-11 pl-9 pr-12 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-xs sm:text-sm text-neutral-100 placeholder-neutral-400 focus:outline-none focus:border-amber-400 transition shadow-inner">
-                    <button type="button" id="clear-search-btn" onclick="clearSearchInput()" class="touch-target absolute right-0 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white text-xs hidden" aria-label="Hapus pencarian">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-                <span id="movie-count-badge" class="flex-shrink-0 px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-neutral-800 font-display font-bold text-sm text-amber-400">0 Film</span>
-                <button onclick="triggerHaptic(); refreshData(this)" title="Muat ulang data"
-                    class="touch-target flex-shrink-0 rounded-xl bg-neutral-950 border border-neutral-800 hover:border-amber-400/60 text-neutral-300 hover:text-amber-400 flex items-center justify-center transition tap-scale shadow-sm">
-                    <i id="refresh-icon" class="fa-solid fa-rotate-right text-xs"></i>
-                </button>
-            </div>
-
-            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
-                <div id="viewer-seg" class="seg" role="group" aria-label="Filter penonton">
-                    <span class="seg-thumb" id="seg-thumb" aria-hidden="true"></span>
-                    <button type="button" onclick="triggerHaptic(); setViewerFilter('all', this)" class="filter-btn seg-btn" aria-pressed="true">Semua</button>
-                    <button type="button" onclick="triggerHaptic(); setViewerFilter('both', this)" class="filter-btn seg-btn" aria-pressed="false">Nonton Bareng</button>
-                    <button type="button" onclick="triggerHaptic(); setViewerFilter('zald', this)" class="filter-btn seg-btn" aria-pressed="false">Zald Picks</button>
-                    <button type="button" onclick="triggerHaptic(); setViewerFilter('micel', this)" class="filter-btn seg-btn" aria-pressed="false">Micel Picks</button>
-                </div>
-                <div class="h-4 w-[1px] bg-neutral-800 mx-1 flex-shrink-0"></div>
-                <button onclick="triggerHaptic(); toggleTopRatedFilter(this)" id="top-rated-btn" class="touch-target px-3.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-amber-400 tap-scale flex-shrink-0 transition flex items-center gap-1.5 shadow-sm">
-                    <i class="fa-solid fa-star text-micro"></i> Top 9+
-                </button>
-            </div>
-        </section>
-
         <!-- Movies: Horizontal Month Carousel (Swipe Right for Older Months) -->
         <section class="space-y-3">
-            <div class="flex items-center justify-between px-1">
-                <h2 class="font-display font-bold text-xl text-neutral-50 tracking-tight leading-none">Bulan Tayang</h2>
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-bold text-neutral-50 tracking-tight font-display flex items-center gap-2">
+                    <i class="fa-solid fa-film text-amber-400 text-base"></i> Bulan Tayang
+                </h2>
                 <div class="flex items-center gap-2">
                     <span id="swipe-hint" class="text-caption text-neutral-300 flex items-center gap-1.5">
                         <i class="fa-solid fa-arrows-left-right text-amber-400/70 text-micro"></i> Geser antar bulan
                     </span>
                 </div>
             </div>
+
+            <!-- SECTION SEARCH & VIEWER FILTER -->
+            <section id="search-section" class="space-y-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="relative flex-grow">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-xs"></i>
+                        <label for="search-input" class="sr-only">Cari judul film atau bulan</label>
+                        <input type="text" id="search-input" oninput="onSearchInput(); toggleClearSearchBtn()" placeholder="Cari judul film atau bulan..." 
+                            class="w-full min-h-11 pl-9 pr-12 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-xs sm:text-sm text-neutral-100 placeholder-neutral-400 focus:outline-none focus:border-amber-400 transition shadow-inner">
+                        <button type="button" id="clear-search-btn" onclick="clearSearchInput()" class="touch-target absolute right-0 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white text-xs hidden" aria-label="Hapus pencarian">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <span id="movie-count-badge" class="flex-shrink-0 px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-neutral-800 font-display font-bold text-sm text-amber-400">0 Film</span>
+                    <button onclick="triggerHaptic(); refreshData(this)" title="Muat ulang data" aria-label="Muat ulang data"
+                        class="touch-target flex-shrink-0 rounded-xl bg-neutral-950 border border-neutral-800 hover:border-amber-400/60 text-neutral-300 hover:text-amber-400 flex items-center justify-center transition tap-scale shadow-sm">
+                        <i id="refresh-icon" class="fa-solid fa-rotate-right text-xs"></i>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+                    <div id="viewer-seg" class="seg" role="group" aria-label="Filter penonton">
+                        <span class="seg-thumb" id="seg-thumb" aria-hidden="true"></span>
+                        <button type="button" onclick="triggerHaptic(); setViewerFilter('all', this)" class="filter-btn seg-btn" aria-pressed="true">Semua</button>
+                        <button type="button" onclick="triggerHaptic(); setViewerFilter('both', this)" class="filter-btn seg-btn" aria-pressed="false">Nonton Bareng</button>
+                        <button type="button" onclick="triggerHaptic(); setViewerFilter('zald', this)" class="filter-btn seg-btn" aria-pressed="false">Zald Picks</button>
+                        <button type="button" onclick="triggerHaptic(); setViewerFilter('micel', this)" class="filter-btn seg-btn" aria-pressed="false">Micel Picks</button>
+                    </div>
+                    <div class="h-4 w-[1px] bg-neutral-800 mx-1 flex-shrink-0"></div>
+                    <button onclick="triggerHaptic(); toggleTopRatedFilter(this)" id="top-rated-btn" class="touch-target px-3.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-amber-400 tap-scale flex-shrink-0 transition flex items-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-star text-micro"></i> Top 9+
+                    </button>
+                </div>
+            </section>
 
             <div id="months-carousel" class="space-y-5"></div>
 
@@ -1783,7 +1785,7 @@
             if (watcher === 'zald') {
                 ratingsHTML = `
                     <div class="flex items-center justify-center gap-2 rounded-xl bg-sky-400/10 border border-sky-400/20 py-1.5 shadow-inner">
-                        <img src="assets/pfp_zald.webp" class="w-4 h-4 rounded-full object-cover shadow-sm">
+                        <img src="assets/pfp_zald.webp" alt="" class="w-4 h-4 rounded-full object-cover shadow-sm">
                         <span class="text-caption font-bold text-sky-400 uppercase">Zald</span>
                         <span class="font-bold text-neutral-50 text-sm leading-none">${escapeHtml(dispZ)}</span>
                     </div>
@@ -1791,7 +1793,7 @@
             } else if (watcher === 'micel') {
                 ratingsHTML = `
                     <div class="flex items-center justify-center gap-2 rounded-xl bg-pink-400/10 border border-pink-400/20 py-1.5 shadow-inner">
-                        <img src="assets/pfp_micel.webp" class="w-4 h-4 rounded-full object-cover shadow-sm">
+                        <img src="assets/pfp_micel.webp" alt="" class="w-4 h-4 rounded-full object-cover shadow-sm">
                         <span class="text-caption font-bold text-pink-400 uppercase">Micel</span>
                         <span class="font-bold text-neutral-50 text-sm leading-none">${escapeHtml(dispM)}</span>
                     </div>
@@ -1800,12 +1802,12 @@
                 ratingsHTML = `
                     <div class="flex items-stretch rounded-xl bg-neutral-900/60 border border-neutral-800 shadow-inner overflow-hidden">
                         <div class="flex-1 flex items-center justify-center gap-1.5 py-1.5">
-                            <img src="assets/pfp_zald.webp" class="w-4 h-4 rounded-full ring-1 ring-sky-400/60 object-cover">
+                            <img src="assets/pfp_zald.webp" alt="Zald" class="w-4 h-4 rounded-full ring-1 ring-sky-400/60 object-cover">
                             <span class="font-bold text-neutral-50 text-sm leading-none">${escapeHtml(dispZ)}</span>
                         </div>
                         <div class="w-[1px] bg-neutral-800"></div>
                         <div class="flex-1 flex items-center justify-center gap-1.5 py-1.5">
-                            <img src="assets/pfp_micel.webp" class="w-4 h-4 rounded-full ring-1 ring-pink-400/60 object-cover">
+                            <img src="assets/pfp_micel.webp" alt="Micel" class="w-4 h-4 rounded-full ring-1 ring-pink-400/60 object-cover">
                             <span class="font-bold text-neutral-50 text-sm leading-none">${escapeHtml(dispM)}</span>
                         </div>
                     </div>
@@ -1820,7 +1822,7 @@
                 </div>
                 <div class="p-3 flex flex-col justify-between flex-grow space-y-2.5">
                     <div>
-                        <h3 class="font-display font-bold text-base ${isCertified ? 'gold-text' : 'text-neutral-50'} line-clamp-1">${escapeHtml(movie.judul) || 'Tanpa Judul'}</h3>
+                        <h4 class="font-display font-bold text-base ${isCertified ? 'gold-text' : 'text-neutral-50'} line-clamp-1">${escapeHtml(movie.judul) || 'Tanpa Judul'}</h4>
                     </div>
                     ${ratingsHTML}
                 </div>
@@ -1874,7 +1876,7 @@
                     <div class="flex items-center gap-3 mb-3 px-0.5">
                         <span class="font-display font-bold text-5xl leading-none stroke-number">${String(panelNumber).padStart(2, '0')}</span>
                         <div>
-                            <div class="font-display font-bold text-lg text-amber-300 tracking-tight leading-none">${escapeHtml(formatMonthDisplay(key))}</div>
+                            <h3 class="font-display font-bold text-lg text-amber-300 tracking-tight leading-none">${escapeHtml(formatMonthDisplay(key))}</h3>
                             <div class="text-caption text-neutral-300 mt-1">${monthMovies.length} film</div>
                         </div>
                     </div>
