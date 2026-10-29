@@ -13,7 +13,7 @@ Peta untuk debug cepat: ke mana melihat, perintah apa yang jalan, dan jebakan ya
 | `supabase/watchlist.sql` | Skema tabel `bubi_watchlist` + RLS. Dijalankan user manual. | Watchlist tidak muncul |
 | (tanpa SQL) logo judul | `fetchTmdbExtra` mengambil `images.logos` (en/tanpa teks dulu, suara terbanyak) -> `renderTmdbExtra` mengisi `#detail-logo` dan menyembunyikan `#detail-title` (`sr-only`, tetap untuk aksesibilitas). Tidak disimpan di DB; judul teks jadi cadangan. | Logo tidak muncul / judul hilang |
 | `supabase/tmdb_id.sql` | Kolom `tmdb_id`/`tmdb_media`. `tmdbIdAvailable()`; diisi `applyTmdbResult` dan `planTmdbSync`. Dipakai `fetchTmdbExtra` (lewati pencarian), `rowMatches` (cocokkan sudah ditonton). | Rekomendasi salah menandai sudah ditonton / detail film salah |
-| (tanpa SQL) rekomendasi | `tmdbItem`, `rowMatches`/`isWatched`/`isQueued`, `renderDetailRelated` (`#detail-lanjut`: hanya sebelumnya/lanjutan), `loadHomeRecs`/`renderHomeRecs` (`#rekomendasi-section`: rilisan `NEW_WINDOW_DAYS` hari terakhir via `/discover` dengan `watch_region=STREAM_REGION` + flatrate, genre dari seed (`seedRecs`), nama layanan dari `/watch/providers`; ganti tiap Senin lewat `weekKey`/`pickSeeds`; cache `bubi_recs_v4` per minggu dan `bubi_recs_seed_v2` per film seed 30 hari), `addRelated` (+ Antrean via `insertWatchlist`), `pickTvForSeason` (pilih series yang season-nya tayang di tahun itu). | Blok Lanjut nonton / Rekomendasi kosong |
+| (tanpa SQL) rekomendasi | `tmdbItem`, `rowMatches`/`isWatched`/`isQueued`, `renderDetailRelated` (`#detail-lanjut`: hanya sebelumnya/lanjutan), `loadHomeRecs`/`renderHomeRecs` (`#rekomendasi-section`: rilisan `NEW_WINDOW_DAYS` hari terakhir via `/discover` dengan `watch_region=STREAM_REGION` + flatrate, genre dari seed (`seedRecs`), nama layanan dari `/watch/providers`; ganti tiap Senin lewat `weekKey`/`pickSeeds`; cache `bubi_recs_v6` per minggu dan `bubi_recs_seed_v2` per film seed 30 hari), `addRelated` (+ Antrean via `insertWatchlist`), `pickTvForSeason` (pilih series yang season-nya tayang di tahun itu). | Blok Lanjut nonton / Rekomendasi kosong |
 | `supabase/season.sql` | Kolom `season` di `bubi_popcorn`. Aktif lewat `seasonAvailable()`; `seasonNum(m)` = nomor valid atau null. Picker: `loadSeasonPicker`/`pickSeason`; `fetchTmdbExtra` melonggarkan aturan tahun untuk series bersesi. | Pemilih season / lencana S2 tidak muncul |
 | `supabase/kutipan.sql` | Kolom `kutipan` di `bubi_popcorn`. Fitur aktif otomatis lewat `kutipanAvailable()` (cek key `kutipan` di baris data). | Kolom kutipan tidak muncul di form |
 | `LICENSE` | MIT untuk kode (isi arsip dan foto dikecualikan). | Soal lisensi |
@@ -31,14 +31,15 @@ Baris bergeser setiap edit. Anchor yang stabil:
 | Judul besar + dinding poster berjalan (`renderPosterWall`, CSS `.poster-row`) | `grep -n 'poster-wall'` |
 | Hero slider (5 slide, rasio asli 1000x324) + Hari Bersama di kiri bawah foto | `grep -n 'hero-slider\|relationship-days'` |
 | Tiket jam Zald/Micel + jarak Colombo-Tokyo (`.ticket-notch`, animasi `.flight-runner`, `initFlightDistance`) | `grep -n 'zald-clock\|ticket-notch'` |
-| Mau Ditonton (watchlist, di atas pencarian) | `grep -n 'watchlist-section'` |
+| Mau Ditonton (watchlist, di bawah daftar film; maks 5 + `showMoreWatchlist`, durasi `fillWatchlistDurations`) | `grep -n 'watchlist-section'` |
 | Modal Statistik + Roulette + Recap + CSV + sinkron TMDB | `grep -n 'id="stats-modal"'` |
 | Kotak info TMDB + trailer di modal detail | `grep -n 'id="detail-tmdb"'` |
-| Footer: logo TMDB + Kredit & Lisensi | `grep -n 'tmdb-logo\|Kredit'` |
+| Footer: identitas, tautan Jelajahi/Sumber data, atribusi TMDB, Kredit & Lisensi | `grep -n 'tmdb-logo\|Kredit'` |
 | Search + filter viewer + Top 9+ | `grep -n 'search-section'` |
 | Karusel film per bulan | `grep -n 'months-carousel'` |
 | Empty state / error state | `grep -n 'empty-state\|error-state'` |
-| Blok total film ditonton | `grep -n 'memory we keep'` |
+| Baru & Sudah Streaming: slider backdrop di bawah tiket jam (`initRecSlider`, `#rec-track`) | `grep -n 'rekomendasi-section'` |
+| Bulan tayang maks 4 + `showMoreMonths`; tombol muat lagi bersama `loadMoreBtn` | `grep -n 'MONTHS_PAGE'` |
 | Footer + panel admin | `grep -n 'Footer Section'` |
 | FAB (konverter, tambah, scroll-top) | `grep -n 'Floating Action'` |
 | Modal konverter / login / tambah / detail | `grep -n 'id="time-calc-modal\|password-modal\|add-modal\|detail-modal"'` |

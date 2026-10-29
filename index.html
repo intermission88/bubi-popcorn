@@ -465,29 +465,12 @@
             </div>
         </button>
 
-        <!-- Watchlist: Mau Ditonton -->
-        <section id="watchlist-section" class="pt-6 hidden">
-            <div class="film-strip -mx-4"></div>
-            <h2 class="mt-5 mb-3 text-xl font-bold text-neutral-50 tracking-tight font-display flex items-center gap-2">
-                <i class="fa-solid fa-ticket text-amber-400 text-base"></i> Mau Ditonton
-            </h2>
-            <div id="watchlist-add" class="hidden mb-4">
-                <div class="flex items-center gap-2">
-                    <input type="text" id="wl-judul" placeholder="Judul film / series + tahun" maxlength="150" enterkeyhint="search" class="min-w-0 flex-1 min-h-[44px] px-3.5 py-2.5 bg-neutral-900 border border-neutral-800 rounded-xl text-base focus:outline-none focus:border-amber-400 text-neutral-100 placeholder:text-neutral-400 transition" onkeydown="if(event.key==='Enter'){event.preventDefault();searchTmdb('wl-judul','wl-tmdb-results','applyTmdbToWatchlist');}">
-                    <button type="button" onclick="searchTmdb('wl-judul','wl-tmdb-results','applyTmdbToWatchlist')" class="shrink-0 w-11 h-11 rounded-xl bg-neutral-900 border border-neutral-800 text-amber-400 tap-scale hover:border-amber-400" aria-label="Cari di TMDB"><i class="fa-solid fa-magnifying-glass"></i></button>
-                    <button type="button" onclick="addWatchlistFromInput()" class="shrink-0 w-11 h-11 rounded-xl popcorn-gradient text-black tap-scale" aria-label="Tambah ke antrean"><i class="fa-solid fa-plus"></i></button>
-                </div>
-                <div id="wl-tmdb-results" class="mt-2 space-y-1.5 max-h-72 overflow-y-auto overscroll-contain hidden" aria-live="polite"></div>
-            </div>
-            <div id="watchlist-list" class="space-y-1.5 md:space-y-0 md:grid md:grid-cols-2 md:gap-1.5"></div>
-        </section>
-
         <!-- SECTION REKOMENDASI (dihitung dari film berskor tinggi; disembunyikan bila kosong) -->
         <section id="rekomendasi-section" class="hidden" aria-label="Rekomendasi">
             <h2 class="mb-3 text-xl font-bold text-neutral-50 tracking-tight font-display flex items-center gap-2">
                 <i class="fa-solid fa-compass text-amber-400 text-base"></i> Baru &amp; Sudah Streaming
             </h2>
-            <div id="rekomendasi-list" class="flex gap-3 overflow-x-auto snap-x no-scrollbar -mx-4 px-4 pb-1"></div>
+            <div id="rekomendasi-list" class="relative"></div>
         </section>
 
         <!-- SECTION SEARCH & VIEWER FILTER -->
@@ -560,18 +543,25 @@
             </div>
         </section>
 
-        <!-- Penutup: total film ditonton -->
-        <section class="pt-6 text-center">
+        <!-- Watchlist: Mau Ditonton -->
+        <section id="watchlist-section" class="pt-6 hidden">
             <div class="film-strip -mx-4"></div>
-            <div class="mt-5 space-y-1.5">
-                <div class="text-micro font-semibold text-neutral-300 uppercase tracking-widest">Total Movies Watched</div>
-                <div id="total-movies-count" class="font-display font-bold text-5xl text-neutral-50 leading-none tracking-tight">0</div>
-                <p class="text-caption text-neutral-400 italic">"Every film is a memory we keep forever."</p>
+            <h2 class="mt-5 mb-3 text-xl font-bold text-neutral-50 tracking-tight font-display flex items-center gap-2">
+                <i class="fa-solid fa-ticket text-amber-400 text-base"></i> Mau Ditonton
+            </h2>
+            <div id="watchlist-add" class="hidden mb-4">
+                <div class="flex items-center gap-2">
+                    <input type="text" id="wl-judul" placeholder="Judul film / series + tahun" maxlength="150" enterkeyhint="search" class="min-w-0 flex-1 min-h-[44px] px-3.5 py-2.5 bg-neutral-900 border border-neutral-800 rounded-xl text-base focus:outline-none focus:border-amber-400 text-neutral-100 placeholder:text-neutral-400 transition" onkeydown="if(event.key==='Enter'){event.preventDefault();searchTmdb('wl-judul','wl-tmdb-results','applyTmdbToWatchlist');}">
+                    <button type="button" onclick="searchTmdb('wl-judul','wl-tmdb-results','applyTmdbToWatchlist')" class="shrink-0 w-11 h-11 rounded-xl bg-neutral-900 border border-neutral-800 text-amber-400 tap-scale hover:border-amber-400" aria-label="Cari di TMDB"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    <button type="button" onclick="addWatchlistFromInput()" class="shrink-0 w-11 h-11 rounded-xl popcorn-gradient text-black tap-scale" aria-label="Tambah ke antrean"><i class="fa-solid fa-plus"></i></button>
+                </div>
+                <div id="wl-tmdb-results" class="mt-2 space-y-1.5 max-h-72 overflow-y-auto overscroll-contain hidden" aria-live="polite"></div>
             </div>
+            <div id="watchlist-list" class="space-y-1.5 md:space-y-0 md:grid md:grid-cols-2 md:gap-1.5"></div>
         </section>
 
         <!-- Footer Section -->
-        <footer class="mt-3 pt-3 pb-1 border-t border-neutral-900 text-center">
+        <footer class="mt-3 border-t border-neutral-900">
             
             <!-- ADMIN-ONLY ABOUT SECTION -->
             <div id="admin-about-section" class="hidden mb-4 space-y-3 text-left p-4 rounded-2xl bg-neutral-950 border border-neutral-800 shadow-inner">
@@ -635,33 +625,64 @@
                 </div>
             </div>
 
-            <div class="space-y-1.5">
-                <div class="font-display font-extrabold text-xs tracking-[0.45em] text-neutral-400 uppercase pl-[0.45em]">The End</div>
-                <p class="text-caption text-neutral-300">
-                    Cinema log archive by <span class="text-sky-400 font-semibold">Zald</span> &amp; <span class="text-pink-400 font-semibold">Micel</span>
-                </p>
-                <p class="text-micro text-neutral-400 tracking-wide">
-                    &copy; 2026 Bubi's Popcorn
-                </p>
-                <a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer" class="mt-3 flex flex-col items-center gap-1.5">
-                    <img src="assets/tmdb-logo.svg" alt="TMDB" width="273" height="36" class="h-3 w-auto opacity-90">
-                    <span class="max-w-[16rem] text-micro leading-snug text-neutral-400">This product uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.</span>
-                </a>
-                <details class="group mx-auto max-w-xs text-left pt-2 pb-16">
-                    <summary class="cursor-pointer list-none text-center text-micro text-neutral-400 hover:text-neutral-200 underline decoration-dotted underline-offset-2">Kredit &amp; Lisensi</summary>
-                    <div class="mt-2.5 p-3 rounded-xl bg-neutral-950 border border-neutral-900 space-y-2 text-micro leading-relaxed text-neutral-400">
-                        <p><a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">TMDB</a>: data film (judul, poster, sinopsis, genre, pemeran, trailer).</p>
-                        <p><a href="https://www.justwatch.com/" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">JustWatch</a>: data ketersediaan streaming, lewat TMDB.</p>
-                        <p><a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">YouTube</a>: pemutar trailer, tunduk pada Ketentuan Layanan YouTube.</p>
-                        <p>Poster, gambar, dan trailer adalah hak cipta pemiliknya masing-masing, ditampilkan untuk arsip pribadi nonkomersial.</p>
-                        <div class="pt-1.5 border-t border-neutral-900 space-y-1">
-                            <p><a href="https://tailwindcss.com/" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">Tailwind CSS</a>: lisensi MIT.</p>
-                            <p><a href="https://fontawesome.com/license/free" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">Font Awesome Free</a>: ikon CC BY 4.0, font SIL OFL 1.1, kode MIT.</p>
-                            <p><a href="https://fonts.google.com/" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">Google Fonts</a>: Bricolage Grotesque, Figtree, lisensi SIL Open Font License 1.1.</p>
-                            <p><a href="https://github.com/supabase/supabase-js" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">Supabase JS</a>: lisensi MIT.</p>
-                        </div>
+            <div class="pt-6 pb-16 text-left">
+                <!-- Identitas -->
+                <div class="flex items-center gap-3">
+                    <img src="assets/icon.svg" alt="" width="40" height="40" class="w-10 h-10 rounded-xl">
+                    <div>
+                        <div class="font-display font-bold text-base text-neutral-50 leading-tight">Bubi's Popcorn</div>
+                        <p class="text-caption text-neutral-300">Cinema log archive by <span class="text-sky-400 font-semibold">Zald</span> &amp; <span class="text-pink-400 font-semibold">Micel</span></p>
                     </div>
-                </details>
+                </div>
+
+                <!-- Tautan -->
+                <div class="mt-6 grid grid-cols-2 gap-6">
+                    <nav aria-label="Navigasi footer">
+                        <h3 class="text-micro font-bold uppercase tracking-wider text-neutral-400">Jelajahi</h3>
+                        <ul class="mt-1">
+                            <li><button type="button" onclick="scrollToTop()" class="min-h-11 inline-flex items-center text-xs text-neutral-300 hover:text-amber-400 transition">Beranda</button></li>
+                            <li id="footer-wl-link"><button type="button" onclick="scrollToWatchlist()" class="min-h-11 inline-flex items-center text-xs text-neutral-300 hover:text-amber-400 transition">Mau Ditonton</button></li>
+                            <li><button type="button" onclick="openStatsModal()" class="min-h-11 inline-flex items-center text-xs text-neutral-300 hover:text-amber-400 transition">Statistik</button></li>
+                            <li><button type="button" onclick="openTimeCalcModal()" class="min-h-11 inline-flex items-center text-xs text-neutral-300 hover:text-amber-400 transition">Konverter waktu</button></li>
+                        </ul>
+                    </nav>
+                    <div>
+                        <h3 class="text-micro font-bold uppercase tracking-wider text-neutral-400">Sumber data</h3>
+                        <ul class="mt-1">
+                            <li><a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer" class="min-h-11 inline-flex items-center text-xs text-neutral-300 hover:text-amber-400 transition">TMDB</a></li>
+                            <li><a href="https://www.justwatch.com/" target="_blank" rel="noopener noreferrer" class="min-h-11 inline-flex items-center text-xs text-neutral-300 hover:text-amber-400 transition">JustWatch</a></li>
+                            <li><a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener noreferrer" class="min-h-11 inline-flex items-center text-xs text-neutral-300 hover:text-amber-400 transition">YouTube</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Atribusi TMDB (wajib, selalu terlihat) -->
+                <a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer" class="mt-6 pt-5 border-t border-neutral-900 flex items-start gap-3">
+                    <img src="assets/tmdb-logo.svg" alt="TMDB" width="273" height="36" class="mt-0.5 h-3 w-auto shrink-0 opacity-90">
+                    <span class="text-micro leading-snug text-neutral-400">This product uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.</span>
+                </a>
+
+                <!-- Baris bawah -->
+                <div class="mt-5 pt-4 border-t border-neutral-900">
+                    <details class="group">
+                        <summary class="cursor-pointer list-none flex items-center justify-between min-h-11 text-caption text-neutral-400">
+                            <span>&copy; 2026 Bubi's Popcorn</span>
+                            <span class="inline-flex items-center gap-1.5 hover:text-neutral-200">Kredit &amp; Lisensi <i class="fa-solid fa-chevron-down text-micro transition-transform group-open:rotate-180"></i></span>
+                        </summary>
+                        <div class="mt-2.5 p-3 rounded-xl bg-neutral-950 border border-neutral-900 space-y-2 text-micro leading-relaxed text-neutral-400">
+                            <p><a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">TMDB</a>: data film (judul, poster, sinopsis, genre, pemeran, trailer).</p>
+                            <p><a href="https://www.justwatch.com/" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">JustWatch</a>: data ketersediaan streaming, lewat TMDB.</p>
+                            <p><a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">YouTube</a>: pemutar trailer, tunduk pada Ketentuan Layanan YouTube.</p>
+                            <p>Poster, gambar, dan trailer adalah hak cipta pemiliknya masing-masing, ditampilkan untuk arsip pribadi nonkomersial.</p>
+                            <div class="pt-1.5 border-t border-neutral-900 space-y-1">
+                                <p><a href="https://tailwindcss.com/" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">Tailwind CSS</a>: lisensi MIT.</p>
+                                <p><a href="https://fontawesome.com/license/free" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">Font Awesome Free</a>: ikon CC BY 4.0, font SIL OFL 1.1, kode MIT.</p>
+                                <p><a href="https://fonts.google.com/" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">Google Fonts</a>: Bricolage Grotesque, Figtree, lisensi SIL Open Font License 1.1.</p>
+                                <p><a href="https://github.com/supabase/supabase-js" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">Supabase JS</a>: lisensi MIT.</p>
+                            </div>
+                        </div>
+                    </details>
+                </div>
             </div>
         </footer>
     </main>
@@ -1770,9 +1791,6 @@
             filteredMoviesCache = filtered;
             document.getElementById('movie-count-badge').innerText = `${filteredMoviesCache.length} Film`;
 
-            const totalCountEl = document.getElementById('total-movies-count');
-            if (totalCountEl) totalCountEl.innerText = moviesData.length;
-
             renderMonthsCarousel();
             renderPosterWall();
         }
@@ -1860,6 +1878,11 @@
             return card;
         }
 
+        // Bulan tayang tampil maks 4, sisanya lewat tombol muat lagi
+        const MONTHS_PAGE = 4;
+        let monthsShown = MONTHS_PAGE;
+        function showMoreMonths() { monthsShown += MONTHS_PAGE; renderMonthsCarousel(); }
+
         function renderMonthsCarousel() {
             const carousel = document.getElementById('months-carousel');
             const emptyState = document.getElementById('empty-state');
@@ -1892,7 +1915,7 @@
             const monthKeys = Object.keys(monthGroups).sort((a, b) => b.localeCompare(a));
             const totalMonths = monthKeys.length;
 
-            monthKeys.forEach((key, idx) => {
+            monthKeys.slice(0, monthsShown).forEach((key, idx) => {
                 const panelNumber = totalMonths - idx; // paling bawah (terlama) = 1
                 const monthMovies = monthGroups[key].sort((a, b) => (a.judul || '').localeCompare(b.judul || ''));
 
@@ -1918,6 +1941,7 @@
                 row.appendChild(track);
                 carousel.appendChild(row);
             });
+            if (totalMonths > monthsShown) carousel.insertAdjacentHTML('beforeend', loadMoreBtn('showMoreMonths()', 'Tampilkan bulan sebelumnya'));
             bindCarouselHaptics();
         }
 
@@ -1966,6 +1990,7 @@
                 year: parseInt(date.slice(0, 4), 10) || null,
                 titles: [r.title, r.name, r.original_title, r.original_name].filter(Boolean),
                 poster: r.poster_path ? TMDB_IMG + r.poster_path : '',
+                backdrop: r.backdrop_path ? TMDB_IMG + r.backdrop_path : '',
                 vote: r.vote_average || 0
             };
         }
@@ -2114,7 +2139,7 @@
         // urut popularitas (ramai/viral) dengan bonus genre film berskor tinggi, hanya judul berbahasa Inggris (aksara Latin); sekuel/prekuel film seed dibuang.
         // Ganti tiap hari Senin (waktu perangkat): seed dipilih acak-tetap dari kunci minggu, jadi sama di semua perangkat.
         // Hasil per film seed disimpan 30 hari sehingga ganti minggu hanya meminta TMDB untuk seed yang belum pernah dipakai.
-        const RECS_KEY = 'bubi_recs_v5', RECS_SEED_KEY = 'bubi_recs_seed_v2', SEED_TTL = 30 * 864e5;
+        const RECS_KEY = 'bubi_recs_v6', RECS_SEED_KEY = 'bubi_recs_seed_v2', SEED_TTL = 30 * 864e5;
         const STREAM_REGION = 'ID', NEW_WINDOW_DAYS = 90;
         let homeRecsTimer = null, homeRecsWeek = '', homeRecsBusy = false;
         function weekKey(d = new Date()) { // tanggal Senin pada minggu ini
@@ -2231,7 +2256,45 @@
             const list = homeRecItems.filter(it => it.poster && isReleased(it.date) && !isWatched(it) && !isQueued(it)).slice(0, 12)
                 .map(it => ({ ...it, sub: (it.providers || []).join(' · '), hideSub: !(it.providers && it.providers.length) })); // keterangan = layanan streaming
             sec.classList.toggle('hidden', !list.length);
-            if (list.length) document.getElementById('rekomendasi-list').innerHTML = relatedRow('home', list);
+            if (!list.length) return;
+            relatedLists.home = list;
+            const canQueue = isAdminUnlocked && watchlistAvailable;
+            const slides = list.map((it, i) => `<div class="relative w-full shrink-0 snap-center aspect-video bg-neutral-900" aria-roledescription="slide" aria-label="${i + 1} dari ${list.length}">
+                    ${posterBox(it.backdrop || it.poster, it.title, 'w-full h-full object-cover', it.backdrop ? 'w780' : 'w342')}
+                    <div class="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-b from-transparent to-black/90 pointer-events-none"></div>
+                    <div class="absolute inset-x-0 bottom-0 flex items-end gap-3 p-3.5">
+                        <div class="min-w-0 flex-1">
+                            <div class="text-base font-bold text-neutral-50 leading-tight line-clamp-2">${escapeHtml(it.title)}</div>
+                            ${it.sub ? `<div class="mt-0.5 text-caption text-neutral-200 truncate">${escapeHtml(it.sub)}</div>` : ''}
+                        </div>
+                        ${canQueue && !isQueued(it) ? `<button type="button" onclick="addRelated('home', ${i})" class="shrink-0 w-11 h-11 rounded-full bg-black/60 border border-amber-500/40 text-amber-400 tap-scale" aria-label="Tambah ${escapeHtml(it.title)} ke antrean"><i class="fa-solid fa-plus"></i></button>` : ''}
+                        <button type="button" onclick="openRecTrailer(${i})" class="shrink-0 h-11 px-4 rounded-full bg-neutral-50 text-black text-xs font-bold tap-scale" aria-label="Putar trailer ${escapeHtml(it.title)}"><i class="fa-solid fa-play text-micro mr-1"></i>Trailer</button>
+                    </div>
+                </div>`).join('');
+            document.getElementById('rekomendasi-list').innerHTML = `
+                <div id="rec-track" class="flex overflow-x-auto snap-x snap-mandatory no-scrollbar rounded-2xl border border-neutral-800">${slides}</div>
+                <span id="rec-counter" class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-black/70 text-caption font-semibold text-neutral-100 pointer-events-none">1 / ${list.length}</span>`;
+            initRecSlider();
+        }
+
+        // Slider rekomendasi: geser manual (scroll-snap), maju sendiri tiap 5 detik, jeda 10 detik setelah disentuh
+        let recSlideTimer = null, recPausedUntil = 0;
+        function initRecSlider() {
+            const track = document.getElementById('rec-track'), counter = document.getElementById('rec-counter');
+            if (!track) return;
+            const n = track.children.length;
+            const current = () => Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+            track.addEventListener('scroll', () => { counter.textContent = `${current() + 1} / ${n}`; }, { passive: true });
+            const pause = () => { recPausedUntil = Date.now() + 10000; };
+            track.addEventListener('pointerdown', pause, { passive: true });
+            track.addEventListener('touchstart', pause, { passive: true });
+            clearInterval(recSlideTimer);
+            if (n < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            recSlideTimer = setInterval(() => {
+                if (document.hidden || Date.now() < recPausedUntil || !track.isConnected) return;
+                const next = (current() + 1) % n;
+                track.scrollTo({ left: next * track.clientWidth, behavior: 'smooth' });
+            }, 5000);
         }
 
         // --- MENU TEKAN-TAHAN pada kartu film ---
@@ -3348,11 +3411,44 @@
             renderWatchlist();
         }
 
+        // Tombol muat lagi: hanya ikon panah ke bawah, label untuk pembaca layar
+        function loadMoreBtn(onclick, label, extra = '') {
+            return `<button type="button" onclick="triggerHaptic(); ${onclick}" class="w-full min-h-11 rounded-xl bg-neutral-900 text-neutral-300 hover:text-amber-400 tap-scale flex items-center justify-center ${extra}" aria-label="${label}"><i class="fa-solid fa-chevron-down"></i></button>`;
+        }
+
+        // Durasi antrean dari TMDB (film: runtime; series: jumlah episode x durasi per episode), diingat selama sesi
+        function fmtDuration(min) {
+            const h = Math.floor(min / 60), m = min % 60;
+            return h ? (m ? `${h}j ${m}m` : `${h}j`) : `${m}m`;
+        }
+        async function fillWatchlistDurations(items) {
+            if (!TMDB_API_KEY) return;
+            await Promise.all(items.map(async w => {
+                try {
+                    const hit = await resolveQueueTmdb(w);
+                    if (!hit) return;
+                    if (hit.dur === undefined) {
+                        const d = await tmdbGet(`/${hit.media}/${hit.id}`, '');
+                        const per = hit.media === 'tv' ? (d.episode_run_time && d.episode_run_time[0]) || 0 : d.runtime || 0;
+                        const eps = hit.media === 'tv' ? d.number_of_episodes || 0 : 0;
+                        hit.dur = !per ? '' : hit.media === 'tv' && eps ? `${eps} eps · ${fmtDuration(per * eps)}` : fmtDuration(per);
+                    }
+                    const el = document.querySelector(`[data-wl-dur="${CSS.escape(String(w.id))}"]`);
+                    if (el && hit.dur) { el.innerHTML = `<i class="fa-regular fa-clock mr-1"></i>${escapeHtml(hit.dur)}`; el.classList.remove('hidden'); }
+                } catch (err) { console.warn('Durasi antrean gagal:', w.judul, err); }
+            }));
+        }
+
+        const WL_PAGE = 5;
+        let wlShown = WL_PAGE;
+        function showMoreWatchlist() { wlShown += WL_PAGE; renderWatchlist(); }
+
         function renderWatchlist() {
             const section = document.getElementById('watchlist-section');
             if (!section) return;
             section.classList.toggle('hidden', !watchlistAvailable || (!watchlistData.length && !isAdminUnlocked));
             document.getElementById('tab-watchlist')?.classList.toggle('hidden', section.classList.contains('hidden'));
+            document.getElementById('footer-wl-link')?.classList.toggle('hidden', section.classList.contains('hidden'));
             document.getElementById('watchlist-add').classList.toggle('hidden', !isAdminUnlocked);
             const list = document.getElementById('watchlist-list');
             if (!watchlistData.length) {
@@ -3360,7 +3456,8 @@
                 refreshRelatedViews();
                 return;
             }
-            list.innerHTML = watchlistData.map(w => {
+            const shown = watchlistData.slice(0, wlShown);
+            list.innerHTML = shown.map(w => {
                 const id = escapeHtml(w.id);
                 const img = w.poster ? `<img src="${escapeHtml(tmdbSized(w.poster, 'w92'))}" alt="" loading="lazy" class="w-full h-full object-cover">` : '';
                 const thumb = TMDB_API_KEY
@@ -3370,11 +3467,12 @@
                     <button type="button" onclick="markWatchlistWatched('${id}')" class="shrink-0 w-11 h-11 rounded-full text-amber-400 hover:bg-amber-400/10 tap-scale" aria-label="Sudah ditonton"><i class="fa-solid fa-check"></i></button>
                     <button type="button" onclick="deleteWatchlistItem('${id}')" class="shrink-0 w-11 h-11 rounded-full text-neutral-400 hover:text-red-400 tap-scale" aria-label="Hapus dari antrean"><i class="fa-solid fa-trash text-xs"></i></button>` : '';
                 const rowHtml = `<div class="flex items-center gap-3 p-2 pr-1 rounded-xl bg-neutral-900 ${isAdminUnlocked ? 'swipe-row' : ''}">${thumb}
-                    <div class="min-w-0 flex-1"><div class="text-sm font-semibold text-neutral-50 truncate">${escapeHtml(w.judul)}</div><div class="text-caption text-neutral-400">${escapeHtml(String(w.tahun || ''))}</div></div>${actions}</div>`;
+                    <div class="min-w-0 flex-1"><div class="text-sm font-semibold text-neutral-50 truncate">${escapeHtml(w.judul)}</div><div class="mt-0.5 flex items-center gap-3 text-caption text-neutral-400">${w.tahun ? `<span><i class="fa-regular fa-calendar mr-1"></i>${escapeHtml(String(w.tahun))}</span>` : ''}<span class="hidden" data-wl-dur="${id}"></span></div></div>${actions}</div>`;
                 return isAdminUnlocked
                     ? `<div class="swipe-wrap"><button type="button" class="swipe-action" onclick="deleteWatchlistItem('${id}')" aria-label="Hapus dari antrean"><i class="fa-solid fa-trash"></i> Hapus</button>${rowHtml}</div>`
                     : rowHtml;
-            }).join('');
+            }).join('') + (watchlistData.length > wlShown ? loadMoreBtn('showMoreWatchlist()', 'Tampilkan antrean lainnya', 'md:col-span-2') : '');
+            fillWatchlistDurations(shown);
             updateTabIndicator();
             refreshRelatedViews();
         }

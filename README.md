@@ -69,7 +69,7 @@ Aplikasi web **mobile-first** untuk mengarsipkan film yang ditonton bersama oleh
 - Detail film: genre, durasi, rating, sinopsis, sutradara, pemeran, streaming di Indonesia
 - **Trailer** langsung tampil di modal (tap play)
 - Sinkron poster massal dengan pratinjau dan centang per film
-- **Rekomendasi:** "Lanjut nonton" di detail (koleksi dan season) serta **Baru & Sudah Streaming** di Beranda; berganti tiap Senin
+- **Rekomendasi:** "Lanjut nonton" di detail (koleksi dan season) serta slider **Baru & Sudah Streaming** di Beranda; berganti tiap Senin
 
 </td>
 <td width="50%" valign="top">
