@@ -197,11 +197,11 @@
         }
 
         .touch-target { min-width: 44px; min-height: 44px; }
-        /* Garis sobek tiket jam: lubang setengah lingkaran di kedua sisi, warnanya = latar halaman */
-        .ticket-perf { position: relative; margin: 0 16px; border-top: 2px dashed #404040; }
-        .ticket-perf::before, .ticket-perf::after { content: ''; position: absolute; top: -10px; width: 18px; height: 18px; border-radius: 9999px; background: #000; }
-        .ticket-perf::before { left: -26px; }
-        .ticket-perf::after { right: -26px; }
+        /* Tiket jam: lubang setengah lingkaran di kedua sisi, warnanya = latar halaman */
+        .ticket-notch { position: relative; }
+        .ticket-notch::before, .ticket-notch::after { content: ''; position: absolute; top: 50%; width: 18px; height: 18px; margin-top: -9px; border-radius: 9999px; background: #000; }
+        .ticket-notch::before { left: -9px; }
+        .ticket-notch::after { right: -9px; }
         /* Pesawat terbang dari sisi Zald ke sisi Micel, meninggalkan jejak emas di garis putus-putus.
            Digerakkan initFlightDistance (sinkron dengan angka km). Posisi dasar = sudah sampai,
            jadi tanpa JS / reduced-motion yang tampil jejak penuh + pesawat di ujung. */
@@ -441,30 +441,27 @@
             </div>
         </div>
 
-        <!-- Jam Zald & Micel sebagai tiket (ketuk = konverter waktu); jarak = Colombo ke Tokyo, garis lurus -->
-        <button type="button" onclick="triggerHaptic(); openTimeCalcModal()" class="w-full text-left rounded-2xl bg-neutral-900 tap-scale" aria-label="Buka konverter waktu Zald dan Micel">
-            <div class="grid grid-cols-2 gap-3 px-4 pt-4 pb-3.5">
-                <div>
-                    <div class="flex items-center gap-2">
-                        <img src="assets/pfp_zald.webp" alt="" class="w-6 h-6 rounded-full object-cover">
-                        <span class="text-xs font-semibold text-sky-400">Zald</span>
-                    </div>
-                    <div id="zald-clock" class="mt-2 font-display font-bold text-xl text-sky-200 leading-none whitespace-nowrap">--:-- --</div>
+        <!-- Jam Zald & Micel sebagai tiket satu baris (ketuk = konverter waktu); jarak = Colombo ke Tokyo, garis lurus -->
+        <button type="button" onclick="triggerHaptic(); openTimeCalcModal()" class="ticket-notch w-full text-left rounded-2xl bg-neutral-900 tap-scale grid grid-cols-[auto_1fr_auto] items-end gap-3 px-4 py-4" aria-label="Buka konverter waktu Zald dan Micel">
+            <div>
+                <div class="flex items-center gap-2">
+                    <img src="assets/pfp_zald.webp" alt="" class="w-6 h-6 rounded-full object-cover">
+                    <span class="text-xs font-semibold text-sky-400">Zald</span>
                 </div>
-                <div class="text-right">
-                    <div class="flex items-center justify-end gap-2">
-                        <span class="text-xs font-semibold text-pink-400">Micel</span>
-                        <img src="assets/pfp_micel.webp" alt="" class="w-6 h-6 rounded-full object-cover">
-                    </div>
-                    <div id="micel-clock" class="mt-2 font-display font-bold text-xl text-pink-200 leading-none whitespace-nowrap">--:-- --</div>
-                </div>
+                <div id="zald-clock" class="mt-2 font-display font-bold text-xl text-sky-200 leading-none whitespace-nowrap">--:-- --</div>
             </div>
-            <div class="ticket-perf" aria-hidden="true"></div>
-            <div class="px-4 pt-3 pb-3.5">
-                <div class="flight-track" aria-hidden="true">
+            <div class="min-w-0">
+                <div class="text-center font-display font-bold text-base text-neutral-50 leading-none whitespace-nowrap"><span id="flight-km">6.846</span> <span class="text-caption text-neutral-300">km</span></div>
+                <div class="flight-track mt-1" aria-hidden="true">
                     <div class="flight-runner"><i class="fa-solid fa-plane text-caption text-amber-400"></i></div>
                 </div>
-                <div class="mt-1 text-center font-display font-bold text-lg text-neutral-50 leading-none"><span id="flight-km">6.846</span> <span class="text-sm text-neutral-300">km</span></div>
+            </div>
+            <div class="text-right">
+                <div class="flex items-center justify-end gap-2">
+                    <span class="text-xs font-semibold text-pink-400">Micel</span>
+                    <img src="assets/pfp_micel.webp" alt="" class="w-6 h-6 rounded-full object-cover">
+                </div>
+                <div id="micel-clock" class="mt-2 font-display font-bold text-xl text-pink-200 leading-none whitespace-nowrap">--:-- --</div>
             </div>
         </button>
 

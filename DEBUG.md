@@ -30,7 +30,7 @@ Baris bergeser setiap edit. Anchor yang stabil:
 | Header app bar | `grep -n 'Header App Bar'` |
 | Judul besar + dinding poster berjalan (`renderPosterWall`, CSS `.poster-row`) | `grep -n 'poster-wall'` |
 | Hero slider (5 slide, rasio asli 1000x324) + Hari Bersama di kiri bawah foto | `grep -n 'hero-slider\|relationship-days'` |
-| Tiket jam Zald/Micel + jarak Colombo-Tokyo (`.ticket-perf`, animasi `.flight-runner`, `initFlightDistance`) | `grep -n 'zald-clock\|ticket-perf'` |
+| Tiket jam Zald/Micel + jarak Colombo-Tokyo (`.ticket-notch`, animasi `.flight-runner`, `initFlightDistance`) | `grep -n 'zald-clock\|ticket-notch'` |
 | Mau Ditonton (watchlist, di atas pencarian) | `grep -n 'watchlist-section'` |
 | Modal Statistik + Roulette + Recap + CSV + sinkron TMDB | `grep -n 'id="stats-modal"'` |
 | Kotak info TMDB + trailer di modal detail | `grep -n 'id="detail-tmdb"'` |
