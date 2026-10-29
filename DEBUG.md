@@ -29,8 +29,8 @@ Baris bergeser setiap edit. Anchor yang stabil:
 |---|---|
 | Header app bar | `grep -n 'Header App Bar'` |
 | Judul besar + dinding poster berjalan (`renderPosterWall`, CSS `.poster-row`) | `grep -n 'poster-wall'` |
-| Hero slider (5 slide) | `grep -n 'hero-slider'` |
-| Kartu "Now Showing" + Hari Bersama + jam ganda | `grep -n 'ticket-card'` |
+| Hero slider (5 slide, persegi) + Hari Bersama di atas foto | `grep -n 'hero-slider\|relationship-days'` |
+| Jam ganda Zald/Micel + kutipan (`LOVE_QUOTES`, `showLoveQuote`) | `grep -n 'zald-clock\|love-quote'` |
 | Mau Ditonton (watchlist, di atas pencarian) | `grep -n 'watchlist-section'` |
 | Modal Statistik + Roulette + Recap + CSV + sinkron TMDB | `grep -n 'id="stats-modal"'` |
 | Kotak info TMDB + trailer di modal detail | `grep -n 'id="detail-tmdb"'` |

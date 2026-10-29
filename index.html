@@ -71,10 +71,6 @@
                             '0%': { opacity: '0' },
                             '100%': { opacity: '1' }
                         },
-                        marquee: {
-                            '0%': { transform: 'translateX(0%)' },
-                            '100%': { transform: 'translateX(-50%)' }
-                        },
                         pulseSlow: {
                             '0%, 100%': { opacity: '1' },
                             '50%': { opacity: '0.4' }
@@ -86,7 +82,6 @@
                         popIn: 'popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
                         slideUp: 'slideUp 0.26s cubic-bezier(0.2, 0.9, 0.25, 1) forwards',
                         fadeIn: 'fadeIn 0.25s ease-out forwards',
-                        marquee: 'marquee 28s linear infinite',
                         pulseSlow: 'pulseSlow 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite'
                     }
                 }
@@ -107,28 +102,6 @@
             -webkit-tap-highlight-color: transparent;
         }
         .font-display { font-family: 'Bricolage Grotesque', sans-serif; font-variant-numeric: tabular-nums; }
-        /* Cinema signage: marquee bulb dots on both sides of a section label */
-        .marquee-label {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .marquee-label::before,
-        .marquee-label::after {
-            content: '';
-            width: 5px;
-            height: 5px;
-            border-radius: 9999px;
-            background: radial-gradient(circle, #fef08a 0%, #eab308 70%);
-            box-shadow: 0 0 6px rgba(245, 158, 11, 0.8);
-        }
-        /* Projector beams: soft rose/amber light falling on the ticket */
-        .projector-glow {
-            background:
-                radial-gradient(ellipse 90% 130% at 10% 50%, rgba(251, 191, 36, 0.10) 0%, transparent 60%),
-                radial-gradient(ellipse 90% 130% at 90% 50%, rgba(244, 114, 182, 0.12) 0%, transparent 60%),
-                linear-gradient(90deg, rgba(12, 74, 110, 0.40) 0%, rgba(0, 0, 0, 0.90) 50%, rgba(131, 24, 67, 0.40) 100%);
-        }
         .glass-card { 
             background: rgba(5, 5, 5, 0.95);
             border: 1px solid rgba(255, 255, 255, 0.08); 
@@ -177,20 +150,6 @@
             border-top: 1px solid #262626;
             border-bottom: 1px solid #262626;
         }
-        .ticket-card { position: relative; }
-        .ticket-card::before, .ticket-card::after {
-            content: '';
-            position: absolute;
-            width: 14px;
-            height: 14px;
-            background: #050505;
-            border: 1px dashed rgba(250, 204, 21, 0.4);
-            border-radius: 9999px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-        .ticket-card::before { left: -8px; }
-        .ticket-card::after { right: -8px; }
         .stroke-number {
             color: transparent;
             -webkit-text-stroke: 1.5px #3f3f46;
@@ -224,17 +183,6 @@
             overflow: hidden !important;
         }
 
-        .marquee-container:hover .marquee-track {
-            animation-play-state: paused;
-        }
-
-        .counting-glow {
-            animation: countingGlow 2.4s ease-in-out infinite;
-        }
-        @keyframes countingGlow {
-            0%, 100% { filter: drop-shadow(0 0 2px rgba(250, 204, 21, 0.25)); }
-            50% { filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.55)); }
-        }
         .refresh-spin {
             animation: refreshSpin 0.8s linear infinite;
         }
@@ -445,132 +393,63 @@
             </div>
         </section>
 
-        <!-- SECTION: AUTO SLIDE INFINITE (1000x324 Aspect Ratio) -->
-        <section class="relative w-full rounded-2xl overflow-hidden border border-neutral-800 bg-neutral-950 group">
-            <div id="hero-slider" class="flex transition-transform duration-700 ease-in-out w-full" style="aspect-ratio: 1000 / 324;">
-                <!-- Slide 1 -->
-                <div class="w-full flex-shrink-0 relative">
-                    <img src="assets/Slider_1.webp" alt="Slider 1" class="w-full h-full object-cover">
+        <!-- Foto jadi layar utama: slider persegi, hari bersama ditulis di atas foto -->
+        <section class="relative w-full aspect-square md:aspect-[16/10] rounded-2xl overflow-hidden border border-neutral-800 bg-neutral-950">
+            <div id="hero-slider" class="flex h-full transition-transform duration-700 ease-in-out w-full">
+                <div class="w-full flex-shrink-0">
+                    <img src="assets/Slider_1.webp" alt="Foto Zald dan Micel 1" class="w-full h-full object-cover">
                 </div>
-                <!-- Slide 2 -->
-                <div class="w-full flex-shrink-0 relative">
-                    <img src="assets/Slider_2.webp" alt="Slider 2" loading="lazy" class="w-full h-full object-cover">
+                <div class="w-full flex-shrink-0">
+                    <img src="assets/Slider_2.webp" alt="Foto Zald dan Micel 2" loading="lazy" class="w-full h-full object-cover">
                 </div>
-                <!-- Slide 3 -->
-                <div class="w-full flex-shrink-0 relative">
-                    <img src="assets/Slider_3.webp" alt="Slider 3" loading="lazy" class="w-full h-full object-cover">
+                <div class="w-full flex-shrink-0">
+                    <img src="assets/Slider_3.webp" alt="Foto Zald dan Micel 3" loading="lazy" class="w-full h-full object-cover">
                 </div>
-                <!-- Slide 4 -->
-                <div class="w-full flex-shrink-0 relative">
-                    <img src="assets/Slider_4.webp" alt="Slider 4" loading="lazy" class="w-full h-full object-cover">
+                <div class="w-full flex-shrink-0">
+                    <img src="assets/Slider_4.webp" alt="Foto Zald dan Micel 4" loading="lazy" class="w-full h-full object-cover">
                 </div>
-                <!-- Slide 5 -->
-                <div class="w-full flex-shrink-0 relative">
-                    <img src="assets/Slider_5.webp" alt="Slider 5" loading="lazy" class="w-full h-full object-cover">
+                <div class="w-full flex-shrink-0">
+                    <img src="assets/Slider_5.webp" alt="Foto Zald dan Micel 5" loading="lazy" class="w-full h-full object-cover">
                 </div>
             </div>
-
-            <!-- Vignette Cinema Overlay -->
-            <div class="absolute inset-0 pointer-events-none z-[5]" style="background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%);"></div>
-
-            <!-- Indikator Dots -->
-            <div class="absolute bottom-0 inset-x-0 flex justify-center items-center gap-0.5 z-10" aria-label="Pilih slide">
-                <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(0)" aria-label="Slide 1"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
-                <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(1)" aria-label="Slide 2"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
-                <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(2)" aria-label="Slide 3"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
-                <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(3)" aria-label="Slide 4"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
-                <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(4)" aria-label="Slide 5"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
+            <div class="absolute inset-x-0 bottom-0 px-5 pt-16 pb-1 bg-gradient-to-b from-transparent to-black/90 pointer-events-none">
+                <div class="text-micro font-bold uppercase tracking-widest text-neutral-200">Hari ke</div>
+                <div id="relationship-days" class="font-display font-extrabold text-6xl text-amber-400 leading-none">0</div>
+                <div class="mt-1 text-xs text-neutral-200">bersama, sejak 5 April 2025</div>
+                <div class="-ml-3 flex items-center pointer-events-auto" aria-label="Pilih slide">
+                    <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(0)" aria-label="Slide 1"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
+                    <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(1)" aria-label="Slide 2"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
+                    <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(2)" aria-label="Slide 3"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
+                    <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(3)" aria-label="Slide 4"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
+                    <button type="button" class="slider-dot touch-target flex items-center justify-center" onclick="currentSlide(4)" aria-label="Slide 5"><span class="w-2 h-2 rounded-full bg-white/50 transition-all duration-300"></span></button>
+                </div>
             </div>
         </section>
 
-        <!-- SECTION ATAS: Cinema Themed Now Showing Card -->
-        <section class="glass-card rounded-2xl p-3.5 border border-neutral-800 bg-gradient-to-br from-black via-neutral-950 to-black space-y-3 relative overflow-hidden">
-            <!-- NOW SHOWING Header -->
-            <div class="text-center pb-0.5">
-                <div class="marquee-label justify-center font-display font-extrabold text-xl tracking-[0.2em] text-amber-400 uppercase leading-none">Now Showing</div>
-            </div>
-
-            <!-- Ticket: total hari bersama -->
-            <div class="ticket-card projector-glow flex flex-col items-center gap-1.5 rounded-xl border border-dashed border-amber-500/40 px-4 py-4 shadow-inner">
-                <div class="text-micro font-semibold text-neutral-300 uppercase tracking-widest">Hari Bersama</div>
-                <div id="relationship-days" class="font-display font-extrabold text-6xl gold-text counting-glow leading-none">0</div>
-                <div class="text-caption font-semibold text-neutral-300">Sejak 5 April 2025</div>
-            </div>
-
-            <!-- Showtimes: Dual Clocks (Clickable to open Time & Alarm Calc) -->
-            <button type="button" onclick="triggerHaptic(); openTimeCalcModal()" class="w-full text-left group/clock rounded-xl" aria-label="Buka konverter waktu Zald dan Micel">
-                <div class="grid grid-cols-2 gap-2.5">
-                    <!-- Zald Clock -->
-                    <div class="p-2.5 rounded-xl bg-sky-950/25 border border-sky-500/20 group-hover/clock:border-sky-500/50 flex flex-col justify-between shadow-inner transition">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <div class="flex items-center gap-1.5">
-                                <img src="assets/pfp_zald.webp" alt="Zald" class="w-5 h-5 rounded-md object-cover shadow-sm">
-                                <span class="text-caption font-bold text-sky-400 uppercase tracking-wide">Zald</span>
-                            </div>
-                            <span class="text-micro font-semibold text-neutral-300 whitespace-nowrap">UTC+5:30</span>
-                        </div>
-                        <div class="flex items-baseline justify-between">
-                            <div id="zald-clock" class="font-display font-bold text-lg text-sky-200 leading-none">--:-- --</div>
-                            <span id="zald-date" class="text-micro text-neutral-200">-- ---</span>
-                        </div>
+        <!-- Jam Zald & Micel (ketuk = konverter waktu) + satu kutipan -->
+        <section>
+            <button type="button" onclick="triggerHaptic(); openTimeCalcModal()" class="w-full text-left divide-y divide-neutral-800 tap-scale" aria-label="Buka konverter waktu Zald dan Micel">
+                <div class="flex items-center justify-between gap-3 py-3.5 px-1">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <img src="assets/pfp_zald.webp" alt="" class="w-7 h-7 rounded-full object-cover">
+                        <span class="text-sm font-semibold text-sky-400">Zald</span>
+                        <span class="text-xs text-neutral-400 truncate">Colombo · <span id="zald-date">-- ---</span></span>
                     </div>
-
-                    <!-- Micel Clock -->
-                    <div class="p-2.5 rounded-xl bg-pink-950/25 border border-pink-500/20 group-hover/clock:border-pink-500/50 flex flex-col justify-between shadow-inner transition">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <div class="flex items-center gap-1.5">
-                                <img src="assets/pfp_micel.webp" alt="Micel" class="w-5 h-5 rounded-md object-cover shadow-sm">
-                                <span class="text-caption font-bold text-pink-400 uppercase tracking-wide">Micel</span>
-                            </div>
-                            <span class="text-micro font-semibold text-neutral-300 whitespace-nowrap">UTC+9:00</span>
-                        </div>
-                        <div class="flex items-baseline justify-between">
-                            <div id="micel-clock" class="font-display font-bold text-lg text-pink-200 leading-none">--:-- --</div>
-                            <span id="micel-date" class="text-micro text-neutral-200">-- ---</span>
-                        </div>
+                    <div id="zald-clock" class="font-display font-bold text-xl text-sky-200 leading-none whitespace-nowrap">--:-- --</div>
+                </div>
+                <div class="flex items-center justify-between gap-3 py-3.5 px-1 border-b border-neutral-800">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <img src="assets/pfp_micel.webp" alt="" class="w-7 h-7 rounded-full object-cover">
+                        <span class="text-sm font-semibold text-pink-400">Micel</span>
+                        <span class="text-xs text-neutral-400 truncate">Tokyo · <span id="micel-date">-- ---</span></span>
                     </div>
+                    <div id="micel-clock" class="font-display font-bold text-xl text-pink-200 leading-none whitespace-nowrap">--:-- --</div>
                 </div>
             </button>
-
-            <!-- Film Strip Divider + Infinite Movie Quotes Marquee -->
-            <div class="film-strip -mx-3.5"></div>
-            <div class="overflow-hidden relative marquee-container opacity-80">
-                <div class="absolute left-0 inset-y-0 w-8 bg-gradient-to-r from-neutral-950 to-transparent z-10 pointer-events-none"></div>
-                <div class="absolute right-0 inset-y-0 w-8 bg-gradient-to-l from-neutral-950 to-transparent z-10 pointer-events-none"></div>
-
-                <div class="flex whitespace-nowrap overflow-hidden">
-                    <div class="flex items-center gap-6 marquee-track animate-marquee py-1">
-                        <span class="inline-flex items-center gap-1.5 text-caption text-amber-400 font-semibold flex-shrink-0">
-                            <i class="fa-solid fa-scroll"></i> "I lack in nothing but thy sight." (Shakespeare)
-                        </span>
-                        <span class="text-neutral-400 text-micro">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-caption text-neutral-200 italic flex-shrink-0">
-                            "Love is not love which alters when it alteration finds." (Sonnet 116)
-                        </span>
-                        <span class="text-neutral-400 text-micro">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-caption text-pink-400 font-semibold flex-shrink-0">
-                            <i class="fa-solid fa-heart text-micro"></i> "Absence is to love what wind is to fire; it extinguishes the small, it inflames the great."
-                        </span>
-                        <span class="text-neutral-400 text-micro">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-caption text-neutral-200 italic flex-shrink-0">
-                            "Doubt thou the stars are fire; doubt that the sun doth move... But never doubt I love." (Hamlet)
-                        </span>
-                        <span class="text-neutral-400 text-micro">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-caption text-amber-400 font-semibold flex-shrink-0">
-                            <i class="fa-solid fa-feather text-micro"></i> "Parting is such sweet sorrow." (Romeo & Juliet)
-                        </span>
-                        <span class="text-neutral-400 text-micro">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-caption text-neutral-200 italic flex-shrink-0">
-                            "Love looks not with the eyes, but with the mind, and therefore is winged Cupid painted blind." (A Midsummer Night's Dream)
-                        </span>
-                        <span class="text-neutral-400 text-micro">•</span>
-                        <span class="inline-flex items-center gap-1.5 text-caption text-pink-400 font-semibold flex-shrink-0">
-                            <i class="fa-solid fa-moon text-micro"></i> "The iron tongue of midnight hath told twelve. Lovers, to bed." (A Midsummer Night's Dream)
-                        </span>
-                        <span class="text-neutral-400 text-micro">•</span>
-                    </div>
-                </div>
-            </div>
+            <figure class="mt-4 px-1">
+                <blockquote id="love-quote" class="text-sm text-neutral-300 leading-relaxed">"I lack in nothing but thy sight."</blockquote>
+                <figcaption id="love-quote-src" class="mt-1 text-xs text-neutral-400">Shakespeare</figcaption>
+            </figure>
         </section>
 
         <!-- Watchlist: Mau Ditonton -->
@@ -1576,6 +1455,24 @@
             if (value === relationshipDaysShown) return;
             relationshipDaysShown = value;
             document.getElementById('relationship-days').innerText = value;
+        }
+
+        // Satu kutipan utuh per kunjungan, menggantikan marquee yang terpotong dan sulit dibaca
+        const LOVE_QUOTES = [
+            ['I lack in nothing but thy sight.', 'Shakespeare'],
+            ['Love is not love which alters when it alteration finds.', 'Sonnet 116'],
+            ['Absence is to love what wind is to fire; it extinguishes the small, it inflames the great.', ''],
+            ['Doubt thou the stars are fire; doubt that the sun doth move... But never doubt I love.', 'Hamlet'],
+            ['Parting is such sweet sorrow.', 'Romeo & Juliet'],
+            ['Love looks not with the eyes, but with the mind, and therefore is winged Cupid painted blind.', "A Midsummer Night's Dream"],
+            ['The iron tongue of midnight hath told twelve. Lovers, to bed.', "A Midsummer Night's Dream"]
+        ];
+        function showLoveQuote() {
+            const [text, src] = LOVE_QUOTES[Math.floor(Math.random() * LOVE_QUOTES.length)];
+            document.getElementById('love-quote').textContent = `"${text}"`;
+            const cite = document.getElementById('love-quote-src');
+            cite.textContent = src;
+            cite.hidden = !src;
         }
 
         function calculateAgeAndCountdown(birthDateStr, ageElementId, countdownElementId) {
@@ -3858,6 +3755,7 @@
 
             // Master timer tunggal: jam, hari hubungan, countdown ultah
             updateRelationshipCounter();
+            showLoveQuote();
             updatePersonalDetails();
             updateDualClocks();
             setInterval(() => {
