@@ -578,7 +578,7 @@
                         </div>
                         <div class="shrink-0 text-right">
                             <div id="zald-countdown" class="font-display font-extrabold text-2xl text-amber-400 leading-none">--</div>
-                            <div id="zald-countdown-label" class="mt-1 text-micro font-bold uppercase tracking-wider text-neutral-400">hari ke ultah</div>
+                            <div id="zald-countdown-label" class="mt-1 text-micro font-bold uppercase tracking-wider text-neutral-400">menuju ultah</div>
                         </div>
                     </div>
                     <div class="flex items-center gap-3 p-2.5 rounded-xl bg-pink-950/30">
@@ -590,7 +590,7 @@
                         </div>
                         <div class="shrink-0 text-right">
                             <div id="micel-countdown" class="font-display font-extrabold text-2xl text-amber-400 leading-none">--</div>
-                            <div id="micel-countdown-label" class="mt-1 text-micro font-bold uppercase tracking-wider text-neutral-400">hari ke ultah</div>
+                            <div id="micel-countdown-label" class="mt-1 text-micro font-bold uppercase tracking-wider text-neutral-400">menuju ultah</div>
                         </div>
                     </div>
                 </div>
@@ -1517,8 +1517,8 @@
             const countdownEl = document.getElementById(countdownElementId);
             const labelEl = document.getElementById(countdownElementId + '-label');
             const isToday = now.getMonth() === birthDate.getMonth() && now.getDate() === birthDate.getDate();
-            if (countdownEl) countdownEl.innerText = isToday ? '🎂' : String(diffDays);
-            if (labelEl) labelEl.innerText = isToday ? 'ultah hari ini' : 'hari ke ultah';
+            if (countdownEl) countdownEl.innerText = isToday ? '🎂' : `H-${diffDays}`;
+            if (labelEl) labelEl.innerText = isToday ? 'ultah hari ini' : 'menuju ultah';
         }
 
         function updatePersonalDetails() {
