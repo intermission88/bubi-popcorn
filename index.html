@@ -569,28 +569,28 @@
                     <i class="fa-solid fa-user-shield text-amber-400 text-base"></i> About Zald &amp; Micel
                 </h2>
                 <div class="space-y-1.5 md:space-y-0 md:grid md:grid-cols-2 md:gap-1.5">
-                    <div class="flex items-start gap-3 p-2.5 pr-3 rounded-xl bg-sky-950/30">
-                        <img src="assets/pfp_zald.webp" alt="" class="w-10 h-10 shrink-0 rounded-md object-cover">
+                    <div class="flex items-center gap-3 p-2.5 rounded-xl bg-sky-950/30">
+                        <img src="assets/pfp_zald.webp" alt="" class="w-14 h-14 shrink-0 rounded-xl object-cover">
                         <div class="min-w-0 flex-1">
-                            <div class="text-sm font-semibold text-sky-400">Zald</div>
-                            <div class="mt-1 flex flex-col gap-1 text-caption text-neutral-300">
-                                <span><i class="fa-solid fa-cake-candles text-sky-400 fa-fw mr-1.5"></i>17 Okt 1999</span>
-                                <span><i class="fa-solid fa-star text-sky-400 fa-fw mr-1.5"></i>Libra · Kelinci (Tanah)</span>
-                                <span><i class="fa-regular fa-clock text-sky-400 fa-fw mr-1.5"></i><span id="zald-age">--</span></span>
-                                <span><i class="fa-solid fa-gift text-sky-400 fa-fw mr-1.5"></i><span id="zald-countdown" class="text-amber-300">--</span></span>
-                            </div>
+                            <div class="text-sm font-bold text-sky-400">Zald</div>
+                            <div class="mt-0.5 text-caption text-neutral-300">17 Okt 1999 · <span id="zald-age">--</span></div>
+                            <div class="text-caption text-neutral-400">Libra · Kelinci (Tanah)</div>
+                        </div>
+                        <div class="shrink-0 text-right">
+                            <div id="zald-countdown" class="font-display font-extrabold text-2xl text-amber-400 leading-none">--</div>
+                            <div id="zald-countdown-label" class="mt-1 text-micro font-bold uppercase tracking-wider text-neutral-400">hari ke ultah</div>
                         </div>
                     </div>
-                    <div class="flex items-start gap-3 p-2.5 pr-3 rounded-xl bg-pink-950/30">
-                        <img src="assets/pfp_micel.webp" alt="" class="w-10 h-10 shrink-0 rounded-md object-cover">
+                    <div class="flex items-center gap-3 p-2.5 rounded-xl bg-pink-950/30">
+                        <img src="assets/pfp_micel.webp" alt="" class="w-14 h-14 shrink-0 rounded-xl object-cover">
                         <div class="min-w-0 flex-1">
-                            <div class="text-sm font-semibold text-pink-400">Micel</div>
-                            <div class="mt-1 flex flex-col gap-1 text-caption text-neutral-300">
-                                <span><i class="fa-solid fa-cake-candles text-pink-400 fa-fw mr-1.5"></i>29 Mei 2003</span>
-                                <span><i class="fa-solid fa-star text-pink-400 fa-fw mr-1.5"></i>Gemini · Kambing (Air)</span>
-                                <span><i class="fa-regular fa-clock text-pink-400 fa-fw mr-1.5"></i><span id="micel-age">--</span></span>
-                                <span><i class="fa-solid fa-gift text-pink-400 fa-fw mr-1.5"></i><span id="micel-countdown" class="text-amber-300">--</span></span>
-                            </div>
+                            <div class="text-sm font-bold text-pink-400">Micel</div>
+                            <div class="mt-0.5 text-caption text-neutral-300">29 Mei 2003 · <span id="micel-age">--</span></div>
+                            <div class="text-caption text-neutral-400">Gemini · Kambing (Air)</div>
+                        </div>
+                        <div class="shrink-0 text-right">
+                            <div id="micel-countdown" class="font-display font-extrabold text-2xl text-amber-400 leading-none">--</div>
+                            <div id="micel-countdown-label" class="mt-1 text-micro font-bold uppercase tracking-wider text-neutral-400">hari ke ultah</div>
                         </div>
                     </div>
                 </div>
@@ -1505,20 +1505,20 @@
                 if (months < 0) months = 11;
             }
             const ageEl = document.getElementById(ageElementId);
-            if (ageEl) ageEl.innerText = `${years} Tahun ${months} Bulan`;
+            if (ageEl) ageEl.innerText = `${years} th ${months} bln`;
 
             let nextBday = new Date(now.getFullYear(), birthDate.getMonth(), birthDate.getDate());
             if (now > nextBday) nextBday.setFullYear(now.getFullYear() + 1);
             
             const diffTime = nextBday - now;
             const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-            const diffHours = Math.floor((diffTime / (1000 * 60 * 60)) % 24);
-            const diffMins = Math.floor((diffTime / 1000 / 60) % 60);
-            const diffSecs = Math.floor((diffTime / 1000) % 60);
 
+            // Angka besar = sisa hari; label di bawahnya ikut berubah saat hari ulang tahun
             const countdownEl = document.getElementById(countdownElementId);
+            const labelEl = document.getElementById(countdownElementId + '-label');
             const isToday = now.getMonth() === birthDate.getMonth() && now.getDate() === birthDate.getDate();
-            if (countdownEl) countdownEl.innerText = isToday ? 'Hari ini! 🎂' : `${diffDays} hari ${diffHours}j ${diffMins}m ${diffSecs}d`;
+            if (countdownEl) countdownEl.innerText = isToday ? '🎂' : String(diffDays);
+            if (labelEl) labelEl.innerText = isToday ? 'ultah hari ini' : 'hari ke ultah';
         }
 
         function updatePersonalDetails() {
