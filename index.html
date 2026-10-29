@@ -202,6 +202,21 @@
         .ticket-perf::before, .ticket-perf::after { content: ''; position: absolute; top: -10px; width: 18px; height: 18px; border-radius: 9999px; background: #000; }
         .ticket-perf::before { left: -26px; }
         .ticket-perf::after { right: -26px; }
+        /* Pesawat terbang dari sisi Zald ke sisi Micel, meninggalkan jejak emas di garis putus-putus.
+           Posisi dasar = sudah sampai, jadi saat reduced-motion yang tampil jejak penuh + pesawat di ujung. */
+        .flight-track { position: relative; flex: 1; height: 16px; overflow: hidden; }
+        .flight-track::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px dashed #404040; }
+        .flight-runner {
+            position: absolute; inset: 0; display: flex; align-items: center; justify-content: flex-end;
+            background: linear-gradient(to right, transparent, rgba(250, 204, 21, 0.45) 92%, transparent 92%) center / 100% 1px no-repeat;
+            animation: flightRun 5s cubic-bezier(0.45, 0, 0.3, 1) infinite;
+        }
+        @keyframes flightRun {
+            0% { transform: translateX(-100%); opacity: 0; }
+            8% { opacity: 1; }
+            70% { transform: translateX(0); opacity: 1; }
+            88%, 100% { transform: translateX(0); opacity: 0; }
+        }
 
         /* Bottom sheet: handle + zona geser-untuk-tutup (iOS) */
         .sheet-handle { display: flex; justify-content: center; padding: 10px 0 4px; flex-shrink: 0; touch-action: none; }
@@ -451,10 +466,10 @@
             </div>
             <div class="ticket-perf" aria-hidden="true"></div>
             <div class="flex items-center gap-3 px-4 py-3">
-                <span class="flex-1 border-t border-dashed border-neutral-700" aria-hidden="true"></span>
-                <i class="fa-solid fa-plane text-caption text-amber-400" aria-hidden="true"></i>
-                <span class="font-display font-bold text-sm text-neutral-50">6.846 km</span>
-                <span class="flex-1 border-t border-dashed border-neutral-700" aria-hidden="true"></span>
+                <div class="flight-track" aria-hidden="true">
+                    <div class="flight-runner"><i class="fa-solid fa-plane text-caption text-amber-400"></i></div>
+                </div>
+                <span class="font-display font-bold text-sm text-neutral-50 whitespace-nowrap"><span id="flight-km">6.846</span> km</span>
             </div>
         </button>
 
@@ -1453,6 +1468,26 @@
         setInterval(checkPing, 30000);
 
         let relationshipDaysShown = null;
+
+        // Angka jarak menghitung naik sekali saat tiket jam pertama kali terlihat
+        function initFlightDistance() {
+            const el = document.getElementById('flight-km');
+            const KM = 6846;
+            if (!el || !('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            el.textContent = '0';
+            const io = new IntersectionObserver((entries) => {
+                if (!entries[0].isIntersecting) return;
+                io.disconnect();
+                const t0 = performance.now();
+                const step = (t) => {
+                    const p = Math.min(1, (t - t0) / 1400);
+                    el.textContent = Math.round(KM * (1 - Math.pow(1 - p, 3))).toLocaleString('id-ID');
+                    if (p < 1) requestAnimationFrame(step);
+                };
+                requestAnimationFrame(step);
+            }, { threshold: 0.6 });
+            io.observe(el);
+        }
 
         function updateRelationshipCounter() {
             const startDate = new Date('2025-04-05T00:00:00');
@@ -3739,6 +3774,7 @@
 
             // Master timer tunggal: jam, hari hubungan, countdown ultah
             updateRelationshipCounter();
+            initFlightDistance();
             updatePersonalDetails();
             updateDualClocks();
             setInterval(() => {
