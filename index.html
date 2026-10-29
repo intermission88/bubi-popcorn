@@ -364,8 +364,10 @@
     <header id="app-header" class="fixed top-0 inset-x-0 z-40 pb-3">
         <div class="max-w-md md:max-w-3xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <!-- Ikon app yang sama dengan footer dan PWA; latar hitam ikon dibingkai tipis agar terbaca sebagai ubin -->
-                <img src="assets/icon.svg" alt="" width="36" height="36" class="w-9 h-9 rounded-xl border border-neutral-800 flex-shrink-0">
+                <!-- Ikon app dalam bingkai kaca yang sama dengan tombol ping; mix-blend lighten membuat latar hitam ikon menyatu dengan kaca -->
+                <span class="glass relative w-11 h-11 rounded-xl overflow-hidden flex-shrink-0" aria-hidden="true">
+                    <img src="assets/icon.svg" alt="" width="44" height="44" class="absolute inset-0 w-full h-full mix-blend-lighten">
+                </span>
                 <div id="header-title" class="font-display font-black text-base text-neutral-50 leading-tight tracking-tight opacity-0 transition-opacity duration-200">
                     Bubi's Popcorn
                 </div>
