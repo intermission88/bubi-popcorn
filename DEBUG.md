@@ -1,195 +1,128 @@
 # 🔍 Guide Debug — bubi-popcorn
 
-Peta untuk debug cepat: ke mana melihat, perintah apa yang jalan, dan jebakan yang sudah pernah terjadi. Baca bagian "Resep Debug" dulu; kalau butuh konteks, barulah baca kode.
+Peta untuk debug cepat: ke mana melihat, perintah yang jalan, dan jebakan yang pernah terjadi. Aturan kerja ada di `CLAUDE.md`. Gejala sudah jelas? Mulai dari "Resep Debug".
 
 ## Peta File
 
-| File | Fungsi | Kapan dibuka |
+| File | Isi | Dibuka saat |
 |---|---|---|
-| `index.html` | Semua markup, CSS, JS (~2800 baris). JANGAN dibaca utuh. | Saat perbaikan perilaku/tampilan |
-| `sw.js` | Service worker: network-first HTML, cache-first aset, Supabase dan API TMDB tidak di-cache; gambar `image.tmdb.org` di-cache terpisah (`IMG_CACHE`). Daftar film di-cache di localStorage (`bubi_movies_cache_v1`) agar tampil instan. | Gejala "perubahan tidak tampil" / offline |
-| `manifest.json` | Metadata PWA + ikon (`assets/icon.svg`). | Ikon install salah |
-| `assets/` | Biner: 5 slider, 2 foto profil, ikon PWA, `tmdb-logo.svg`. Jangan dibaca; pakai `file`/`sips` untuk metadata. | Aset 404 |
-| `supabase/watchlist.sql` | Skema tabel `bubi_watchlist` + RLS. Dijalankan user manual. | Watchlist tidak muncul |
-| (tanpa SQL) logo judul | `fetchTmdbExtra` mengambil `images.logos` (en/tanpa teks dulu, suara terbanyak) -> `renderTmdbExtra` mengisi `#detail-logo` dan menyembunyikan `#detail-title` (`sr-only`, tetap untuk aksesibilitas). Tidak disimpan di DB; judul teks jadi cadangan. | Logo tidak muncul / judul hilang |
-| `supabase/tmdb_id.sql` | Kolom `tmdb_id`/`tmdb_media`. `tmdbIdAvailable()`; diisi `applyTmdbResult` dan `planTmdbSync`. Dipakai `fetchTmdbExtra` (lewati pencarian), `rowMatches` (cocokkan sudah ditonton). | Rekomendasi salah menandai sudah ditonton / detail film salah |
-| (tanpa SQL) rekomendasi | `tmdbItem`, `rowMatches`/`isWatched`/`isQueued`, `renderDetailRelated` (`#detail-lanjut`: hanya sebelumnya/lanjutan), `loadHomeRecs`/`renderHomeRecs` (`#rekomendasi-section`: rilisan `NEW_WINDOW_DAYS` hari terakhir via `/discover` dengan `watch_region=STREAM_REGION` + flatrate, genre dari seed (`seedRecs`), nama layanan dari `/watch/providers`; ganti tiap Senin lewat `weekKey`/`pickSeeds`; cache `bubi_recs_v6` per minggu dan `bubi_recs_seed_v2` per film seed 30 hari), `addRelated` (+ Antrean via `insertWatchlist`), `pickTvForSeason` (pilih series yang season-nya tayang di tahun itu). | Blok Lanjut nonton / Rekomendasi kosong |
-| `supabase/season.sql` | Kolom `season` di `bubi_popcorn`. Aktif lewat `seasonAvailable()`; `seasonNum(m)` = nomor valid atau null. Picker: `loadSeasonPicker`/`pickSeason`; `fetchTmdbExtra` melonggarkan aturan tahun untuk series bersesi. | Pemilih season / lencana S2 tidak muncul |
-| `supabase/kutipan.sql` | Kolom `kutipan` di `bubi_popcorn`. Fitur aktif otomatis lewat `kutipanAvailable()` (cek key `kutipan` di baris data). | Kolom kutipan tidak muncul di form |
-| `LICENSE` | MIT untuk kode (isi arsip dan foto dikecualikan). | Soal lisensi |
-| `push.bat` | Alternatif commit+push interaktif (Windows). | — |
-| `README.md` | Fitur, skema data, setup. | Referensi |
-| `CLAUDE.md` | Konvensi kerja + lingkungan per-OS. | Wajib baca dulu |
+| `index.html` | Markup, CSS, JS (~3800 baris). JANGAN dibaca utuh. | Perbaikan perilaku/tampilan |
+| `sw.js` | Service worker. `CACHE_NAME` (naikkan bila aset berubah), `IMG_CACHE` (gambar TMDB). Network-first HTML, cache-first aset. | "Perubahan tidak tampil", offline |
+| `manifest.json` | Metadata PWA, ikon `assets/icon.svg`. | Ikon install salah |
+| `assets/` | Biner. Jangan dibaca; pakai `file`/`sips`. | Aset 404 |
+| `supabase/*.sql` | `watchlist.sql` (tabel + RLS), `tmdb_id.sql`, `season.sql`, `kutipan.sql` (kolom opsional). Dijalankan user manual. | Lihat Resep |
+| `README.md` / `LICENSE` / `push.bat` | Fitur, skema, setup / MIT untuk kode / commit+push interaktif (Windows). | Referensi |
 
-## Peta `index.html` — cari dengan `grep -n`, jangan hafal baris
+## Peta `index.html` — cari dengan `grep -n`
 
-Baris bergeser setiap edit. Anchor yang stabil:
+Baris bergeser tiap edit; pakai pola ini, jangan hafal baris.
 
 | Bagian | Cari dengan |
 |---|---|
 | Header app bar | `grep -n 'Header App Bar'` |
-| Judul besar + dinding poster berjalan (`renderPosterWall`, CSS `.poster-row`) | `grep -n 'poster-wall'` |
-| Hero slider (5 slide, rasio asli 1000x324) + Hari Bersama di kiri bawah foto | `grep -n 'hero-slider\|relationship-days'` |
-| Tiket jam Zald/Micel + jarak Colombo-Tokyo (`.ticket-notch`, animasi `.flight-runner`, `initFlightDistance`) | `grep -n 'zald-clock\|ticket-notch'` |
-| Mau Ditonton (watchlist, di bawah daftar film; maks 5 + `showMoreWatchlist`, durasi `fillWatchlistDurations`) | `grep -n 'watchlist-section'` |
+| Judul besar + dinding poster (`renderPosterWall`, `.poster-row`) | `grep -n 'poster-wall'` |
+| Hero slider (5 slide) + Hari Bersama | `grep -n 'hero-slider\|relationship-days'` |
+| Tiket jam + jarak Colombo-Tokyo (`.ticket-notch`, `.flight-runner`) | `grep -n 'zald-clock\|ticket-notch'` |
+| Mau Ditonton (maks 5 + `showMoreWatchlist`) | `grep -n 'watchlist-section'` |
 | Modal Statistik + Roulette + Recap + CSV + sinkron TMDB | `grep -n 'id="stats-modal"'` |
 | Kotak info TMDB + trailer di modal detail | `grep -n 'id="detail-tmdb"'` |
-| Footer: kartu identitas + tombol ke atas + atribusi TMDB, baris hak cipta + Kredit & Lisensi | `grep -n 'tmdb-logo\|Kredit'` |
 | Search + filter viewer + Top 9+ | `grep -n 'search-section'` |
-| Karusel film per bulan | `grep -n 'months-carousel'` |
+| Karusel per bulan (maks 4 + `showMoreMonths`, `loadMoreBtn`) | `grep -n 'months-carousel\|MONTHS_PAGE'` |
 | Empty state / error state | `grep -n 'empty-state\|error-state'` |
-| Baru & Sudah Streaming: slider backdrop di bawah tiket jam (`initRecSlider`, `#rec-track`, logo judul `fillRecLogos`) | `grep -n 'rekomendasi-section'` |
-| Bulan tayang maks 4 + `showMoreMonths`; tombol muat lagi bersama `loadMoreBtn` | `grep -n 'MONTHS_PAGE'` |
-| Footer + panel admin | `grep -n 'Footer Section'` |
-| FAB (konverter, tambah, scroll-top) | `grep -n 'Floating Action'` |
+| Baru & Sudah Streaming (`#rekomendasi-section`, `#rec-track`) | `grep -n 'rekomendasi-section'` |
+| Tab bar `#tab-bar` + `#fab-container` (tombol tambah admin) | `grep -n 'id="tab-bar"\|fab-container'` |
+| Footer: identitas, atribusi TMDB, Kredit & Lisensi | `grep -n 'Footer Section'`, `grep -n 'tmdb-logo\|Kredit'` |
 | Modal konverter / login / tambah / detail | `grep -n 'id="time-calc-modal\|password-modal\|add-modal\|detail-modal"'` |
-| Konstanta Supabase + ADMIN_EMAIL + watchlist | `grep -n 'SUPABASE_URL\|ADMIN_EMAIL\|WATCHLIST_TABLE'` |
-| Konstanta TMDB | `grep -n 'TMDB_API_KEY\|TMDB_IMG'` |
-| Blok JS per fitur | `grep -n '// --- '` |
-| Fungsi JS | `grep -n 'function <nama>'` |
+| Konstanta Supabase, admin, watchlist, TMDB | `grep -n 'SUPABASE_URL\|ADMIN_EMAIL\|WATCHLIST_TABLE\|TMDB_API_KEY\|TMDB_IMG'` |
+| Blok JS per fitur / fungsi | `grep -n '// --- '`, `grep -n 'function <nama>'` |
 
 ## Fungsi JS per Fitur
 
-- **Modal (semua modal memakai helper ini):** `activateModal` / `deactivateModal` — simpan pemicu, fokus awal, restore fokus. Escape + trap Tab di satu listener `keydown` global. Perubahan perilaku modal di sini saja.
-- **Data:** `fetchSupabaseData` (ambil semua, set `hasFetchError`) → `processFilterAndRender` (filter + search + hitung) → `renderMonthsCarousel` (+ `renderPosterWall`, sekali isi) → `createMovieCard` (satu-satunya tempat `innerHTML` untuk data; semua data WAJIB lewat `escapeHtml`).
-- **Filter:** `setViewerFilter`, `toggleTopRatedFilter`, `onSearchInput` (debounce 250 ms), `clearSearchInput`, `resetSearch`.
-- **Form:** `openAddModal`, `handleFormSubmit` (perhatikan alur sukses/gagal; tombol simpan dikunci sebelum `resolveYearIfMissing` agar tidak tersimpan dobel), `editCurrentMovie`, `requestCloseAddModal`, `validateRatingInput`, `clampRatingOnBlur`.
-- **Admin:** `handleLockClick`, `openPasswordModal`, `handlePasswordSubmit` (`signInWithPassword`, email dari `ADMIN_EMAIL`), `initAdminSession` (`getSession` + `onAuthStateChange`), `updateLockUI`.
-- **Waktu:** `updateDualClocks` (Zald `Asia/Colombo`, Micel `Asia/Tokyo`), `updateConvertedTime` + `toggleConverterDirection` (JST ↔ Colombo, beda 3,5 jam), `calculateAgeAndCountdown`.
-- **Slider:** `updateSlider`, `startSlideTimer` (hormati reduced motion), `currentSlide`.
-- **Statistik + Roulette:** `openStatsModal` / `closeStatsModal`, `renderStats`, `getRoulettePool` (antrean + film yang baru ditonton satu orang), `spinRoulette` (hormati reduced motion).
-- **Recap tahunan:** `initRecap`, `renderRecap`, `shareRecap`.
-- **TMDB (form):** `searchTmdb(inputId, boxId, handler)` → `applyTmdbResult` / `applyTmdbToWatchlist`. Hasil disimpan per kotak di `tmdbItemsByBox[boxId]` dengan penjaga balapan `tmdbSearchSeq`. `tmdbPick` + `onFormTitleInput`: judul diubah setelah memilih hasil TMDB → ID, poster, dan season pilihan itu dikosongkan. Kunci di `TMDB_API_KEY`; kosong = fitur nonaktif.
-- **TMDB (detail):** `loadTmdbExtra` → `fetchTmdbExtra` (search lalu detail dengan `append_to_response`, cache di `tmdbExtraCache`) → `renderTmdbExtra`; `showTrailer` / `stopTrailer` (iframe `youtube-nocookie` lewat `mountYouTube`, tanpa autoplay, otomatis pindah video bila diblokir), `toggleOverview` (potong 3 baris).
-- **Sinkron poster (admin):** `planTmdbSync` (pratinjau, tidak menulis) → `applyTmdbSync` (satu-satunya yang menulis kolom `poster`).
-- **Watchlist:** trailer lewat poster baris (`openQueueTrailer` → `resolveQueueTmdb` cari ID TMDB dari judul+tahun, cache per sesi `queueTmdbCache` → `openTrailerFor`, modal `#rec-trailer-modal` yang sama dengan Rekomendasi). `fetchWatchlist` (set `watchlistAvailable`, tabel hilang = bagian disembunyikan), `renderWatchlist`, `insertWatchlist`, `deleteWatchlistItem`, `markWatchlistWatched` (set `pendingWatchlistId`; dihapus di `handleFormSubmit` setelah simpan sukses).
-- **CSV:** `CSV_COLUMNS` (termasuk `kutipan`, `tmdb_id`, `tmdb_media`), `exportCsv`, `importCsv` (admin; dedup judul+bulan; format sendiri atau Letterboxd), `parseCsv`, `csvCell` (awalan `'` untuk cegah formula injection).
-- **Navigasi dan tampilan:** tab bar bawah `#tab-bar` (`scrollToTop`, `scrollToWatchlist`; tab Antrean ikut visibilitas section watchlist; `#fab-container` = tombol tambah admin di tengah tab bar). `updateScrollUI` (judul header muncul setelah large title keluar layar, tab aktif). Daftar film hanya karusel per bulan: `renderMonthsCarousel` + `createMovieCard`. Nuansa iOS: `triggerHaptic` (Android `vibrate`; iOS lewat `<input switch>` tersembunyi, iOS 17.4+), `updateTabIndicator` + kelas `is-min` di `#tab-bar` (dalam `updateScrollUI`), `syncViewerSeg` (segmented filter, `#seg-thumb`), `body.sheet-open` + `--sheet-oy` (halaman mengecil, diatur `activateModal`/`deactivateModal`), `initPullToRefresh` (`#ptr`), `initSwipeRows` (`.swipe-row`, admin), `initA2hs` (`#a2hs`, `bubi_a2hs_dismissed`), `initContextMenu`/`openCtxMenu`/`ctxAction` (`#ctx-menu`, tekan-tahan 450ms atau klik kanan), `setThemeColor` (meta theme-color), `bindCarouselHaptics` (tick haptic saat karusel berhenti di kartu lain; tanpa baca layout per frame). Catatan uji: di browser pane, `requestAnimationFrame` tertahan; ambil screenshot untuk memaksa frame sebelum membaca hasil animasi. Poster: `posterBox`, `tmdbSized`. Bottom sheet: `initSheetDrag` (pointer events; zona `[data-sheet-grab]`).
-- **Bootstrap:** satu `DOMContentLoaded` di akhir file — semuanya dipasang di sini.
+- **Modal:** `activateModal` / `deactivateModal` (simpan pemicu, fokus awal, restore fokus). Escape dan trap Tab di satu listener `keydown` global; modal baru wajib didaftarkan di Escape.
+- **Bottom sheet:** `initSheetDrag` (pointer events, zona `[data-sheet-grab]`). `body.sheet-open` + `--sheet-oy` diatur helper modal.
+- **Data:** `fetchSupabaseData` (set `hasFetchError`) → `processFilterAndRender` → `renderMonthsCarousel` (+ `renderPosterWall`, isi sekali) → `createMovieCard` (satu-satunya `innerHTML` data). Salinan offline: `bubi_movies_cache_v1`.
+- **Filter:** `setViewerFilter`, `toggleTopRatedFilter`, `onSearchInput` (debounce 250 ms), `clearSearchInput`, `resetSearch`, `syncViewerSeg` (`#seg-thumb`).
+- **Form:** `openAddModal`, `handleFormSubmit` (tombol dikunci sebelum `resolveYearIfMissing` agar tidak tersimpan dobel; `pendingWatchlistId` dihapus setelah sukses), `editCurrentMovie`, `requestCloseAddModal`, `validateRatingInput`, `clampRatingOnBlur`. Rating selalu lewat `parseRating()`.
+- **Admin:** `handleLockClick`, `openPasswordModal`, `handlePasswordSubmit` (`signInWithPassword`, email `ADMIN_EMAIL`), `initAdminSession` (`getSession` + `onAuthStateChange`), `updateLockUI`.
+- **Waktu dan slider:** `updateDualClocks` (Zald `Asia/Colombo`, Micel `Asia/Tokyo`), `updateConvertedTime` + `toggleConverterDirection` (JST ↔ Colombo, beda 3,5 jam; `convDirection`, `formatAmPm`), `calculateAgeAndCountdown`, `initFlightDistance`, `updateSlider`, `startSlideTimer` (hormati reduced motion), `currentSlide`.
+- **Statistik, Roulette, Recap:** `openStatsModal` / `closeStatsModal`, `renderStats`, `getRoulettePool` (antrean + film yang baru ditonton satu orang), `spinRoulette`, `initRecap`, `renderRecap`, `shareRecap`.
+- **TMDB (form):** `searchTmdb(inputId, boxId, handler)` → `applyTmdbResult` / `applyTmdbToWatchlist`. Hasil per kotak di `tmdbItemsByBox[boxId]`, penjaga balapan `tmdbSearchSeq`. `tmdbPick` + `onFormTitleInput`: judul diubah setelah memilih hasil → ID, poster, season dikosongkan. Kunci `TMDB_API_KEY`; kosong = nonaktif.
+- **TMDB (detail):** `loadTmdbExtra` → `fetchTmdbExtra` (lewati search bila `tmdb_id` ada; `append_to_response`; cache `tmdbExtraCache`; logo dari `images.logos`, en/tanpa teks dulu, suara terbanyak; aturan tahun dilonggarkan untuk series bersesi) → `renderTmdbExtra` (isi `#detail-logo`; `#detail-title` jadi `sr-only`). Penjaga balapan: `currentDetailMovieId`. Season: `loadSeasonPicker` / `pickSeason`. `toggleOverview` (potong 3 baris).
+- **Trailer:** `showTrailer` / `stopTrailer`, `mountYouTube` (iframe `youtube-nocookie`, `enablejsapi=1`, tanpa autoplay; saat `onError` pindah kandidat `ytTrailerKeys`: resmi → trailer → teaser, maks 6; status per bingkai di `ytPlayers`).
+- **Sinkron poster (admin):** `planTmdbSync` (pratinjau, tidak menulis) → `applyTmdbSync` (satu-satunya penulis kolom `poster`).
+- **Rekomendasi:** `loadHomeRecs` / `renderHomeRecs`: rilisan `NEW_WINDOW_DAYS` hari terakhir via `/discover` (`watch_region=STREAM_REGION`, flatrate), genre dari seed (`seedRecs`), nama layanan dari `/watch/providers`. Ganti tiap Senin: `weekKey` / `pickSeeds`. Cache: `bubi_recs_v6` (per minggu), `bubi_recs_seed_v2` (per seed, 30 hari). Pendukung: `tmdbItem`, `rowMatches` / `isWatched` / `isQueued`, `initRecSlider`, `fillRecLogos`, `renderDetailRelated` (`#detail-lanjut`: hanya sebelumnya/lanjutan), `addRelated` (+ Antrean via `insertWatchlist`), `pickTvForSeason`.
+- **Watchlist:** trailer lewat poster (`openQueueTrailer` → `resolveQueueTmdb` cari ID dari judul+tahun, cache `queueTmdbCache` → `openTrailerFor`, modal `#rec-trailer-modal`). `fetchWatchlist` (set `watchlistAvailable`; tabel hilang = bagian disembunyikan), `renderWatchlist`, `insertWatchlist`, `deleteWatchlistItem`, `markWatchlistWatched`, `fillWatchlistDurations`.
+- **CSV:** `CSV_COLUMNS` (termasuk `kutipan`, `tmdb_id`, `tmdb_media`), `exportCsv`, `importCsv` (admin; dedup judul+bulan; format sendiri atau Letterboxd), `parseCsv`, `csvCell` (awalan `'` cegah formula injection).
+- **Navigasi dan sentuhan:** `scrollToTop`, `scrollToWatchlist`, `updateScrollUI` (judul header muncul setelah large title keluar layar; tab aktif), `updateTabIndicator` + `is-min`, `setThemeColor`, `posterBox`, `tmdbSized`. Haptic: `triggerHaptic` (Android `vibrate`; iOS lewat `<input switch>`, iOS 17.4+), `bindCarouselHaptics`. Gesture: `initPullToRefresh` (`#ptr`, mati saat `body.modal-lock`), `initSwipeRows` (`.swipe-row`, admin), `initA2hs` (`#a2hs`, `bubi_a2hs_dismissed`), `initContextMenu` / `openCtxMenu` / `ctxAction` (`#ctx-menu`, tekan-tahan 450 ms atau klik kanan).
+- **Bootstrap:** satu `DOMContentLoaded` di akhir file; semua init ada di sini.
 
 ## Cek Kesehatan 30 Detik (mulai dari sini kalau "website rusak")
 
 ```bash
-# 1) commit terakhir yang ter-deploy (bandingkan dengan HEAD lokal)
-curl -s "https://api.github.com/repos/intermission88/bubi-popcorn/deployments?per_page=1" \
-  | grep '"sha"'
-
-# 2) konten live terbaru? CACHE_NAME harus sama dengan lokal
-curl -s https://bubi-popcorn.vercel.app/sw.js | grep CACHE_NAME
-
-# 3) tulis anonim harus ditolak 401 (RLS aktif)
-curl -s -o /dev/null -w '%{http_code}\n' -X DELETE \
-  "https://<project>.supabase.co/rest/v1/bubi_popcorn?id=eq.__probe__" \
-  -H "apikey: <publishable-key>" -H "Authorization: Bearer <publishable-key>"
-
-# 4) pendaftaran publik harus tertutup (disable_signup = true)
-curl -s https://<project>.supabase.co/auth/v1/settings -H "apikey: <publishable-key>" \
-  | grep disable_signup
+curl -s "https://api.github.com/repos/intermission88/bubi-popcorn/deployments?per_page=1" | grep '"sha"'   # 1) commit terakhir ter-deploy vs HEAD; status: statuses_url
+curl -s https://bubi-popcorn.vercel.app/sw.js | grep CACHE_NAME                                             # 2) harus sama dengan lokal
+curl -s -o /dev/null -w '%{http_code}\n' -X DELETE "https://<project>.supabase.co/rest/v1/bubi_popcorn?id=eq.__probe__" -H "apikey: <publishable-key>" -H "Authorization: Bearer <publishable-key>"   # 3) harus 401 (RLS aktif)
+curl -s https://<project>.supabase.co/auth/v1/settings -H "apikey: <publishable-key>" | grep disable_signup   # 4) harus true
+curl -s -w '\nHTTP %{http_code}\n' "https://<project>.supabase.co/rest/v1/bubi_watchlist?select=*" -H "apikey: <publishable-key>" -H "Authorization: Bearer <publishable-key>"   # 200 = ada; 404 = tabel belum dibuat
 ```
 
-Keempatnya normal → masalahnya di kode/perangkat, lanjut ke tabel resep di bawah.
-Status sukses/gagal detail: `.../deployments/<id>/statuses` (ikuti `statuses_url` dari langkah 1).
+Keempat langkah pertama normal berarti masalahnya di kode/perangkat; lanjut ke resep. Uji INSERT RLS: `?on_conflict=id` + `Prefer: resolution=ignore-duplicates` pada id yang ada (aman, menjawab `42501` bila RLS aktif). DELETE/PATCH tak cocok TIDAK bisa dipakai membedakan (tetap 204).
 
 ## Resep Debug (gejala → ke mana)
 
-| Gejala | Cek dulu | Seringnya penyebab |
+| Gejala | Cek dulu | Penyebab yang sering |
 |---|---|---|
-| Data film tidak muncul / kartu kosong | `error-state` terlihat? Cek tab Network | Fetch Supabase gagal, RLS menolak baca, key salah |
-| Simpan/edit gagal | Apakah admin masih login? Probe RLS (bawah) | Sesi habis, RLS `to authenticated`, payload tidak valid |
-| Update/hapus "sukses" tapi data tidak berubah | RLS bisa menjawab 204 tanpa baris — cek jumlah baris yang kembali | Sesi tidak valid, RLS senyap |
-| Perubahan tidak tampil di situs live | `CACHE_NAME` di `sw.js` vs live | Lupa bump cache; aset cache-first |
-| Aset 404 di live tapi jalan di lokal | Huruf besar-kecil nama file | macOS case-insensitive, Vercel case-sensitive |
-| Kartu/teks tampil aneh | Apakah data lewat `escapeHtml`? | Data mentah masuk `innerHTML` |
-| Modal nyangkut / fokus hilang | `activateModal`/`deactivateModal` + listener Escape | Modal dibuka lewat jalur yang belum memakai helper |
-| Ikon install salah | `manifest.json` + `apple-touch-icon` | iOS tidak baca SVG manifest, butuh PNG |
+| Data film tidak muncul / kartu kosong | `error-state` terlihat? Tab Network | Fetch Supabase gagal, RLS menolak baca, key salah |
+| Simpan/edit gagal | Admin masih login? Probe RLS | Sesi habis, RLS `to authenticated`, payload tidak valid |
+| Update/hapus "sukses" tapi data tidak berubah | Jumlah baris yang kembali | RLS menjawab 204 tanpa baris; sesi tidak valid |
+| Perubahan tidak tampil di live | `CACHE_NAME` di `sw.js` vs live | Lupa naikkan cache; aset cache-first |
+| Aset 404 di live, jalan di lokal | Huruf besar-kecil nama file | macOS case-insensitive, Vercel case-sensitive |
+| Kartu/teks tampil aneh | Data lewat `escapeHtml`? | Data mentah masuk `innerHTML` |
+| Modal nyangkut / fokus hilang | `activateModal`/`deactivateModal`, Escape | Modal dibuka lewat jalur tanpa helper |
+| Ikon install salah | `manifest.json`, `apple-touch-icon` | iOS tidak membaca SVG di manifest; butuh PNG |
 | Waktu/konverter salah | `convDirection`, `formatAmPm` | Offset zona salah, arah tertukar |
-| Bagian "Mau Ditonton" tidak muncul | `watchlistAvailable`; probe `bubi_watchlist` (bawah) | Tabel belum dibuat (jalankan `supabase/watchlist.sql`), atau antrean kosong dan belum login admin |
-| Kotak info TMDB tidak muncul di detail | `TMDB_API_KEY` terisi? Tab Network ke `api.themoviedb.org` | Key kosong/salah; film tidak cocok judul+tahun (±1) |
-| Film series "Season N" tidak dapat poster/info | Tahun TMDB = tayang perdana, bukan musim | Normal; isi poster manual lewat form edit |
-| Trailer tidak muncul / hitam | Ada `trailerKey`? Tautan cadangan "Buka di YouTube" | Video melarang embed, atau tidak ada trailer YouTube |
+| "Mau Ditonton" tidak muncul | `watchlistAvailable`; probe `bubi_watchlist` | Tabel belum dibuat (`supabase/watchlist.sql`), atau antrean kosong / belum login admin |
+| Kotak info TMDB / logo judul tidak muncul | `TMDB_API_KEY` terisi? Network ke `api.themoviedb.org`; `images.logos` | Key kosong/salah; judul+tahun tidak cocok (±1); film tanpa logo (judul teks jadi cadangan) |
+| Rekomendasi kosong / Lanjut nonton hilang | `/discover` di Network; cache `bubi_recs_v6` | Cache minggu ini kosong/rusak; hapus key lalu muat ulang |
+| Rekomendasi salah menandai ditonton | `tmdbIdAvailable()` | `supabase/tmdb_id.sql` belum dijalankan; cocok memakai judul |
+| Pemilih season / lencana S2 / kutipan tidak muncul | `seasonAvailable()`, `kutipanAvailable()` | `supabase/season.sql` atau `kutipan.sql` belum dijalankan |
+| Film series "Season N" tanpa poster/info | Tahun TMDB = tayang perdana, bukan musim | Normal; isi poster manual lewat form edit |
+| Trailer tidak muncul / hitam | Ada `trailerKey`? Tautan "Buka di YouTube" | Embed diblokir (error 150, per negara), atau tidak ada trailer |
 
 ## Verifikasi Cepat
 
-**Perubahan sepele (teks, warna, spasi, label):** cek statis saja, jangan buka browser.
+Alur lengkap di `CLAUDE.md`. Untuk perubahan sepele, cek statis:
 
 ```bash
-python3 - <<'PY'
-from pathlib import Path
-h = Path('index.html').read_text()
-assert 'teks-lama' not in h      # pastikan hilang
-assert 'teks-baru' in h          # pastikan ada
-print('ok')
-PY
+python3 -c "from pathlib import Path; h=Path('index.html').read_text(); assert 'teks-lama' not in h and 'teks-baru' in h; print('ok')"
 ```
 
-**Perubahan perilaku (JS, modal, form, fetch):** verifikasi SEKALI dengan browser pane bawaan Claude, satu skrip gabungan untuk semua assertion.
-
-```bash
-# 1) server (stop setelah selesai)
-python3 -m http.server 4173 --bind 127.0.0.1
-```
-
-2. Buka `http://127.0.0.1:4173` dengan `preview_start` (parameter `url`) atau `navigate`.
-3. Assertion DOM/JS: `javascript_tool` (REPL, `await` boleh). Error JS: `read_console_messages` dengan `onlyErrors`.
-4. Cek visual: `resize_window` preset `mobile`, lalu `screenshot`. Kembalikan ke `desktop` setelah selesai.
-
-Pola assertion yang sudah terbukti: render kartu uji via `createMovieCard({...})` langsung di halaman; simulasi gagal dengan menimpa `supabaseClient.from` sementara; bandingkan posisi tombol dengan `getBoundingClientRect`.
+Pola browser yang terbukti: render kartu uji lewat `createMovieCard({...})`; simulasi gagal dengan menimpa `supabaseClient.from` sementara; bandingkan posisi dengan `getBoundingClientRect`; geser sheet lewat `PointerEvent` sintetis (jebakan 16).
 
 ## Jebakan yang Sudah Pernah Terjadi
 
-1. **`space-y-*` tetap menghitung elemen tersembunyi.** Footer dulu punya `space-y-4` sambil memuat panel admin yang tersembunyi → jarak 16 px bayangan. Solusi: jangan pakai `space-y` di wadah yang memuat elemen `hidden`; beri margin di elemennya sendiri.
-2. **Nama `let`/`const` bukan properti `window`.** `let isAdminUnlocked` di scope atas script bisa diakses dari `javascript_tool`, tapi tidak lewat `window.isAdminUnlocked`.
+1. **`space-y-*` tetap menghitung elemen `hidden`.** Footer dulu jarak 16 px dari panel admin tersembunyi. Beri margin di elemennya sendiri.
+2. **`let`/`const` bukan properti `window`.** `isAdminUnlocked` bisa diakses dari `javascript_tool`, tapi tidak lewat `window.isAdminUnlocked`.
 3. **Fungsi async di `javascript_tool`** harus di-`await` di ekspresi akhir; kalau tidak, yang kembali hanya Promise.
-4. **Toast umur ~2,8 detik.** Membaca isi toast setelah itu kosong. Kalau butuh, pasang `MutationObserver` sebelum memicu.
-5. **Edit paralel di file yang sama** bisa saling menimpa snippet — baca ulang area hasil edit sebelum yakin.
-6. **`grep` tool: jangan kirim field `type`/filter kosong** → error "unrecognized file type". Cukup `path` + `pattern`.
-7. **Brave headless tidak dipakai lagi.** Di macOS ia menggantung (izin Crashpad); jangan dicoba ulang.
-8. **iOS butuh PNG.** Ikon SVG di manifest tidak dibaca iPhone; wajib ada `apple-touch-icon.png`.
-9. **Jangan taruh password/secret di `index.html` atau README** — bisa dibaca via Inspect Element. Auth lewat `signInWithPassword`, email di `ADMIN_EMAIL`.
-10. **Host adalah Vercel, bukan GitHub Pages.** Jangan ikuti klaim lama.
-
-11. **`javascript_tool` terpotong saat halaman navigasi.** `location.reload()` di skrip yang sama membuang hasilnya; reload di panggilan terpisah, lalu tunggu `DOMContentLoaded` sebelum assertion.
-12. **Service worker bisa menyajikan versi lama saat uji.** Cek dulu `typeof namaFungsiBaru === 'function'` sebelum assertion; kalau `stale`, muat ulang.
-13. **Console menampilkan "An unknown error occurred when fetching the script" dan 404 `bubi_watchlist`.** Yang pertama tidak menyebut skrip mana dan tidak mengganggu fitur; yang kedua normal bila tabel watchlist belum dibuat.
-14. **Trailer YouTube diblokir per negara (error 150).** `mountYouTube` mengirim `listening` ke iframe (`enablejsapi=1`) dan pindah ke kandidat berikutnya dari `ytTrailerKeys` (trailer resmi → trailer → teaser, maks 6) saat menerima `onError`. Status per bingkai di `ytPlayers`. Pane browser bisa memutar YouTube; uji dengan log `message` dari origin youtube.
-15. **Rating bisa `null` atau string.** Selalu lewat `parseRating()` sebelum menghitung; film yang ditonton satu orang tidak punya rating pihak lain.
-16. **Detail TMDB punya penjaga balapan.** `loadTmdbExtra` membandingkan `currentDetailMovieId`; kalau modal berpindah film sebelum fetch selesai, hasil lama dibuang.
-17. **`requestAnimationFrame` bisa dijeda di browser pane**, jadi efek scroll (`updateScrollUI`) tidak terpicu saat uji. Panggil `updateScrollUI()` manual setelah `scrollTo`.
-18. **Uji geser-tutup** lewat `PointerEvent` sintetis di `[data-sheet-grab]` (`pointerdown` lalu beberapa `pointermove` lalu `pointerup`, `pointerType: 'touch'`). Geser >120px (atau >30px dengan kecepatan terkini >0.5 px/ms; tahan sebentar sebelum lepas = bukan lemparan) menutup; tarik ke atas memakai efek karet 0.25x; kurang dari itu kembali. Animasi `animate-slideUp` dilepas saat drag dan dipasang lagi saat modal dibuka.
-19. **Pull-to-refresh** hanya satu: `initPullToRefresh` (dimatikan saat `body.modal-lock`, supaya geser-tutup tidak memicu refresh). Dulu ada handler `touchend` kedua di bootstrap yang membuat fetch dobel; jangan ditambahkan lagi.
-22. **Offline:** `renderMonthsCarousel` menampilkan `error-state` hanya bila fetch gagal DAN `moviesData` kosong; bila ada salinan `bubi_movies_cache_v1`, film tetap tampil.
-20. **Kaca tidak terlihat?** `backdrop-filter` hanya tampak bila ada konten berwarna di belakangnya (di atas latar hitam polos hasilnya gelap). Cek dengan scroll ke area poster. Header memakai pseudo-elemen `::before` untuk blur bermasker agar tombol di dalamnya tidak ikut memudar.
-21. **`.certified-card` memakai tiga lapis `background` (`padding-box` + `border-box`) untuk bingkai gradien.** Jangan tambahkan `border-color` atau `background-color` Tailwind pada kartu itu; akan menimpa bingkai. Lencana emas memakai `!important` agar tidak kalah oleh utilitas `shadow-*`.
-
-## Probe cepat (read-only)
-
-```bash
-# RLS: tulis anonim harus ditolak (401). Aman: filter id yang tidak ada.
-curl -s -o /dev/null -w '%{http_code}\n' -X DELETE \
-  "https://<project>.supabase.co/rest/v1/bubi_popcorn?id=eq.__probe__" \
-  -H "apikey: <publishable-key>" -H "Authorization: Bearer <publishable-key>"
-
-# Pendaftaran publik harus tertutup (disable_signup = true)
-curl -s "https://<project>.supabase.co/auth/v1/settings" -H "apikey: <publishable-key>"
-
-# Watchlist ada dan bisa dibaca publik? 200 + [] atau isi = ya; 404 = tabel belum dibuat
-curl -s -w '\nHTTP %{http_code}\n' "https://<project>.supabase.co/rest/v1/bubi_watchlist?select=*" \
-  -H "apikey: <publishable-key>" -H "Authorization: Bearer <publishable-key>"
-```
-
-INSERT dengan `?on_conflict=id` + `Prefer: resolution=ignore-duplicates` pada id yang sudah ada: aman (tidak menulis apa pun) dan menjawab `42501` bila RLS aktif. DELETE/PATCH dengan filter yang tidak cocok TIDAK bisa dipakai membedakan — keduanya tetap 204.
-
-## Aturan kerja (lihat `CLAUDE.md`)
-
-- Baca `index.html` hanya dengan grep + `offset`/`limit`.
-- Commit + push ke `main` langsung setelah selesai; Vercel deploy otomatis.
-- Setelah mengubah `index.html` atau aset yang di-cache, naikkan `CACHE_NAME`.
-- Uji perilaku lewat browser pane bawaan Claude, jangan fungsi yang menulis ke Supabase.
-- Bersihkan server/proses latar setelah verifikasi.
+4. **Toast hanya ~2,8 detik.** Pasang `MutationObserver` sebelum memicu bila ingin membaca isinya.
+5. **Edit paralel di file yang sama** bisa saling menimpa. Baca ulang area hasil edit.
+6. **Brave headless tidak dipakai.** Di macOS ia menggantung (izin Crashpad).
+7. **iOS butuh PNG.** Ikon SVG di manifest tidak dibaca iPhone; wajib `apple-touch-icon.png`.
+8. **Password/secret jangan di `index.html` atau README.** Bisa dibaca lewat Inspect Element.
+9. **Host adalah Vercel, bukan GitHub Pages.** Jangan ikuti klaim lama.
+10. **`javascript_tool` terpotong saat navigasi.** `location.reload()` di skrip yang sama membuang hasilnya; reload di panggilan terpisah, tunggu `DOMContentLoaded`. Service worker bisa menyajikan versi lama: cek `typeof namaFungsiBaru === 'function'` dulu.
+11. **Console berisi "An unknown error occurred when fetching the script" dan 404 `bubi_watchlist`.** Yang pertama tidak mengganggu; yang kedua normal bila tabel belum dibuat.
+12. **Trailer diblokir per negara (error 150).** `mountYouTube` pindah ke kandidat berikutnya. Browser pane bisa memutar YouTube; uji lewat log `message` dari origin youtube.
+13. **Rating bisa `null` atau string.** Selalu lewat `parseRating()`; film yang ditonton satu orang tidak punya rating pihak lain.
+14. **`requestAnimationFrame` dijeda di browser pane**, jadi `updateScrollUI` tidak terpicu saat uji. Panggil manual setelah `scrollTo`, dan ambil screenshot untuk memaksa frame.
+15. **Pull-to-refresh hanya satu handler**: `initPullToRefresh`. Handler `touchend` kedua pernah membuat fetch dobel.
+16. **Uji geser-tutup sheet** lewat `PointerEvent` sintetis di `[data-sheet-grab]` (`pointerdown`, beberapa `pointermove`, `pointerup`, `pointerType: 'touch'`). Geser >120 px, atau >30 px dengan kecepatan >0.5 px/ms, menutup; tarik ke atas memakai efek karet 0.25x.
+17. **Kaca tidak terlihat?** `backdrop-filter` hanya tampak di atas konten berwarna; latar hitam polos tampak gelap. Header memakai `::before` untuk blur bermasker.
+18. **`.certified-card` memakai tiga lapis `background`** (`padding-box` + `border-box`) untuk bingkai gradien. Jangan tambahkan `border-color` atau `background-color` Tailwind; akan menimpa bingkai. Lencana emas memakai `!important` agar tidak kalah oleh `shadow-*`.
+19. **Offline:** `error-state` hanya tampil bila fetch gagal DAN `moviesData` kosong. Bila ada `bubi_movies_cache_v1`, film tetap tampil.
 
 ## iOS / iPhone (safe area)
 
-- `env(safe-area-inset-*)` hanya bernilai bila viewport memuat `viewport-fit=cover`. Jangan hapus itu dari meta viewport; tanpanya tab bar menimpa indikator Home dan header tertutup Dynamic Island.
-- Status bar PWA = `black-translucent` (konten di bawah Dynamic Island). Tinggi header = `4rem + env(safe-area-inset-top)`; nilai ini dipakai `body` padding-top, `scroll-padding-top` di `html`, dan `#toast-container`. Ubah ketiganya bersama. Jangan pakai `scroll-mt-*` lagi (terhitung dobel).
-- Tinggi sheet modal pakai `dvh`, bukan `vh` (di Safari `vh` = viewport besar, sheet tertutup toolbar).
-- Browser pane tidak meniru safe area (semua inset 0); cek akhirnya di iPhone sungguhan.
+- `env(safe-area-inset-*)` bernilai hanya bila viewport memuat `viewport-fit=cover`. Jangan hapus; tanpanya tab bar menimpa indikator Home.
+- Tinggi header `4rem + env(safe-area-inset-top)` dipakai `body` padding-top, `scroll-padding-top` di `html`, dan `#toast-container`. Ubah ketiganya bersama; jangan pakai `scroll-mt-*` (terhitung dobel).
+- Sheet memakai `dvh`, bukan `vh` (di Safari `vh` = viewport besar). Browser pane tidak meniru safe area; cek akhir di iPhone sungguhan.
