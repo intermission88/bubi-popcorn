@@ -267,19 +267,6 @@ allowed-tools: Read Write Edit Glob Grep
 - **Rule:** R-36.
 - **Not a ban:** dialogue, short stories, quoted real sources, and titles of works keep their quotes. The tell is quotes doing the work the sentence should do. One scare quote used once for a real reason is fine; a cluster of them is not. Minimize, do not strip quotes that carry meaning.
 
-### Inline-Header Lists
-
-- **The pattern:** list items that start with a bolded header followed by a colon: "- **User Experience:** The UX has been improved".
-- **Why it reads as AI:** the header restates what the item already says. It is a formatting habit, not a structure.
-- **Before:**
-  > - **User Experience:** The interface is easier to use.
-  > - **Performance:** Load times are faster.
-  > - **Security:** Data is encrypted.
-- **After:**
-  > The update improves the interface, speeds up load times, and encrypts data in transit.
-- **Rule:** R-36.
-- **Carve-out:** the `- **Tell:**` / `- **Why:**` / `- **Fix:**` headers that structure every antislop skill entry are a documentation convention, not the header-restates-the-item habit above, and are exempt.
-
 ### Emojis in Headings
 
 - **The pattern:** decoration emojis leading headings or bullets: 🚀 Launch, 💡 Key insight, ✅ Next steps.

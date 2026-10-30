@@ -13,79 +13,6 @@ allowed-tools: Read Write Edit Glob Grep
 
 ---
 
-## First-Run Install Wizard
-
-antislop is a system: this core file plus optional **skills**, one per concern (`antislop-ui`, `antislop-copywriting`, and so on, each a folder with a `SKILL.md`). This section installs them once. It is an **offer, not a requirement**: if the user prefers, this file alone remains a complete filter.
-
-**Skip this section** if the project's entry file (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, or the equivalent the running tool reads at session start) already contains an antislop pointer block. That means antislop is already installed. Come back only when the user asks to add or remove a skill.
-
-If no antislop pointer exists and this file is being read for the first time, run the wizard:
-
-> The steps below are the manual install for setups where only this file is present. No network is used: missing skills are fetched by the user, never by the agent.
-
-1. **Declare the setup before doing anything.** Tell the user you will (a) get the chosen skill(s) in place in `skills/<name>/` subfolders next to this file (the user fetches them; the agent never downloads from the network, see step 4), and (b) append an antislop pointer block at the end of the project's entry file. Get approval. Never modify the entry file silently.
-2. **Ask which skills to install** (multi-select, in the user's chat language). List only the skills that exist in this version of antislop:
-   - **1. All** (recommended): install every available skill. Choose this when the work spans UI, copy, people, or mobile layout.
-   - **2. `antislop-ui`** (UI / visual): pick this for building or editing a website, web app, or interface: color, layout, components, decoration, motion.
-   - **3. `antislop-copywriting`** (copy & text): pick this for writing or editing copy: headlines, CTAs, value propositions, tone, landing-page text, product prose.
-   - **4. `antislop-human`** (people): pick this for making sure a UI works for people with different eyes, hands, and setups: contrast, keyboard, focus, states.
-   - **5. `antislop-layoutmobile`** (mobile / responsive): pick this for layouts that have to reflow across screen sizes, phone to desktop: breakpoints, scale, grids, overflow, tap targets.
-   - **6. `antislop-code`** (code comments): pick this for writing or editing code comments: remove generic AI-slop comments, keep the valuable ones, never touch the code.
-   - New skills appear here as they ship; never offer a skill that does not exist in this version.
-
-   If the user declines or says "core only", stop here and use this file alone as the filter. Do not install anything.
-3. **Resolve direction** (only if a UI skill was selected). Check for `DESIGN.md` or explicit brand/style direction. If none exists, be honest that antislop is a **filter, not a beautifier**: without direction the output tends toward monotonous. Recommend having a `DESIGN.md`, then offer these paths:
-   - **1. The user supplies direction (recommended).** They write their own `DESIGN.md`, or answer a few direction questions (identity, personality, palette, typography, mood) and the agent transcribes their answers into `DESIGN.md`. The user is the author; the agent only formats. Never invent example content for `DESIGN.md`.
-   - **2. The agent supplies direction, with an honest warning.** The agent writes the direction itself, stating explicitly that agent-generated style tends toward default AI taste, which is the slop antislop filters, so the result is likely monotonous. If chosen, still ask a minimal brief (product, audience, mood) before building.
-   - **3. The user skips direction for now.** Proceed without a `DESIGN.md`. Any UI built this way must be labeled *"draft without direction"* with dials ENERGY 1 / RHYTHM 1 / MOTION 1 (R-37), and is not a shippable deliverable.
-4. **Get the chosen skill(s) in place; the user does the fetching, never the agent.** A `SKILL.md` is instructions the agent will obey, so an agent that downloads one at runtime is fetching its own next prompt: do not do it, and do not ask for network access here. The skills ship as folders in the release (`skills/<name>/SKILL.md`). If a chosen skill folder is missing next to this file, tell the user which ones are missing and that they come with the release matching this core, so a newer skill never mixes with an older one. `antislop-human` also needs `contrast-check.py` from that same folder.
-5. **Append the pointer block at the END of the project's entry file** (the file the running tool reads at session start: `CLAUDE.md` for Claude Code, `AGENTS.md` for Codex, `GEMINI.md` for Gemini CLI, and so on). If that file does not exist, create it. Never modify existing content:
-   ```md
-   <!-- antislop:start -->
-   ## antislop
-   For UI, copy, people, mobile layout, or code comments work, read `antislop.md` (core) and then the skill for the task:
-   - UI / visual: `skills/antislop-ui/SKILL.md`
-   - Copy & text: `skills/antislop-copywriting/SKILL.md`
-   - People: `skills/antislop-human/SKILL.md`
-   - Mobile / responsive: `skills/antislop-layoutmobile/SKILL.md`
-   - Code comments: `skills/antislop-code/SKILL.md`
-   Before starting, follow the core's "Two Usage Modes" section in strict order: explicit session instruction first, then global preference, then ask. A session instruction always wins. For a resolved mode, say `antislop active: <mode> (session override).` or `antislop active: <mode> (global preference).` once before presenting findings or making edits, using the actual mode and source. Acknowledging the user's request without naming the source does not replace this notice.
-   Only an explicit choice of antislop during or after selects a session mode. A request to review, audit, or avoid file edits does not select a mode; read the global preference in that case. Another skill's mode does not select antislop's mode.
-   If the mode is unresolved, ask during/after and end the response; wait for the answer before any UI review, planning, or concept. For read-only tasks, put the active-mode notice only at the start of the final answer, never in progress messages. For editing tasks, announce before the first edit and omit it from the final answer.
-   To update antislop later: download `antislop.md` again, or run `npx antislop-ai --update` if it was installed as skill folders.
-   <!-- antislop:end -->
-   ```
-   The packaged installers write the same two markers, so whichever install path runs last replaces the block instead of adding a second one. If an older antislop block exists (even without the markers), replace just that block instead of appending a duplicate.
-6. **Resolve and announce the usage mode** (see "Two Usage Modes"), then proceed with the work.
-
-Notes:
-- The entry file is read at the start of a session, so a newly written pointer takes effect from the **next** session.
-- The wizard needs file-write access for step 5 (the pointer block) and nothing else to install; the user approves once. A `DESIGN.md` in step 3 and an audit report in Mode 2 are written separately, only when the work calls for them. It never needs network access.
-- The pointer block is the source of truth for which skills are installed. To add or remove a skill later, update the block to match (add or remove the file and its line).
-
-### Already installed, and the user asks how to update
-
-antislop never updates itself, and nothing announces a new release. Answer from the route the user installed with, and say which route you are assuming when you cannot tell. `npx antislop-ai --update` is the shortest path for the first two routes: it replaces every antislop folder it finds, at project and global scope, prints the release it replaced, and asks nothing.
-
-- **The installer** (`npx antislop-ai`): run it again, answer as before, and pick **Overwrite them**. It prints the version already on disk next to the version it carries, so nothing has to be compared by hand. *Keep what is there* installs nothing.
-- **The skills directory** (`npx skills add miqdadbadjuber/anti-slop`): run `npx skills update`, which asks which scope to update unless you pass `-p` or `-g`. An installer folder and a skills-directory folder hold the same files, so `--update` covers this route as well.
-- **A plugin door**: each agent keeps its own copy, and `--update` cannot reach those. The installer names the command for any door it finds installed; without it, these are the seven:
-  - **Claude Code**: `claude plugin update antislop@anti-slop`
-  - **Antigravity**: `agy plugin install https://github.com/miqdadbadjuber/anti-slop`
-  - **Codex**: `codex plugin marketplace upgrade anti-slop`
-  - **Cursor**: `agent plugin marketplace update https://github.com/miqdadbadjuber/anti-slop`
-  - **Kimi Code**: `/plugins install https://github.com/miqdadbadjuber/anti-slop`
-  - **Cline**: `cline plugin install https://github.com/miqdadbadjuber/anti-slop.git --force`
-  - **Oh My Pi**: `omp plugin marketplace update anti-slop` then `omp plugin upgrade antislop@anti-slop`
-- **The Pi package** (`pi install git:github.com/miqdadbadjuber/anti-slop`): run `pi update --extensions`. The declaration lives in Pi's settings file rather than in a folder, so `--update` cannot see it.
-- **This file alone**: download it again and replace the copy.
-
-The folder this skill sits in holds a `VERSION` file naming the release it came from, unless it was installed before that file shipped. The current release is on the repo's releases page.
-
-Skills load when a session starts, so the session asking the question keeps the old rules either way. Say so, and tell the user to start a new one.
-
----
-
 ## Two Usage Modes
 
 On the first antislop activation in each session, resolve the mode in this order:
@@ -100,7 +27,7 @@ This order is strict. An explicit session instruction always wins over a saved p
 
 The notice tells the user both the active mode and why it was selected. A generic acknowledgement such as "I'll use during mode" omits the source and does not replace it. Use the notice above in English; translate it for other chat languages while retaining both mode and source.
 
-To opt into a saved default across new sessions, the user can run `npx antislop-ai --mode during` (or `after`). `npx antislop-ai --mode ask` restores the default question for every session, and `npx antislop-ai --mode` displays the current setting. The file is a JSON object, for example `{"mode":"during"}`. If the user explicitly asks you to remember a mode, create or update the platform-specific file above, preserving other fields; confirm only after a successful write. Do not overwrite malformed settings. A one-session answer does not authorize saving a default. If file access is unavailable, explain that persistence is unavailable and use the session choice.
+The file is a JSON object, for example `{"mode":"during"}`. If the user explicitly asks you to remember a mode, create or update the platform-specific file above, preserving other fields; confirm only after a successful write. Do not overwrite malformed settings. A one-session answer does not authorize saving a default. If file access is unavailable, explain that persistence is unavailable and use the session choice.
 
 Ask this only when no mode has been resolved, in the user's chat language. Do not start UI work until they answer:
 
@@ -178,7 +105,7 @@ Anything presented as fact (testimonials, statistics, security claims) is real a
 
 ## Part 1: AI Slop Patterns (Warning Signs)
 
-These are the most common patterns found in AI-generated designs. Use this table to **audit** your output: scan for clusters, then ask each one "what does this serve?" A single pattern from this list is fine if it serves a purpose, unless a **Hard Gate** rule in Part 2 forbids it (R-02, R-03, R-17, R-18, R-23 to R-28, R-32 to R-38). What makes a design slop is many of these appearing together with no reason. This is a **diagnostic scan, not a ban list**: Part 1 itself bans nothing, but the Hard Gate rules in Part 2 are absolute, and every other pattern must pass the purpose test (Part 2, Purpose-Gate group).
+These are the most common patterns found in AI-generated designs. Use this table to **audit** your output: scan for clusters, then ask each one "what does this serve?" A single pattern from this list is fine if it serves a purpose, unless a **Hard Gate** rule in Part 2 forbids it (R-02, R-03, R-17, R-18, R-23 to R-27, R-32 to R-38). What makes a design slop is many of these appearing together with no reason. This is a **diagnostic scan, not a ban list**: Part 1 itself bans nothing, but the Hard Gate rules in Part 2 are absolute, and every other pattern must pass the purpose test (Part 2, Purpose-Gate group).
 
 ### Visual & Color
 
@@ -364,13 +291,6 @@ If an element genuinely cannot have a destination yet, remove it instead of ship
   - **Error state**: the view when something goes wrong
 - A UI designed only for the ideal condition is not ready for real use
 - These states are not bonuses; they are part of a complete design
-
-#### R-28 — FAQ
-
-- **FORBIDDEN**: FAQ containing template questions that are not specific to the product
-- Every question in the FAQ must address a real concern of that product's users
-- If you do not know what questions are actually asked, do not create an FAQ section
-- A generic FAQ does more damage to trust than having no FAQ at all
 
 #### R-32 — Keyboard Accessibility
 
@@ -664,7 +584,6 @@ Before declaring the design done, answer every question below. All answers must 
 - [ ] Is there any text with contrast below the WCAG AA standard (4.5:1 for normal text, 3:1 for large text)? *(R-25)*
 - [ ] Are there any buttons, dropdowns, or forms that do nothing, with no real behavior and no `// TODO` + visible label? *(R-26)*
 - [ ] Does the UI lack an empty state, loading state, or error state? *(R-27)*
-- [ ] Does the FAQ contain generic questions that are not relevant to the product? *(R-28)*
 - [ ] Can the UI not be navigated by keyboard (Tab, Enter, Escape) or is there no visible focus state? *(R-32)*
 - [ ] Was any feature added by patching source/CSS with an external script instead of writing it in source? *(R-33)*
 - [ ] If a theme toggle exists, does one mode (light or dark) break styles, fonts, or layout? *(R-34)*
@@ -711,7 +630,7 @@ All answers must be **no**:
 - [ ] C-3: Does any section exist only to fill an AI template, not to serve the product's content? *(Content-Driven Composition)*
 - [ ] C-4: Does the UI break in any state, theme, breakpoint, or without a mouse? *(Resilience)*
 - [ ] C-5: Is any testimonial, statistic, or claim fabricated? *(Evidence Over Claims)*
-- [ ] Does the layout follow an AI template (generic Hero+cards, "How It Works" always 3 steps, "Trusted By" logo bar, bento-grid mosaic, fake terminal window, 3 pricing columns, 4-column footer with no variation, uniform section rhythm), or does the section rhythm contradict the declared RHYTHM dial? *(R-05)*
+- [ ] Does the layout follow an AI template (generic Hero+cards, bento-grid mosaic, fake terminal window, uniform section rhythm), or does the section rhythm contradict the declared RHYTHM dial? *(R-05)*
 - [ ] Are all elements (buttons, cards, inputs, badges) made pill-shaped with no radius variation? *(R-11)*
 - [ ] Are CTAs still generic (Get Started, Learn More, Try Now, Explore, Discover)? *(R-15)*
 - [ ] Are there any AI marketing buzzwords (AI Powered, Seamless, Revolutionary, Cutting Edge, etc.)? *(R-16)*

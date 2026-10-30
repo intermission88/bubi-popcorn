@@ -92,48 +92,17 @@ allowed-tools: Read Write Edit Glob Grep
 - **Why:** uniform cards flatten the content. When every feature is a card with an icon, the features with real weight and the ones without look the same.
 - **Fix:** create variation that reflects content hierarchy, with the reason written down (R-14). Not every feature needs to be a card. The flagship feature may deserve a full-width treatment, the supporting ones a list.
 
-### Bento Grid
-
-- **Tell:** a section made of a mosaic of differently-sized cards, some spanning two columns or two rows, filling the space like a tiled dashboard.
-- **Why:** it is the default "app-like" landing layout of the last few years, so it signals nothing about the product. When every section could be a bento, the layout is a template, not a decision.
-- **Fix:** use a bento grid only when the content genuinely has elements of different sizes to show (R-05). If every cell is roughly the same, a simple grid or list is more honest. The RHYTHM dial decides whether sections vary at all.
-
 ### Uniform Spacing
 
 - **Tell:** padding, margin, and gaps are identical across every section.
 - **Why:** rhythm is a tool, and a single spacing value removes it. Sections stop relating to each other; the page reads as one flat strip.
 - **Fix:** use whitespace as structure (core Part 3) and vary it with the RHYTHM dial. Establish a spacing scale, then use different levels to separate and connect. Uniform rhythm is a deliberate choice only when the dial says so (R-05).
 
-### "How It Works" Always 3 Steps
-
-- **Tell:** round icon + number 1, 2, 3 + short text, always three steps, always the same shape.
-- **Why:** the product's real process is rarely a tidy three-step list. The template forces the process into its shape, not the other way around.
-- **Fix:** present the process as it actually is (R-05). Three steps with round icons is fine if that is genuinely the process; otherwise use whatever shape the real workflow takes, including two steps or five.
-
-### "Trusted By" Logo Bar
-
-- **Tell:** a row of generic company logos directly below the hero.
-- **Why:** it is a trust claim with no evidence: generic logos, no real customers named, no proof of use.
-- **Fix:** only show real, verifiable logos (R-18, R-36, C-5). If the product has no such customers yet, do not fabricate a logo bar. Real social proof beats a generic one every time.
-
-### "Most Popular" Pricing Card
-
-- **Tell:** the middle pricing tier always highlighted with a capsule badge.
-- **Why:** it is the default pattern, which means it is not a decision. When every pricing section does it, the highlighted tier stops meaning anything.
-- **Fix:** highlight the tier that actually serves the product's goals, and write why (R-31). If no tier deserves emphasis, highlight none.
-- **Three columns is part of the tell:** pricing shown as three tiers whatever the real structure, the middle one highlighted. That shape is the default, so it is not a decision (R-05). Use as many tiers as the product really has, and highlight the one that serves it.
-
 ### Demo Without a Product
 
 - **Tell:** the page sells a product that is never shown working: no real demo, no Terms of Service, no Privacy Policy, just promises.
 - **Why:** it is a demo wearing a product's clothes. Every claim is trust with nothing behind it, and the missing legal pages are the quiet tell that nothing real exists yet.
 - **Fix:** show the real product working, or say honestly that it is not shipped yet (R-38, C-5). If the page asks for signups or payment, the Terms of Service and Privacy Policy must exist. An honest "coming soon" beats a convincing demo.
-
-### 4-Column Template Footer
-
-- **Tell:** Product / Company / Resources / Legal columns with no variation.
-- **Why:** the columns exist because templates have them, not because the site has that many link groups.
-- **Fix:** structure the footer around what the product actually links to (R-05). A single column of links can be more useful than four half-empty ones.
 
 ### Uniform Section Rhythm
 
@@ -198,12 +167,6 @@ allowed-tools: Read Write Edit Glob Grep
 - **Fix:** choose typeface from brand character, not the model's default pick, and write the reason (R-06). Typography must improve readability and reflect the product. A type choice with a reason beats a trend every time.
 - **The default roster:** Inter, Geist, and Space Grotesk for sans; Geist Mono, JetBrains Mono, and Fira Code for mono. None are banned; each is valid with a brand reason. The tell is the font that shows up because it was the default, not because it fits (R-06).
 
-### Fake Terminal Window
-
-- **Tell:** a styled terminal window with traffic-light dots, a prompt line, and typed-out commands, used as the hero or feature visual.
-- **Why:** it is the generic "this is a developer tool" costume. The window is decoration; the real product rarely looks like that. It reads as a placeholder for a real screenshot.
-- **Fix:** if the product is genuinely a terminal or CLI, a real, working screenshot is evidence. Otherwise show the actual product UI, not a costume (R-06, C-5). Monospace as aesthetic is already covered by R-06; a fake terminal is that pattern as a component.
-
 ### Illustrations With No Connection
 
 - **Tell:** Undraw, Storyset, or generic 3D blob characters with no real connection to the product.
@@ -230,39 +193,7 @@ allowed-tools: Read Write Edit Glob Grep
 - **Why:** template sections are content without purpose. They add length and remove focus.
 - **Fix:** every section earns its place from the product's content (C-3). Remove sections that only fill a template. A page with fewer, purposeful sections is stronger than a page with all the defaults.
 
-## App & Dashboard
-
-The patterns above are landing-page shapes. These are the app-side equivalents: the defaults an agent reaches for when the screen is a dashboard, an admin panel, or any signed-in view. The rules they break are the same ones; only the shape is new.
-
-### Default Dashboard Shell
-
-- **Tell:** left sidebar, top bar, four stat cards, a chart, a table. Chosen before anyone asked what the screen is for, and identical whether it manages invoices, patients, or servers.
-- **Why:** it is the landing-page template problem in an app: a layout picked from memory instead of from the work the screen supports. Swap the labels and it belongs to any product.
-- **Fix:** name the screen's job and the one decision the user makes on it, then build the hierarchy around that (C-3, R-20). If the job is "spot the failing job and retry it", the failing jobs are the page and the stat row is a footnote. Sections that survive only because dashboards usually have them get cut (C-3).
-
-### Stat Cards With Invented Numbers
-
-- **Tell:** a row of four cards reading 12,483 / 94.2% / $48.2K / 1,204, each with a green "+12% this week" delta.
-- **Why:** the numbers are decoration, and the deltas are worse: a trend claim with no series behind it. Real dashboards have metrics that matter and metrics that do not, so four equal cards is already a hierarchy failure.
-- **Fix:** show real numbers or none (R-17, R-38). Wire the cards to real data, or ship the one metric that is real. A delta appears only when the comparison period is real and named. If the screen is a prototype, label the values as placeholder where the user can see it (R-38).
-
-### Filler Activity Feed
-
-- **Tell:** "Sarah Chen updated a document, 2 hours ago", repeated with rotating names and avatars.
-- **Why:** invented people, invented events. It is the testimonial section wearing a different layout, and it makes an empty product look busy.
-- **Fix:** the feed shows real events or does not ship (R-18, R-38). An honest empty state beats a fabricated feed, and it tells the user what to do first (R-27).
-
-### Charts Without a Question
-
-- **Tell:** a line or donut chart placed because the space looked bare, with a generic title ("Overview", "Performance") and no axis the reader can act on.
-- **Why:** a chart is an answer. Without the question, it is texture, and it costs more attention than a sentence would.
-- **Fix:** write the question the chart answers before drawing it, and put that question in the title ("Failed jobs per hour, last 24h"). If a sentence answers it better, write the sentence (C-3). Chart segments still need 3:1 contrast against their neighbours (R-25).
-
-### Generic Table Columns
-
-- **Tell:** Name, Status, Date, Actions, whatever the rows actually are, with a three-dot menu on every row.
-- **Why:** the columns come from the table component, not from the data. The user scans for the field that decides their next move and it is not there.
-- **Fix:** pick columns from the decision the user makes in this table, and put the deciding field early. The row menu holds actions that exist; anything that does nothing comes out (R-26).
+## Data & States
 
 ### Filler Data in Fields and Columns
 
@@ -298,13 +229,13 @@ Run these alongside the core Delivery Gate when the task is UI work. All answers
 - [ ] Is the accent used at the key moment only, not spread across every element? (core Part 3, one deliberate accent)
 - [ ] Is the copy free of decorative emoji scattered through headings, bullets, and buttons? (R-04)
 - [ ] Do section compositions vary according to the declared RHYTHM dial instead of repeating one template? (R-05)
-- [ ] Is the layout free of the default AI shapes: bento-grid mosaic, fake terminal window, three pricing columns, and left-edge color stripes with no meaning? (R-05, R-01)
+- [ ] Is the layout free of the default AI shapes: generic hero plus feature cards, and left-edge color stripes with no meaning? (R-05, R-01)
 - [ ] Is the space above the H1 clear of a pill badge holding a label the headline already says? (R-09)
 - [ ] Does every navigation item and interactive element have a real destination or behavior, or a visible "Coming soon" label? (R-24, R-26)
 - [ ] Does motion follow the declared MOTION dial and serve a written purpose, with no endless loops? (R-19)
 - [ ] Is glass, glow, shadow, and radius used at their dose caps, not as a page-wide default? (R-10, R-11, R-12, R-13)
 - [ ] Is every colored dot and status light marking a real state, with no decorative glow or endless pulse? (R-13, R-19, R-31)
-- [ ] On an app screen, is the layout built around the decision the user makes there, rather than the sidebar plus stat row plus chart plus table default? (C-3, R-20)
+- [ ] On an app screen, is the layout built around the decision the user makes there, rather than a default shell picked from memory? (C-3, R-20)
 - [ ] Is every number, delta, feed entry, and table row real or a labelled placeholder, with no invented metrics? (R-17, R-18, R-38)
 - [ ] Do empty form fields and table cells stay empty or carry honest placeholders (Your Name, email@example.com) instead of fake-looking data (John Doe, johndoe@example.com)? (R-23, R-38)
 - [ ] Do the empty, loading, and error states name the cause and the next action instead of saying "No data"? (R-27)
