@@ -1,13 +1,13 @@
-const CACHE_NAME = 'bubi-popcorn-v94';
+const CACHE_NAME = 'bubi-popcorn-v95';
 const IMG_CACHE = 'bubi-tmdb-img-v1'; // tidak ikut dihapus saat CACHE_NAME naik
 const IMG_MAX = 400;
 const CORE_ASSETS = [
   './',
   './index.html',
-  './assets/Slider_1.webp', // slider 2-5 masuk cache saat pertama tampil, tidak berebut bandwidth di kunjungan pertama
-  './assets/pfp_zald.webp',
-  './assets/pfp_micel.webp',
-  './assets/icon.svg',
+  './assets/slider/1.webp', // slider 2-5 masuk cache saat pertama tampil, tidak berebut bandwidth di kunjungan pertama
+  './assets/people/zald.webp',
+  './assets/people/micel.webp',
+  './assets/logo/icon.svg',
   './manifest.json'
 ];
 

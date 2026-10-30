@@ -36,7 +36,7 @@ Brief subagent: file + anchor `grep`, tujuan, batasan relevan (palet, tipografi,
 
 ## TMDB
 - Hanya API Key v3 (`TMDB_API_KEY`). Jangan pakai Read Access Token v4; jangan ulangi nilai key di balasan, commit, atau dokumen.
-- Atribusi wajib selalu terlihat di footer: `assets/tmdb-logo.svg` (tidak dimodifikasi, lebih kecil dari identitas app) + kalimat resmi.
+- Atribusi wajib selalu terlihat di footer: `assets/logo/tmdb-logo.svg` (tidak dimodifikasi, lebih kecil dari identitas app) + kalimat resmi.
 - Data TMDB tidak disimpan ke DB kecuali `poster`, `tmdb_id`, `tmdb_media`. Rekomendasi, koleksi, season, dan detail diambil langsung (cache localStorage `bubi_recs_v6` per minggu, `bubi_recs_seed_v2` per seed 30 hari).
 
 ## UI dan kode

@@ -232,7 +232,7 @@ Key v3 hanya bisa membaca data publik dan memang terlihat di klien. Kalau bocor,
 | `index.html` | Seluruh aplikasi |
 | `sw.js` | Service worker (network-first untuk HTML, cache-first untuk aset; Supabase dan TMDB tidak di-cache) |
 | `manifest.json` | Metadata PWA |
-| `assets/` | Gambar slider, foto profil, ikon PWA, logo TMDB, dan `readme/` (aset README) |
+| `assets/` | `slider/` (foto slider), `people/` (foto profil), `logo/` (ikon PWA, logo TMDB), `readme/` (aset README) |
 | `supabase/watchlist.sql` | Skema tabel watchlist |
 | `supabase/kutipan.sql` | Kolom `kutipan` (kutipan favorit per film), opsional |
 | `supabase/season.sql` | Kolom `season` (nomor season series), opsional |
@@ -242,7 +242,7 @@ Key v3 hanya bisa membaca data publik dan memang terlihat di klien. Kalau bocor,
 
 ## Deploy dan Pengembangan
 
-- Push ke `main` otomatis dideploy ke Vercel. `push.bat` tersedia untuk Windows.
+- Push ke `main` otomatis dideploy ke Vercel. `scripts/push.bat` tersedia untuk Windows.
 - Setelah mengubah `index.html` atau aset yang di-cache, naikkan `CACHE_NAME` di `sw.js`.
 - Konvensi dan cara uji: [`CLAUDE.md`](CLAUDE.md). Peta kode dan resep debug: [`DEBUG.md`](DEBUG.md).
 

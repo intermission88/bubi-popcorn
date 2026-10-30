@@ -1,9 +1,7 @@
-# macOS
+# OS
 .DS_Store
 .AppleDouble
 .LSOverride
-
-# Windows
 Thumbs.db
 desktop.ini
 
@@ -11,9 +9,9 @@ desktop.ini
 .vscode/
 .idea/
 
-# Dependency & log
+# Dependency dan log
 node_modules/
 *.log
 
-# Folder milik tool lain (Command Code); tidak dipakai di repo ini
+# Tool lain (Command Code), tidak dipakai di repo ini
 .commandcode/

@@ -8,10 +8,10 @@ Peta untuk debug cepat: ke mana melihat, perintah yang jalan, dan jebakan yang p
 |---|---|---|
 | `index.html` | Markup, CSS, JS (~3800 baris). JANGAN dibaca utuh. | Perbaikan perilaku/tampilan |
 | `sw.js` | Service worker. `CACHE_NAME` (naikkan bila aset berubah), `IMG_CACHE` (gambar TMDB). Network-first HTML, cache-first aset. | "Perubahan tidak tampil", offline |
-| `manifest.json` | Metadata PWA, ikon `assets/icon.svg`. | Ikon install salah |
+| `manifest.json` | Metadata PWA, ikon `assets/logo/icon.svg`. | Ikon install salah |
 | `assets/` | Biner. Jangan dibaca; pakai `file`/`sips`. | Aset 404 |
 | `supabase/*.sql` | `watchlist.sql` (tabel + RLS), `tmdb_id.sql`, `season.sql`, `kutipan.sql` (kolom opsional). Dijalankan user manual. | Lihat Resep |
-| `README.md` / `LICENSE` / `push.bat` | Fitur, skema, setup / MIT untuk kode / commit+push interaktif (Windows). | Referensi |
+| `README.md` / `LICENSE` / `scripts/push.bat` | Fitur, skema, setup / MIT untuk kode / commit+push interaktif (Windows). | Referensi |
 
 ## Peta `index.html` — cari dengan `grep -n`
 
