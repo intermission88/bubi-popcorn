@@ -22,10 +22,13 @@ Repo ini dikerjakan dari dua mesin: macOS (rumah) dan Windows (apartemen).
 ## Orkestrasi model (Opus = otak, Haiku = pekerja utama)
 Instruksi ini adalah izin tetap dari user untuk memakai subagent (tool `Agent`) dengan parameter `model`.
 
+Haiku memegang porsi kerja terbesar. Opus berpikir dan memeriksa, Haiku yang mengerjakan. Semua subagent, termasuk `subagent_type: "Explore"`, wajib diberi `model: "haiku"` kecuali sedang eskalasi ke Sonnet (tanpa `model`, subagent ikut memakai Opus).
+
 Ikuti urutan ini setiap menerima tugas:
 
-1. **Saring dulu: kerjakan sendiri (Opus) bila salah satu benar.** Tugas kecil (satu pertanyaan, satu sampai tiga edit, kurang dari ~5 tool call); butuh browser pane (verifikasi perilaku/visual); butuh keputusan desain, arsitektur, atau copy; atau menyentuh auth/admin. Menulis brief untuk tugas sekecil ini lebih mahal daripada mengerjakannya.
-2. **Sisanya delegasikan ke Haiku (`model: "haiku"`), pekerja default.** Implementasi yang lingkupnya jelas, refactor terarah, menulis/memperbarui `README.md`/`DEBUG.md`, pencarian/`grep` luas (`subagent_type: "Explore"`), merangkum file atau log, cek statis, membaca data publik Supabase/TMDB.
+1. **Opus merencanakan:** pahami permintaan, putuskan desain/arsitektur/copy, lalu pecah jadi tugas untuk Haiku. Keputusan desain tetap di Opus; Haiku mengeksekusinya.
+2. **Delegasikan ke Haiku (`model: "haiku"`) sebagai default untuk hampir semua pengerjaan:** semua edit kode dan dokumen (termasuk perubahan kecil beberapa baris), refactor, menulis/memperbarui `README.md`/`DEBUG.md`, pencarian/`grep`, membaca dan merangkum potongan `index.html` atau log, cek statis (`grep`/python assert), membaca data publik Supabase/TMDB.
+   Opus hanya mengerjakan langsung: menjawab pertanyaan yang sudah bisa dijawab dari context, satu edit sepele yang lokasinya sudah diketahui pasti, verifikasi di browser pane, serta hal yang menyentuh auth/admin.
 3. **Review hasil Haiku.** Cek diff atau hasilnya sendiri; laporan subagent bukan bukti. Bila benar, lanjut ke langkah 6.
 4. **Naik ke Sonnet (`model: "sonnet"`) hanya dengan alasan:** hasil Haiku salah/tidak lengkap, Haiku menyerah, atau tugasnya sejak awal jelas di luar kemampuan Haiku (bug multi-langkah, perubahan lintas banyak bagian `index.html`, review kode kedua). Brief Sonnet wajib menyebut apa yang sudah dicoba Haiku dan kenapa gagal.
 5. **Bila Sonnet juga gagal, Opus mengerjakan sendiri.** Jangan mengulang model yang sama dengan brief yang sama.
