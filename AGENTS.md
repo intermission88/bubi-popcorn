@@ -22,14 +22,19 @@ Repo ini dikerjakan dari dua mesin: macOS (rumah) dan Windows (apartemen).
 ## Orkestrasi model (Opus = otak, Haiku = pekerja utama)
 Instruksi ini adalah izin tetap dari user untuk memakai subagent (tool `Agent`) dengan parameter `model`.
 
-- **Opus (sesi utama) = otak dan juru kunci:** pahami permintaan, rencanakan, bagi tugas, putuskan desain/arsitektur, review hasil subagent, lalu edit akhir, verifikasi, commit, dan push. Keputusan dan tanggung jawab akhir tetap di Opus; hanya Opus yang commit/push.
-- **Haiku (`model: "haiku"`) = pekerja utama (default):** semua tugas yang didelegasikan dikirim ke Haiku dulu: implementasi yang lingkupnya jelas, refactor terarah, menulis/memperbarui `README.md`/`DEBUG.md`, pencarian/`grep` luas (pakai `subagent_type: "Explore"`), merangkum file atau log, cek statis, membaca data publik Supabase/TMDB.
-- **Sonnet (`model: "sonnet"`) = cadangan, naik kelas bila Haiku gagal:** pakai hanya kalau hasil Haiku salah/tidak lengkap setelah di-review Opus, Haiku menyerah, atau tugasnya jelas di luar kemampuan Haiku (investigasi bug multi-langkah yang rumit, perubahan lintas banyak bagian `index.html`, review kode kedua). Saat naik ke Sonnet, sertakan di brief apa yang sudah dicoba Haiku dan kenapa gagal.
-- Urutan eskalasi: Haiku → Sonnet → Opus mengerjakan sendiri. Jangan langsung loncat ke Sonnet tanpa alasan.
-- Brief subagent wajib mandiri: file/baris terkait, tujuan, batasan dari dokumen ini yang relevan (palet, tipografi, `escapeHtml`, larangan secret, larangan tulis Supabase), dan bentuk laporan yang diminta (ringkas, bukan dump file).
-- Tugas independen boleh dijalankan paralel, tetapi dua subagent TIDAK boleh mengedit file yang sama (praktis: hanya satu penulis untuk `index.html` sekaligus).
-- Subagent tidak commit/push dan tidak membuka browser GUI. Hasil subagent = laporan, bukan bukti: Opus mengecek diff/hasilnya sebelum melapor ke user.
-- Tugas kecil (satu edit, satu pertanyaan, beberapa tool call) dikerjakan langsung oleh Opus, jangan didelegasikan.
+Ikuti urutan ini setiap menerima tugas:
+
+1. **Saring dulu: kerjakan sendiri (Opus) bila salah satu benar.** Tugas kecil (satu pertanyaan, satu sampai tiga edit, kurang dari ~5 tool call); butuh browser pane (verifikasi perilaku/visual); butuh keputusan desain, arsitektur, atau copy; atau menyentuh auth/admin. Menulis brief untuk tugas sekecil ini lebih mahal daripada mengerjakannya.
+2. **Sisanya delegasikan ke Haiku (`model: "haiku"`), pekerja default.** Implementasi yang lingkupnya jelas, refactor terarah, menulis/memperbarui `README.md`/`DEBUG.md`, pencarian/`grep` luas (`subagent_type: "Explore"`), merangkum file atau log, cek statis, membaca data publik Supabase/TMDB.
+3. **Review hasil Haiku.** Cek diff atau hasilnya sendiri; laporan subagent bukan bukti. Bila benar, lanjut ke langkah 6.
+4. **Naik ke Sonnet (`model: "sonnet"`) hanya dengan alasan:** hasil Haiku salah/tidak lengkap, Haiku menyerah, atau tugasnya sejak awal jelas di luar kemampuan Haiku (bug multi-langkah, perubahan lintas banyak bagian `index.html`, review kode kedua). Brief Sonnet wajib menyebut apa yang sudah dicoba Haiku dan kenapa gagal.
+5. **Bila Sonnet juga gagal, Opus mengerjakan sendiri.** Jangan mengulang model yang sama dengan brief yang sama.
+6. **Tutup oleh Opus:** edit akhir, verifikasi (lihat "Verifikasi hemat"), commit, push. Hanya Opus yang commit/push.
+
+Aturan untuk setiap subagent:
+- Brief wajib mandiri: file dan anchor `grep` terkait, tujuan, batasan relevan dari dokumen ini (palet, tipografi, `escapeHtml`, larangan secret, larangan tulis Supabase, larangan baca `index.html` utuh), dan bentuk laporan (ringkas: apa yang diubah, di baris mana, apa yang belum yakin; bukan dump file).
+- Tugas independen boleh paralel, tetapi hanya satu penulis per file (praktis: satu penulis `index.html` sekaligus).
+- Subagent tidak commit/push, tidak membuka browser, dan tidak memanggil fungsi yang menulis ke Supabase.
 
 ## Verifikasi hemat
 - Perubahan sepele (teks, warna, spasi, label): cukup cek statis (`grep`/python assert). Jangan buka browser.
