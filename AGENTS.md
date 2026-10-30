@@ -26,13 +26,23 @@ Haiku memegang porsi kerja terbesar. Opus berpikir dan memeriksa, Haiku yang men
 
 Ikuti urutan ini setiap menerima tugas:
 
-1. **Opus merencanakan:** pahami permintaan, putuskan desain/arsitektur/copy, lalu pecah jadi tugas untuk Haiku. Keputusan desain tetap di Opus; Haiku mengeksekusinya.
-2. **Delegasikan ke Haiku (`model: "haiku"`) sebagai default untuk hampir semua pengerjaan:** semua edit kode dan dokumen (termasuk perubahan kecil beberapa baris), refactor, menulis/memperbarui `README.md`/`DEBUG.md`, pencarian/`grep`, membaca dan merangkum potongan `index.html` atau log, cek statis (`grep`/python assert), membaca data publik Supabase/TMDB.
-   Opus hanya mengerjakan langsung: menjawab pertanyaan yang sudah bisa dijawab dari context, satu edit sepele yang lokasinya sudah diketahui pasti, verifikasi di browser pane, serta hal yang menyentuh auth/admin.
-3. **Review hasil Haiku.** Cek diff atau hasilnya sendiri; laporan subagent bukan bukti. Bila benar, lanjut ke langkah 6.
+Pekerjaan Opus dibatasi pada lima hal ini saja; selain itu, delegasikan ke Haiku:
+- memutuskan (desain, arsitektur, copy, apa yang dikerjakan) dan menulis brief;
+- membaca diff hasil subagent;
+- menjalankan verifikasi di browser pane (skripnya disiapkan Haiku);
+- `git add`, commit, push (pesan commit boleh disusun Haiku);
+- membalas user.
+
+Opus tidak membaca `index.html` atau dokumen untuk mencari sesuatu, tidak mengedit file, dan tidak menjalankan `grep`/cek statis sendiri. Pengecualian hanya untuk langkah 5 (Sonnet gagal) dan hal yang menyentuh auth/admin.
+
+Ikuti urutan ini setiap menerima tugas:
+
+1. **Opus memutuskan dan menulis brief.** Bila konteks kurang, minta Haiku (`Explore`) mencari dulu, jangan cari sendiri.
+2. **Haiku (`model: "haiku"`) mengerjakan semuanya:** pencarian/`grep`, membaca dan merangkum potongan `index.html` atau log, semua edit kode dan dokumen (sekecil apa pun), refactor, `README.md`/`DEBUG.md`, kenaikan `CACHE_NAME` di `sw.js`, cek statis (`grep`/python assert), membaca data publik Supabase/TMDB, menyiapkan skrip verifikasi `javascript_tool` dan draf pesan commit. Laporannya menyertakan hasil cek statis.
+3. **Opus membaca diff (`git diff`).** Laporan subagent bukan bukti. Bila ada yang salah, kirim balik ke Haiku dengan koreksi spesifik satu kali; bila masih salah, ke langkah 4. Bila benar, lanjut ke langkah 6.
 4. **Naik ke Sonnet (`model: "sonnet"`) hanya dengan alasan:** hasil Haiku salah/tidak lengkap, Haiku menyerah, atau tugasnya sejak awal jelas di luar kemampuan Haiku (bug multi-langkah, perubahan lintas banyak bagian `index.html`, review kode kedua). Brief Sonnet wajib menyebut apa yang sudah dicoba Haiku dan kenapa gagal.
 5. **Bila Sonnet juga gagal, Opus mengerjakan sendiri.** Jangan mengulang model yang sama dengan brief yang sama.
-6. **Tutup oleh Opus:** edit akhir, verifikasi (lihat "Verifikasi hemat"), commit, push. Hanya Opus yang commit/push.
+6. **Tutup oleh Opus:** jalankan skrip verifikasi di browser pane bila perubahan menyentuh perilaku (lihat "Verifikasi hemat"), lalu commit dan push. Hanya Opus yang commit/push.
 
 Aturan untuk setiap subagent:
 - Brief wajib mandiri: file dan anchor `grep` terkait, tujuan, batasan relevan dari dokumen ini (palet, tipografi, `escapeHtml`, larangan secret, larangan tulis Supabase, larangan baca `index.html` utuh), dan bentuk laporan (ringkas: apa yang diubah, di baris mana, apa yang belum yakin; bukan dump file).
