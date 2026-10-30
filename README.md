@@ -237,14 +237,14 @@ Key v3 hanya bisa membaca data publik dan memang terlihat di klien. Kalau bocor,
 | `supabase/kutipan.sql` | Kolom `kutipan` (kutipan favorit per film), opsional |
 | `supabase/season.sql` | Kolom `season` (nomor season series), opsional |
 | `supabase/tmdb_id.sql` | Kolom `tmdb_id` dan `tmdb_media` untuk pencocokan rekomendasi yang akurat, opsional |
-| `DEBUG.md` · `AGENTS.md` | Guide debug dan konvensi kerja |
+| `DEBUG.md` · `CLAUDE.md` | Guide debug dan konvensi kerja |
 | `LICENSE` | MIT untuk kode |
 
 ## Deploy dan Pengembangan
 
 - Push ke `main` otomatis dideploy ke Vercel. `push.bat` tersedia untuk Windows.
 - Setelah mengubah `index.html` atau aset yang di-cache, naikkan `CACHE_NAME` di `sw.js`.
-- Konvensi dan cara uji: [`AGENTS.md`](AGENTS.md). Peta kode dan resep debug: [`DEBUG.md`](DEBUG.md).
+- Konvensi dan cara uji: [`CLAUDE.md`](CLAUDE.md). Peta kode dan resep debug: [`DEBUG.md`](DEBUG.md).
 
 ## Lisensi dan Kredit
 

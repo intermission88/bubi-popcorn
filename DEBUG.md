@@ -19,7 +19,7 @@ Peta untuk debug cepat: ke mana melihat, perintah apa yang jalan, dan jebakan ya
 | `LICENSE` | MIT untuk kode (isi arsip dan foto dikecualikan). | Soal lisensi |
 | `push.bat` | Alternatif commit+push interaktif (Windows). | — |
 | `README.md` | Fitur, skema data, setup. | Referensi |
-| `AGENTS.md` | Konvensi kerja + lingkungan per-OS. | Wajib baca dulu |
+| `CLAUDE.md` | Konvensi kerja + lingkungan per-OS. | Wajib baca dulu |
 
 ## Peta `index.html` — cari dengan `grep -n`, jangan hafal baris
 
@@ -179,7 +179,7 @@ curl -s -w '\nHTTP %{http_code}\n' "https://<project>.supabase.co/rest/v1/bubi_w
 
 INSERT dengan `?on_conflict=id` + `Prefer: resolution=ignore-duplicates` pada id yang sudah ada: aman (tidak menulis apa pun) dan menjawab `42501` bila RLS aktif. DELETE/PATCH dengan filter yang tidak cocok TIDAK bisa dipakai membedakan — keduanya tetap 204.
 
-## Aturan kerja (lihat `AGENTS.md`)
+## Aturan kerja (lihat `CLAUDE.md`)
 
 - Baca `index.html` hanya dengan grep + `offset`/`limit`.
 - Commit + push ke `main` langsung setelah selesai; Vercel deploy otomatis.
