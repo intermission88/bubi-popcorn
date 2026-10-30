@@ -19,10 +19,10 @@ Repo ini dikerjakan dari dua mesin: macOS (rumah) dan Windows (apartemen).
 - Edit pakai konteks sependek mungkin yang tetap unik. Hindari menulis ulang seluruh file untuk perubahan kecil.
 - Perubahan desain: langsung eksekusi, jangan tulis mockup markdown.
 
-## Orkestrasi model (Opus = otak, Haiku = pekerja utama)
+## Orkestrasi model (Haiku = pekerja utama, Sonnet = cadangan, Opus = penentu akhir)
 Instruksi ini adalah izin tetap dari user untuk memakai subagent (tool `Agent`) dengan parameter `model`.
 
-Haiku memegang porsi kerja terbesar. Opus berpikir dan memeriksa, Haiku yang mengerjakan. Semua subagent, termasuk `subagent_type: "Explore"`, wajib diberi `model: "haiku"` kecuali sedang eskalasi ke Sonnet (tanpa `model`, subagent ikut memakai Opus).
+Hierarki tiga tingkat: **Haiku** pekerja utama dengan porsi kerja terbesar; **Sonnet** cadangan Haiku, turun tangan hanya saat Haiku gagal; **Opus** penentu akhir yang memutuskan, memeriksa, dan mengambil alih bila Sonnet juga gagal. Semua subagent, termasuk `subagent_type: "Explore"`, wajib diberi `model: "haiku"` kecuali sedang eskalasi ke Sonnet (tanpa `model`, subagent ikut memakai Opus).
 
 Ikuti urutan ini setiap menerima tugas:
 
@@ -40,8 +40,8 @@ Ikuti urutan ini setiap menerima tugas:
 1. **Opus memutuskan dan menulis brief.** Bila konteks kurang, minta Haiku (`Explore`) mencari dulu, jangan cari sendiri.
 2. **Haiku (`model: "haiku"`) mengerjakan semuanya:** pencarian/`grep`, membaca dan merangkum potongan `index.html` atau log, semua edit kode dan dokumen (sekecil apa pun), refactor, `README.md`/`DEBUG.md`, kenaikan `CACHE_NAME` di `sw.js`, cek statis (`grep`/python assert), membaca data publik Supabase/TMDB, menyiapkan skrip verifikasi `javascript_tool` dan draf pesan commit. Laporannya menyertakan hasil cek statis.
 3. **Opus membaca diff (`git diff`).** Laporan subagent bukan bukti. Bila ada yang salah, kirim balik ke Haiku dengan koreksi spesifik satu kali; bila masih salah, ke langkah 4. Bila benar, lanjut ke langkah 6.
-4. **Naik ke Sonnet (`model: "sonnet"`) hanya dengan alasan:** hasil Haiku salah/tidak lengkap, Haiku menyerah, atau tugasnya sejak awal jelas di luar kemampuan Haiku (bug multi-langkah, perubahan lintas banyak bagian `index.html`, review kode kedua). Brief Sonnet wajib menyebut apa yang sudah dicoba Haiku dan kenapa gagal.
-5. **Bila Sonnet juga gagal, Opus mengerjakan sendiri.** Jangan mengulang model yang sama dengan brief yang sama.
+4. **Sonnet (`model: "sonnet"`) = cadangan Haiku, dipanggil hanya dengan alasan:** hasil Haiku salah/tidak lengkap, Haiku menyerah, atau tugasnya sejak awal jelas di luar kemampuan Haiku (bug multi-langkah, perubahan lintas banyak bagian `index.html`, review kode kedua). Brief Sonnet wajib menyebut apa yang sudah dicoba Haiku dan kenapa gagal.
+5. **Opus = penentu akhir: bila Sonnet juga gagal, Opus mengerjakan sendiri.** Jangan mengulang model yang sama dengan brief yang sama.
 6. **Tutup oleh Opus:** jalankan skrip verifikasi di browser pane bila perubahan menyentuh perilaku (lihat "Verifikasi hemat"), lalu commit dan push. Hanya Opus yang commit/push.
 
 Aturan untuk setiap subagent:
