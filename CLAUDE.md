@@ -59,4 +59,4 @@ Brief subagent: file + anchor `grep`, tujuan, batasan relevan (palet, tipografi,
 - Untuk UI, copy, aksesibilitas, layout mobile, atau komentar kode: baca `.claude/skills/antislop/SKILL.md`, lalu skill turunannya (`-ui`, `-copywriting`, `-human`, `-layoutmobile`, `-code`). Aturan proyek di atas menang bila bentrok.
 - Mode mengikuti "Two Usage Modes" di core: instruksi sesi, lalu preferensi global, lalu tanya (during/after) dan tunggu jawaban. Permintaan review atau tanpa edit, maupun mode skill lain, bukan pilihan mode.
 - Umumkan sekali `antislop active: <mode> (session override).` atau `(global preference).`: tugas edit sebelum edit pertama, tugas baca-saja di awal jawaban akhir.
-- Update: unduh ulang `skills/*` dari github.com/miqdadbadjuber/anti-slop ke `.claude/skills/`.
+- Skill sudah dipangkas untuk proyek ini (tanpa wizard instalasi, pola landing page/dashboard, R-28 FAQ, `contrast-mcp.py`). Unduh ulang dari github.com/miqdadbadjuber/anti-slop akan mengembalikan bagian itu; setelah update, pangkas lagi bagian yang sama.
