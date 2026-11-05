@@ -3,7 +3,7 @@
 Web app mobile-first satu file: `index.html` (HTML + CSS + JS inline, ~3800 baris). Data: Supabase (`bubi_popcorn`, `bubi_watchlist`). Info film: TMDB API v3. Deploy: Vercel, otomatis tiap push ke `main`. Peta kode dan resep debug: `DEBUG.md`.
 
 ## Lingkungan
-- **macOS (rumah):** `python3` ada; `node`/`npm`/`timeout` tidak ada; jangan pakai Brave headless (menggantung).
+- **macOS (rumah):** `python3` dan `node`/`npm` (Homebrew) ada; `timeout` tidak ada; jangan pakai Brave headless (menggantung).
 - **Windows (apartemen):** GUI app lewat `Start-Process -Wait`; `.ps1` butuh `-ExecutionPolicy Bypass`.
 
 ## Hemat context
