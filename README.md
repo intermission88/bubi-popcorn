@@ -150,20 +150,7 @@ Semua konstanta ada di bagian atas script `index.html`:
    - Email harus sama persis dengan `ADMIN_EMAIL` di `index.html` (`admin@bubipopcorn.app`).
    - Password bebas, itu yang diketik di aplikasi.
    - Centang *Auto Confirm User*.
-3. **Aktifkan RLS** di SQL Editor:
-
-```sql
-alter table public.bubi_popcorn enable row level security;
-
-create policy "Public read" on public.bubi_popcorn
-  for select using (true);
-create policy "Admin insert" on public.bubi_popcorn
-  for insert to authenticated with check (true);
-create policy "Admin update" on public.bubi_popcorn
-  for update to authenticated using (true) with check (true);
-create policy "Admin delete" on public.bubi_popcorn
-  for delete to authenticated using (true);
-```
+3. **Jalankan [`supabase/keamanan.sql`](supabase/keamanan.sql)** di SQL Editor, setelah `watchlist.sql`, `season.sql`, `tmdb_id.sql`, dan `kutipan.sql`. File ini mengaktifkan RLS dengan baca publik dan tulis khusus admin, serta memasang validasi nilai kolom. Tulis dibatasi ke email admin, bukan sekadar akun yang login, jadi langkah 1 adalah lapisan kedua, bukan satu-satunya. Bila `ADMIN_EMAIL` di `index.html` diganti, ubah juga email di `keamanan.sql` lalu jalankan ulang.
 
 > [!IMPORTANT]
 > Publishable key di `index.html` memang aman untuk publik, tetapi **tanpa RLS** siapa pun bisa menulis langsung ke tabel. RLS-lah yang menolak permintaan tulis dari pengunjung yang belum login. Tombol admin di UI hanya kenyamanan, bukan pengamanan.
@@ -222,7 +209,6 @@ Key v3 hanya bisa membaca data publik dan memang terlihat di klien. Kalau bocor,
 | [`kutipan.sql`](supabase/kutipan.sql) | `kutipan` | Kutipan favorit per film |
 | [`season.sql`](supabase/season.sql) | `season` | Season series, lencana "S2" di kartu dan detail |
 | [`tmdb_id.sql`](supabase/tmdb_id.sql) | `tmdb_id`, `tmdb_media` | Pencocokan rekomendasi yang akurat; lengkapi film lama lewat sinkron TMDB (admin). Tanpa ini pencocokan memakai judul + tahun |
-
 **`bubi_watchlist`**: `id` (`w_<timestamp>`), `judul`, `tahun`, `poster`, `created_at`. Skema lengkap di [`supabase/watchlist.sql`](supabase/watchlist.sql).
 
 ## Struktur Proyek

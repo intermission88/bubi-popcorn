@@ -10,7 +10,7 @@ Peta untuk debug cepat: ke mana melihat, perintah yang jalan, dan jebakan yang p
 | `sw.js` | Service worker. `CACHE_NAME` (naikkan bila aset berubah), `IMG_CACHE` (gambar TMDB). Network-first HTML, cache-first aset. | "Perubahan tidak tampil", offline |
 | `manifest.json` | Metadata PWA, ikon `assets/logo/icon.svg`. | Ikon install salah |
 | `assets/` | Biner. Jangan dibaca; pakai `file`/`sips`. | Aset 404 |
-| `supabase/*.sql` | `watchlist.sql` (tabel + RLS), `tmdb_id.sql`, `season.sql`, `kutipan.sql` (kolom opsional). Dijalankan user manual. | Lihat Resep |
+| `supabase/*.sql` | `watchlist.sql` (tabel + RLS), `tmdb_id.sql`, `season.sql`, `kutipan.sql` (kolom opsional), `keamanan.sql` (RLS admin + CHECK, terakhir). Dijalankan user manual. | Lihat Resep |
 | `README.md` / `LICENSE` / `scripts/push.bat` | Fitur, skema, setup / MIT untuk kode / commit+push interaktif (Windows). | Referensi |
 
 ## Peta `index.html` — cari dengan `grep -n`
@@ -66,7 +66,7 @@ curl -s https://<project>.supabase.co/auth/v1/settings -H "apikey: <publishable-
 curl -s -w '\nHTTP %{http_code}\n' "https://<project>.supabase.co/rest/v1/bubi_watchlist?select=*" -H "apikey: <publishable-key>" -H "Authorization: Bearer <publishable-key>"   # 200 = ada; 404 = tabel belum dibuat
 ```
 
-Keempat langkah pertama normal berarti masalahnya di kode/perangkat; lanjut ke resep. Uji INSERT RLS: `?on_conflict=id` + `Prefer: resolution=ignore-duplicates` pada id yang ada (aman, menjawab `42501` bila RLS aktif). DELETE/PATCH tak cocok TIDAK bisa dipakai membedakan (tetap 204).
+Keempat langkah pertama normal berarti masalahnya di kode/perangkat; lanjut ke resep. Uji INSERT RLS: `?on_conflict=id` + `Prefer: resolution=ignore-duplicates` pada id yang ada (aman, menjawab `42501` bila RLS aktif). DELETE/PATCH tak cocok TIDAK bisa dipakai membedakan (tetap 204). Setelah `keamanan.sql`: tulis yang melanggar CHECK → `23514` (check_violation); tulis dari akun non-admin → `42501` (RLS).
 
 ## Resep Debug (gejala → ke mana)
 
