@@ -4,7 +4,7 @@ Web app mobile-first satu file: `index.html` (HTML + CSS + JS inline, ~3800 bari
 
 ## Lingkungan
 - **macOS (rumah):** `python3` dan `node`/`npm` (Homebrew) ada; `timeout` tidak ada; jangan pakai Brave headless (menggantung).
-- **Windows (apartemen):** GUI app lewat `Start-Process -Wait`; `.ps1` butuh `-ExecutionPolicy Bypass`.
+- **Windows (apartemen):** GUI app lewat `Start-Process -Wait`; `.ps1` butuh `-ExecutionPolicy Bypass`; ubah class Tailwind butuh Node.
 
 ## Hemat context
 - Jangan baca `index.html` utuh: `grep -n` dulu, lalu baca ±40–80 baris dengan offset/limit. Jangan baca `assets/` (biner).
@@ -46,6 +46,7 @@ Brief subagent: file + anchor `grep`, tujuan, batasan relevan (palet, tipografi,
 - Layout satu kolom: `max-w-md` di HP, `md:max-w-3xl` mulai 768px (karusel `md:w-44`, antrean 2 kolom, modal `md:max-w-lg/xl`, tab bar `md:max-w-lg`). Navigasi = tab bar `#tab-bar`; dilarang FAB.
 - **Palet:** dasar `neutral-950/900/800`; teks `neutral-50`, sekunder `200/300`, paling gelap `neutral-400`. Emas `#facc15` (`amber-*`, `.popcorn-gradient`, `.gold-gradient`). `sky-*` hanya Zald, `pink-*` hanya Micel, merah hanya hapus/error. Dilarang `slate-*`, hijau, oranye, atau warna lain.
 - **Tipografi:** hanya skala `tailwind.config`: `text-micro` 11px, `text-caption` 12px, `text-xs` 13px, `text-sm` 15px, `text-base` 16px, lalu bawaan. Dilarang `text-[Npx]` dan ukuran di bawah 11px; input tetap 16px.
+- **Tailwind:** CSS hasil build di `assets/css/app.css` (Tailwind 3.4.17 CLI, config `tailwind.config.js`). Tambah/ubah class atau config: `npm run build:css`, commit `app.css` bersama `index.html`. Class jangan dirakit dinamis (`text-${x}-400`); kalau terpaksa, masukkan ke `safelist`.
 - **Certified Fresh:** `.certified-card`, `.gold-frame`, `.gold-badge`, `.gold-text`, `.certified-sheet`. Jangan mengarang gaya emas baru.
 - **Liquid Glass:** `.glass` dipakai hemat (tab bar, tombol header). Jangan kaca di atas kaca, jangan filter SVG di `backdrop-filter` (tidak jalan di Safari).
 - `sw.js`: naikkan `CACHE_NAME` bila `index.html`/aset berubah; jangan cache Supabase maupun `api.themoviedb.org`.

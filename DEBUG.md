@@ -7,6 +7,7 @@ Peta untuk debug cepat: ke mana melihat, perintah yang jalan, dan jebakan yang p
 | File | Isi | Dibuka saat |
 |---|---|---|
 | `index.html` | Markup, CSS, JS (~3800 baris). JANGAN dibaca utuh. | Perbaikan perilaku/tampilan |
+| `tailwind.config.js` / `assets/css/app.css` | Konfigurasi Tailwind dan CSS hasil build yang dimuat `index.html`. | Class baru tidak bergaya → `npm run build:css` |
 | `sw.js` | Service worker. `CACHE_NAME` (naikkan bila aset berubah), `IMG_CACHE` (gambar TMDB). Network-first HTML, cache-first aset. | "Perubahan tidak tampil", offline |
 | `manifest.json` | Metadata PWA, ikon `assets/logo/icon.svg`. | Ikon install salah |
 | `assets/` | Biner. Jangan dibaca; pakai `file`/`sips`. | Aset 404 |

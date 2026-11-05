@@ -26,9 +26,9 @@
 
 Aplikasi web **mobile-first** untuk mengarsipkan film yang ditonton bersama oleh **Zald** dan **Micel**, lengkap dengan hitungan hari bersama dan jam dua zona waktu. Dirancang untuk iPhone: tab bar kaca, bottom sheet yang bisa digeser, dan tipografi yang nyaman dibaca.
 
-| 📱 Mobile-first | 🗂 Satu file | ⚡ Tanpa build |
+| 📱 Mobile-first | 🗂 Satu file | ⚡ Tanpa build saat deploy |
 |:---:|:---:|:---:|
-| Kolom tunggal `max-w-md` (HP), melebar di iPad, target sentuh 44 px | Semua ada di [`index.html`](index.html) | HTML, CSS, JS murni via CDN |
+| Kolom tunggal `max-w-md` (HP), melebar di iPad, target sentuh 44 px | Kode app di [`index.html`](index.html) | HTML dan JS murni, CSS Tailwind sudah di-build di [`assets/css/app.css`](assets/css/app.css) |
 
 <img src="assets/readme/divider.svg" alt="" width="100%">
 
@@ -125,7 +125,17 @@ Pakai server lokal (bukan `file://`), karena ada service worker:
 python3 -m http.server 4173
 ```
 
-Buka <http://localhost:4173>. Tidak ada langkah build atau dependensi untuk dipasang.
+Buka <http://localhost:4173>. Menjalankan aplikasi tidak butuh build; langkah build hanya perlu saat mengubah class Tailwind (lihat [CSS](#css)).
+
+### CSS
+
+Tailwind dibangun dari CLI (3.4.17), bukan CDN. Sekali saja jalankan `npm install`, lalu setiap menambah atau mengubah class Tailwind di `index.html`:
+
+```bash
+npm run build:css
+```
+
+Saat mengedit terus-menerus, pakai `npm run watch:css`. Hasilnya `assets/css/app.css` ikut di-commit, jadi Vercel tetap menyajikan file statis tanpa langkah build. Konfigurasi ada di `tailwind.config.js`, direktif di `src/tailwind.css`.
 
 ### Konfigurasi
 
@@ -218,7 +228,9 @@ Key v3 hanya bisa membaca data publik dan memang terlihat di klien. Kalau bocor,
 | `index.html` | Seluruh aplikasi |
 | `sw.js` | Service worker (network-first untuk HTML, cache-first untuk aset; Supabase dan TMDB tidak di-cache) |
 | `manifest.json` | Metadata PWA |
-| `assets/` | `slider/` (foto slider), `people/` (foto profil), `logo/` (ikon PWA, logo TMDB), `readme/` (aset README) |
+| `assets/` | `slider/` (foto slider), `people/` (foto profil), `logo/` (ikon PWA, logo TMDB), `readme/` (aset README), `css/` (CSS hasil build Tailwind) |
+| `package.json` · `tailwind.config.js` | Skrip `build:css` dan `watch:css`, konfigurasi Tailwind |
+| `src/tailwind.css` | Direktif Tailwind (base, components, utilities) |
 | `supabase/watchlist.sql` | Skema tabel watchlist |
 | `supabase/kutipan.sql` | Kolom `kutipan` (kutipan favorit per film), opsional |
 | `supabase/season.sql` | Kolom `season` (nomor season series), opsional |
