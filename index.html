@@ -19,12 +19,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://image.tmdb.org" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="preload" as="image" href="assets/slider/1.webp">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Figtree:wght@300..900&display=swap" rel="stylesheet">
-    <!-- Supabase JS Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0"></script>
 
 
     <style>
@@ -283,8 +282,17 @@
                         linear-gradient(to right, rgba(0,0,0,.7) 0%, transparent 70%);
         }
 
+        /* Jeda animasi tak berhingga saat di luar layar / tab tersembunyi */
+        [data-anim-off], [data-anim-off]::before, [data-anim-off]::after, [data-anim-off] .poster-row { animation-play-state: paused !important; }
+        html.page-hidden *, html.page-hidden *::before, html.page-hidden *::after { animation-play-state: paused !important; }
+        /* View Transition poster ke modal detail */
+        ::view-transition-old(root), ::view-transition-new(root) { animation-duration: .2s; }
+        ::view-transition-old(detail-poster), ::view-transition-new(detail-poster) { animation-duration: .35s; animation-timing-function: cubic-bezier(.2, .8, .2, 1); }
+
         /* QoL: Respect reduced motion preference */
         @media (prefers-reduced-motion: reduce) {
+            ::view-transition-old(root), ::view-transition-new(root),
+            ::view-transition-old(detail-poster), ::view-transition-new(detail-poster) { animation: none; }
             *, *::before, *::after {
                 scroll-behavior: auto !important;
                 animation-duration: 0.01ms !important;
@@ -916,7 +924,7 @@
                 <div class="sheet-handle sm:hidden absolute top-0 inset-x-0 z-10" aria-hidden="true"></div>
                 <img id="detail-banner-img" alt="Banner" class="w-full h-full object-cover opacity-40 blur-sm scale-105" onerror="posterFallback(this)">
                 <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/60 to-transparent"></div>
-                <button type="button" onclick="triggerHaptic(); closeDetailModal()" class="absolute top-3 right-3 z-10 touch-target rounded-full bg-black/80 border border-neutral-800 text-neutral-200 flex items-center justify-center tap-scale" aria-label="Tutup detail film">
+                <button type="button" onclick="triggerHaptic(); closeDetailModalAnimated()" class="absolute top-3 right-3 z-10 touch-target rounded-full bg-black/80 border border-neutral-800 text-neutral-200 flex items-center justify-center tap-scale" aria-label="Tutup detail film">
                     <i class="fa-solid fa-xmark text-xs"></i>
                 </button>
 
@@ -988,10 +996,10 @@
                         <button onclick="triggerHaptic(); editCurrentMovie()" class="px-3.5 py-2 rounded-xl bg-sky-400/10 border border-sky-400/20 text-sky-400 text-xs font-semibold tap-scale shadow-sm">Edit</button>
                         <button onclick="triggerHaptic(); deleteCurrentMovie()" class="px-3.5 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold tap-scale shadow-sm">Hapus</button>
                     </div>
-                    <button onclick="triggerHaptic(); closeDetailModal()" class="px-4 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-100 tap-scale shadow-sm">Tutup</button>
+                    <button onclick="triggerHaptic(); closeDetailModalAnimated()" class="px-4 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-100 tap-scale shadow-sm">Tutup</button>
                 </div>
                 <div id="detail-public-actions" class="pt-3 flex items-center justify-end border-t border-neutral-900">
-                    <button onclick="triggerHaptic(); closeDetailModal()" class="px-4 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-100 tap-scale shadow-sm">Tutup</button>
+                    <button onclick="triggerHaptic(); closeDetailModalAnimated()" class="px-4 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-100 tap-scale shadow-sm">Tutup</button>
                 </div>
             </div>
         </div>
@@ -1000,6 +1008,8 @@
     <!-- Toast Container Mobile -->
     <div id="toast-container" role="status" aria-live="polite" aria-atomic="true" style="top: calc(4rem + env(safe-area-inset-top))" class="fixed inset-x-0 z-50 flex flex-col items-center gap-2 pointer-events-none px-4"></div>
 
+    <!-- Supabase JS Client (dimuat sebelum skrip utama agar kerangka halaman tampil lebih dulu) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0"></script>
     <script>
         const SUPABASE_URL = 'https://fhpyvnbsreoaiaeqfkvk.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_aSPwcLUMW2y7r3nk6cpBpg_3DJH5sky';
@@ -1088,7 +1098,7 @@
                 if (activeModal.id === 'time-calc-modal') closeTimeCalcModal();
                 else if (activeModal.id === 'password-modal') closePasswordModal();
                 else if (activeModal.id === 'add-modal') requestCloseAddModal();
-                else if (activeModal.id === 'detail-modal') closeDetailModal();
+                else if (activeModal.id === 'detail-modal') closeDetailModalAnimated();
                 else if (activeModal.id === 'stats-modal') closeStatsModal();
                 else if (activeModal.id === 'rec-trailer-modal') closeRecTrailer();
                 return;
@@ -1691,6 +1701,14 @@
             renderPosterWall();
         }
 
+        let popInPlayed = false;
+        // Jeda animasi tak berhingga (kilau emas, dinding poster, titik ping) bila elemen di luar layar atau tab tersembunyi
+        const animObserver = 'IntersectionObserver' in window
+            ? new IntersectionObserver(entries => entries.forEach(e => e.target.toggleAttribute('data-anim-off', !e.isIntersecting)), { rootMargin: '100px' })
+            : null;
+        function observeAnim(el) { if (animObserver && el) animObserver.observe(el); }
+        document.addEventListener('visibilitychange', () => document.documentElement.classList.toggle('page-hidden', document.hidden));
+
         function createMovieCard(movie, index) {
             const posterUrl = (movie.poster && movie.poster.trim() !== '') ? movie.poster : POSTER_FALLBACK;
             const watcher = movie.watched_by || 'both';
@@ -1703,7 +1721,7 @@
             card.style.animationDelay = `${(index % 8) * 0.05}s`;
             card.className = (isCertified 
                 ? "rounded-2xl overflow-hidden flex flex-col certified-card tap-scale cursor-pointer relative shadow-xl"
-                : "glass-card rounded-2xl overflow-hidden flex flex-col border border-neutral-800 tap-scale cursor-pointer") + " animate-popIn";
+                : "glass-card rounded-2xl overflow-hidden flex flex-col border border-neutral-800 tap-scale cursor-pointer") + (popInPlayed ? "" : " animate-popIn"); // pop-in hanya pada render pertama setelah halaman dimuat
             card.setAttribute('role', 'button');
             card.setAttribute('tabindex', '0');
             card.setAttribute('aria-label', `Buka detail ${movie.judul || 'film tanpa judul'}`);
@@ -1758,6 +1776,7 @@
                 `;
             }
 
+            if (isCertified) observeAnim(card);
             card.innerHTML = `
                 <div class="relative aspect-[2/3] w-full overflow-hidden bg-black">
                     ${posterBox(posterUrl, movie.judul, 'w-full h-full object-cover')}
@@ -1837,6 +1856,7 @@
                 row.appendChild(track);
                 carousel.appendChild(row);
             });
+            if (totalMonths) popInPlayed = true;
             if (totalMonths > monthsShown) carousel.insertAdjacentHTML('beforeend', loadMoreBtn('showMoreMonths()', 'Tampilkan bulan sebelumnya'));
             bindCarouselHaptics();
         }
@@ -2172,7 +2192,7 @@
                     <div class="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-b from-transparent to-black/90 pointer-events-none"></div>
                     <div class="absolute inset-x-0 bottom-0 flex items-end gap-3 p-3.5">
                         <div class="min-w-0 flex-1">
-                            <img data-rec-logo="${i}" alt="${escapeHtml(it.title)}" class="hidden max-h-12 max-w-[80%] w-auto object-contain object-left drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]" onload="this.classList.remove('hidden'); this.nextElementSibling.classList.add('hidden')">
+                            <img data-rec-logo="${i}" ${/^https:\/\/image\.tmdb\.org\/t\/p\/w300\/[\w.-]+\.(png|svg)$/.test(it.logo || '') ? `src="${escapeHtml(it.logo)}" ` : ''}alt="${escapeHtml(it.title)}" class="hidden max-h-12 max-w-[80%] w-auto object-contain object-left drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]" onload="this.classList.remove('hidden'); this.nextElementSibling.classList.add('hidden')">
                             <div class="text-base font-bold text-neutral-50 leading-tight line-clamp-2">${escapeHtml(it.title)}</div>
                             ${it.sub ? `<div class="mt-0.5 text-caption text-neutral-200 truncate">${escapeHtml(it.sub)}</div>` : ''}
                         </div>
@@ -2188,20 +2208,44 @@
         }
 
         // Logo judul asli dari TMDB untuk slide rekomendasi (en lalu tanpa teks, suara terbanyak); judul teks jadi cadangan
+        // Promise per item disimpan di Map (panggilan bersamaan dipakai bersama); URL hasil disimpan di field `logo` item cache mingguan
         const recLogoCache = new Map();
+        let recLogoSaveTimer = null;
+        function fetchRecLogo(it) {
+            const key = `${it.media}:${it.id}`;
+            if (!recLogoCache.has(key)) {
+                const p = tmdbGet(`/${it.media}/${it.id}/images`, '&include_image_language=en,null').then(res => {
+                    const logos = (res.logos || [])
+                        .filter(l => /^\/[\w.-]+\.(png|svg)$/.test(l.file_path || ''))
+                        .sort((a, b) => (b.iso_639_1 === 'en') - (a.iso_639_1 === 'en') || (b.vote_average || 0) - (a.vote_average || 0));
+                    return logos[0] ? `https://image.tmdb.org/t/p/w300${logos[0].file_path}` : '';
+                });
+                p.catch(() => { if (recLogoCache.get(key) === p) recLogoCache.delete(key); });
+                recLogoCache.set(key, p);
+            }
+            return recLogoCache.get(key);
+        }
+        function saveRecLogos() {
+            clearTimeout(recLogoSaveTimer);
+            recLogoSaveTimer = setTimeout(() => {
+                try {
+                    const cached = JSON.parse(localStorage.getItem(RECS_KEY) || 'null');
+                    if (!cached || cached.week !== homeRecsWeek) return;
+                    cached.items.forEach(c => { const h = homeRecItems.find(x => x.media === c.media && x.id === c.id); if (h && h.logo !== undefined) c.logo = h.logo; });
+                    localStorage.setItem(RECS_KEY, JSON.stringify(cached));
+                } catch (e) {}
+            }, 300);
+        }
         async function fillRecLogos(list) {
             await Promise.all(list.map(async (it, i) => {
-                const key = `${it.media}:${it.id}`;
+                if (it.logo !== undefined) return; // sudah ada di markup slide
                 try {
-                    if (!recLogoCache.has(key)) {
-                        const logos = ((await tmdbGet(`/${it.media}/${it.id}/images`, '&include_image_language=en,null')).logos || [])
-                            .filter(l => /^\/[\w.-]+\.(png|svg)$/.test(l.file_path || ''))
-                            .sort((a, b) => (b.iso_639_1 === 'en') - (a.iso_639_1 === 'en') || (b.vote_average || 0) - (a.vote_average || 0));
-                        recLogoCache.set(key, logos[0] ? `https://image.tmdb.org/t/p/w300${logos[0].file_path}` : '');
-                    }
-                    const url = recLogoCache.get(key);
+                    const url = await fetchRecLogo(it);
+                    const h = homeRecItems.find(x => x.media === it.media && x.id === it.id);
+                    if (h) h.logo = url;
+                    saveRecLogos();
                     const img = document.querySelector(`#rec-track [data-rec-logo="${i}"]`);
-                    if (url && img) img.src = url;
+                    if (url && img && !img.getAttribute('src')) img.src = url;
                 } catch (err) { console.warn('Logo rekomendasi gagal:', it.title, err); }
             }));
         }
@@ -2497,7 +2541,34 @@
             });
         }
 
+        // View Transition poster kartu <-> hero modal detail; tanpa dukungan / reduced motion: langsung jalankan update
+        let posterVtBusy = false;
+        function withPosterTransition(srcImg, getDest, update) {
+            if (!document.startViewTransition || posterVtBusy || !srcImg || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { update(false); return false; }
+            const r = srcImg.getBoundingClientRect();
+            if (r.width === 0 || r.bottom < 0 || r.top > window.innerHeight) { update(false); return false; }
+            posterVtBusy = true;
+            let dest = null;
+            const clear = () => { posterVtBusy = false; srcImg.style.viewTransitionName = ''; if (dest) dest.style.viewTransitionName = ''; };
+            srcImg.style.viewTransitionName = 'detail-poster';
+            try {
+                document.startViewTransition(() => {
+                    srcImg.style.viewTransitionName = '';
+                    update(true);
+                    dest = getDest();
+                    if (dest) dest.style.viewTransitionName = 'detail-poster';
+                }).finished.then(clear, clear);
+            } catch (err) { clear(); update(false); return false; }
+            return true;
+        }
+
         function openDetailModal(id) {
+            const srcImg = document.querySelector(`#movie-card-${CSS.escape(String(id))} img.poster-img`);
+            // slide-up CSS dilewati bila View Transition yang menganimasikan pembukaan
+            withPosterTransition(srcImg, () => document.getElementById('detail-banner-img'), vt => openDetailModalNow(id, vt));
+        }
+
+        function openDetailModalNow(id, viaTransition) {
             lastScrollPosition = window.pageYOffset || document.documentElement.scrollTop;
             lastClickedMovieId = id;
 
@@ -2563,9 +2634,17 @@
             const modal = document.getElementById('detail-modal');
             const content = document.getElementById('detail-modal-content');
             modal.classList.remove('hidden');
-            content.classList.add('animate-slideUp');
+            if (!viaTransition) content.classList.add('animate-slideUp');
             activateModal(modal, modal.querySelector('[aria-label="Tutup detail film"]'));
             loadTmdbExtra(movie);
+        }
+
+        // Tutup lewat tombol/Escape: poster hero kembali ke kartu bila kartu terlihat. Pemanggil internal tetap memakai closeDetailModal() yang sinkron.
+        function closeDetailModalAnimated() {
+            const modal = document.getElementById('detail-modal');
+            const card = lastClickedMovieId && document.querySelector(`#movie-card-${CSS.escape(String(lastClickedMovieId))} img.poster-img`);
+            if (modal.classList.contains('hidden') || !card) { closeDetailModal(); return; }
+            withPosterTransition(document.getElementById('detail-banner-img'), () => card, () => closeDetailModal());
         }
 
         function closeDetailModal() {
@@ -2901,6 +2980,7 @@
                 return `<div class="poster-row">${set}${set}</div>`;
             }).join('');
             wall.dataset.filled = '1';
+            observeAnim(wall);
             requestAnimationFrame(() => wall.classList.add('is-ready'));
         }
 
@@ -3771,6 +3851,7 @@
             initContextMenu();
             initPullToRefresh();
             initA2hs();
+            observeAnim(document.getElementById('ping-dot'));
             initSheetDrag('detail-modal-content', closeDetailModal);
             initSheetDrag('add-modal-content', requestCloseAddModal);
             initSheetDrag('stats-modal-content', closeStatsModal);
