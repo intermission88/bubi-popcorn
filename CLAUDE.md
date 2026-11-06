@@ -61,3 +61,7 @@ Brief subagent: file + anchor `grep`, tujuan, batasan relevan (palet, tipografi,
 - Mode mengikuti "Two Usage Modes" di core: instruksi sesi, lalu preferensi global, lalu tanya (during/after) dan tunggu jawaban. Permintaan review atau tanpa edit, maupun mode skill lain, bukan pilihan mode.
 - Umumkan sekali `antislop active: <mode> (session override).` atau `(global preference).`: tugas edit sebelum edit pertama, tugas baca-saja di awal jawaban akhir.
 - Skill sudah dipangkas untuk proyek ini (tanpa wizard instalasi, pola landing page/dashboard, R-28 FAQ, `contrast-mcp.py`). Unduh ulang dari github.com/miqdadbadjuber/anti-slop akan mengembalikan bagian itu; setelah update, pangkas lagi bagian yang sama.
+
+## ui-ux-pro-max
+- Referensi UX/aksesibilitas: `python3 .claude/skills/ui-ux-pro-max/scripts/search.py "<query>" --domain <domain>`. Palet, font, dan gaya yang disarankan skill kalah dari aturan proyek di atas; jangan pakai `--persist` (menulis folder `design-system/`).
+- Dipasang tanpa `scripts/tests/`, dan `${CLAUDE_PLUGIN_ROOT}/` di path sudah dihapus. Setelah update dari upstream, ulangi dua hal itu.

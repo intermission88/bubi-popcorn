@@ -253,7 +253,7 @@ Key v3 hanya bisa membaca data publik dan memang terlihat di klien. Kalau bocor,
 
 Daftar yang sama tampil di footer situs, bagian **Kredit & Lisensi**.
 
-- **Alat pengembangan (tidak ikut dikirim ke situs):** skill agent [anti-slop](https://github.com/miqdadbadjuber/anti-slop) oleh miqdadbadjuber (MIT), di `.claude/skills/`.
+- **Alat pengembangan (tidak ikut dikirim ke situs):** skill agent [anti-slop](https://github.com/miqdadbadjuber/anti-slop) oleh miqdadbadjuber (MIT), dan [UI/UX Pro Max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) oleh Next Level Builder (MIT, hanya skill `ui-ux-pro-max`), di `.claude/skills/`.
 
 <img src="assets/readme/divider.svg" alt="" width="100%">
 
