@@ -45,7 +45,7 @@ Brief subagent: file + anchor `grep`, tujuan, batasan relevan (palet, tipografi,
 - Poster selalu lewat `posterBox()`, jangan `<img>` mentah.
 - Layout satu kolom: `max-w-md` di HP, `md:max-w-3xl` mulai 768px (karusel `md:w-44`, antrean 2 kolom, modal `md:max-w-lg/xl`, tab bar `md:max-w-lg`). Navigasi = tab bar `#tab-bar`; dilarang FAB.
 - **Palet:** dasar `neutral-950/900/800`; teks `neutral-50`, sekunder `200/300`, paling gelap `neutral-400`. Emas `#facc15` (`amber-*`, `.popcorn-gradient`, `.gold-gradient`). `sky-*` hanya Zald, `pink-*` hanya Micel, merah hanya hapus/error. Dilarang `slate-*`, hijau, oranye, atau warna lain.
-- **Tipografi:** hanya skala `tailwind.config`: `text-micro` 11px, `text-caption` 12px, `text-xs` 13px, `text-sm` 15px, `text-base` 16px, lalu bawaan. Dilarang `text-[Npx]` dan ukuran di bawah 11px; input tetap 16px.
+- **Tipografi:** hanya skala `tailwind.config`: `text-caption` 12px, `text-xs` 13px, `text-sm` 15px, `text-base` 16px, lalu bawaan. Dilarang `text-[Npx]` dan ukuran di bawah 12px; input tetap 16px.
 - **Tailwind:** CSS hasil build di `assets/css/app.css` (Tailwind 3.4.17 CLI, config `tailwind.config.js`). Tambah/ubah class atau config: `npm run build:css`, commit `app.css` bersama `index.html`. Class jangan dirakit dinamis (`text-${x}-400`); kalau terpaksa, masukkan ke `safelist`.
 - **Certified Fresh:** `.certified-card`, `.gold-frame`, `.gold-badge`, `.gold-text`, `.certified-sheet`. Jangan mengarang gaya emas baru.
 - **Liquid Glass:** `.glass` dipakai hemat (tab bar, tombol header). Jangan kaca di atas kaca, jangan filter SVG di `backdrop-filter` (tidak jalan di Safari).

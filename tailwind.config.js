@@ -7,9 +7,8 @@ module.exports = {
     darkMode: 'class',
             theme: {
                 extend: {
-                    // Skala tipografi iPhone: micro 11 (overline/label), caption 12, xs 13 (sekunder), sm 15 (isi), base 16+ bawaan
+                    // Skala tipografi iPhone: caption 12 (label), xs 13 (sekunder), sm 15 (isi), base 16+ bawaan
                     fontSize: {
-                        micro: ['11px', { lineHeight: '1.35' }],
                         caption: ['12px', { lineHeight: '1.4' }],
                         xs: ['13px', { lineHeight: '1.45' }],
                         sm: ['15px', { lineHeight: '1.5' }]

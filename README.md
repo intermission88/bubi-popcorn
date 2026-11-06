@@ -97,7 +97,7 @@ Hitam dan putih sebagai dasar, **emas** sebagai aksen brand, **biru hanya untuk 
 
 ### Tipografi
 
-Skala tunggal untuk iPhone di `tailwind.config`: `micro` 11 px (label), `caption` 12, `xs` 13, `sm` 15 (isi), `base` 16 (judul modal, input; mencegah zoom otomatis iOS), lalu skala bawaan Tailwind. Font: **Bricolage Grotesque** (judul dan display; ExtraBold untuk papan bioskop), **Figtree** (isi).
+Skala tunggal untuk iPhone di `tailwind.config`: `caption` 12 px (label), `xs` 13 (sekunder), `sm` 15 (isi), `base` 16 (judul modal, input; mencegah zoom otomatis iOS), lalu skala bawaan Tailwind. Font: **Bricolage Grotesque** (judul dan display; ExtraBold untuk papan bioskop), **Figtree** (isi).
 
 ### Material dan gerak
 

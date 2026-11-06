@@ -186,7 +186,7 @@
         /* Tab bar: kapsul kaca melayang, tab aktif = gelembung kaca emas */
         #tab-bar { padding: 0 max(12px, env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + 8px) max(12px, env(safe-area-inset-left)); pointer-events: none; }
         #tab-bar-inner { pointer-events: auto; border-radius: 30px; }
-        .tab-item { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 52px; margin: 4px 2px; border-radius: 24px; color: #d4d4d4; font-size: 11px; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,0.65); transition: color .2s, background .25s, box-shadow .25s, transform .15s; -webkit-tap-highlight-color: transparent; }
+        .tab-item { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 52px; margin: 4px 2px; border-radius: 24px; color: #d4d4d4; font-size: 12px; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,0.65); transition: color .2s, background .25s, box-shadow .25s, transform .15s; -webkit-tap-highlight-color: transparent; }
         .tab-item i { font-size: 18px; }
         .tab-item:active { transform: scale(0.93); }
         .tab-item[aria-current="true"] {
@@ -204,7 +204,7 @@
             transition: transform .45s cubic-bezier(.3, 1.35, .45, 1), width .45s cubic-bezier(.3, 1.35, .45, 1), opacity .2s;
         }
         .tab-item[aria-current="true"] { background: none; box-shadow: none; }
-        .tab-item span { max-height: 16px; overflow: hidden; transition: max-height .25s ease, opacity .2s ease; }
+        .tab-item span { line-height: 16px; max-height: 16px; overflow: hidden; transition: max-height .25s ease, opacity .2s ease; }
         .tab-item { transition: min-height .25s ease, color .2s, transform .15s; }
         #tab-bar.is-min .tab-item { min-height: 44px; }
         #tab-bar.is-min .tab-item span { max-height: 0; opacity: 0; }
@@ -221,7 +221,7 @@
         /* Segmented control (filter penonton) dengan thumb yang bergeser */
         .seg { position: relative; display: flex; flex-shrink: 0; padding: 3px; border-radius: 14px; background: #0a0a0a; border: 1px solid #262626; }
         .seg-thumb { position: absolute; top: 3px; bottom: 3px; left: 0; width: 0; border-radius: 11px; background: #facc15; box-shadow: 0 2px 8px rgba(250,204,21,0.25); transition: transform .35s cubic-bezier(.3, 1.25, .45, 1), width .35s cubic-bezier(.3, 1.25, .45, 1); }
-        .seg-btn { position: relative; z-index: 1; min-height: 38px; padding: 0 12px; border-radius: 11px; font-size: 13px; font-weight: 600; color: #e5e5e5; white-space: nowrap; transition: color .2s; -webkit-tap-highlight-color: transparent; }
+        .seg-btn { position: relative; z-index: 1; min-height: 44px; padding: 0 12px; border-radius: 11px; font-size: 13px; font-weight: 600; color: #e5e5e5; white-space: nowrap; transition: color .2s; -webkit-tap-highlight-color: transparent; }
         .seg-btn[aria-pressed="true"] { color: #000; }
 
         /* Pull-to-refresh */
@@ -406,11 +406,13 @@
         </button>
 
         <!-- SECTION REKOMENDASI (dihitung dari film berskor tinggi; disembunyikan bila kosong) -->
-        <section id="rekomendasi-section" class="hidden" aria-label="Rekomendasi">
+        <section id="rekomendasi-section" aria-label="Rekomendasi" aria-busy="true">
             <h2 class="mb-3 text-xl font-bold text-neutral-50 tracking-tight font-display flex items-center gap-2">
                 <i class="fa-solid fa-compass text-amber-400 text-base"></i> Baru &amp; Sudah Streaming
             </h2>
-            <div id="rekomendasi-list" class="relative"></div>
+            <div id="rekomendasi-list" class="relative">
+                <div class="rounded-2xl border border-neutral-800 overflow-hidden" aria-hidden="true"><div class="aspect-video w-full skeleton-shimmer"></div></div>
+            </div>
         </section>
 
         <!-- Movies: Horizontal Month Carousel (Swipe Right for Older Months) -->
@@ -421,7 +423,7 @@
                 </h2>
                 <div class="flex items-center gap-2">
                     <span id="swipe-hint" class="text-caption text-neutral-300 flex items-center gap-1.5">
-                        <i class="fa-solid fa-arrows-left-right text-amber-400/70 text-micro"></i> Geser antar bulan
+                        <i class="fa-solid fa-arrows-left-right text-amber-400/70 text-caption"></i> Geser antar bulan
                     </span>
                 </div>
             </div>
@@ -432,7 +434,7 @@
                     <div class="relative flex-grow">
                         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-xs"></i>
                         <label for="search-input" class="sr-only">Cari judul film atau bulan</label>
-                        <input type="text" id="search-input" oninput="onSearchInput(); toggleClearSearchBtn()" placeholder="Cari judul film atau bulan..." 
+                        <input type="text" id="search-input" oninput="onSearchInput(); toggleClearSearchBtn()" placeholder="Cari judul atau bulan..." 
                             class="w-full min-h-11 pl-9 pr-12 py-2.5 bg-neutral-950 border border-neutral-800 rounded-xl text-xs sm:text-sm text-neutral-100 placeholder-neutral-400 focus:outline-none focus:border-amber-400 transition shadow-inner">
                         <button type="button" id="clear-search-btn" onclick="clearSearchInput()" class="touch-target absolute right-0 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white text-xs hidden" aria-label="Hapus pencarian">
                             <i class="fa-solid fa-xmark"></i>
@@ -440,7 +442,7 @@
                     </div>
                     <span id="movie-count-badge" class="flex-shrink-0 px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-neutral-800 font-display font-bold text-sm text-amber-400">0 Film</span>
                     <button onclick="triggerHaptic(); refreshData(this)" title="Muat ulang data" aria-label="Muat ulang data"
-                        class="touch-target flex-shrink-0 rounded-xl bg-neutral-950 border border-neutral-800 hover:border-amber-400/60 text-neutral-300 hover:text-amber-400 flex items-center justify-center transition tap-scale shadow-sm">
+                        class="touch-target flex-shrink-0 rounded-xl bg-neutral-950 border border-neutral-800 hover:border-amber-400/60 text-neutral-300 hover:text-amber-400 disabled:opacity-50 flex items-center justify-center transition tap-scale shadow-sm">
                         <i id="refresh-icon" class="fa-solid fa-rotate-right text-xs"></i>
                     </button>
                 </div>
@@ -455,7 +457,7 @@
                     </div>
                     <div class="h-4 w-[1px] bg-neutral-800 mx-1 flex-shrink-0"></div>
                     <button onclick="triggerHaptic(); toggleTopRatedFilter(this)" id="top-rated-btn" class="touch-target px-3.5 rounded-xl text-xs font-semibold bg-neutral-950 border border-neutral-800 text-amber-400 tap-scale flex-shrink-0 transition flex items-center gap-1.5 shadow-sm">
-                        <i class="fa-solid fa-star text-micro"></i> Top 9+
+                        <i class="fa-solid fa-star text-caption"></i> Top 9+
                     </button>
                 </div>
             </section>
@@ -493,7 +495,7 @@
             </h2>
             <div id="watchlist-add" class="hidden mb-4">
                 <div class="flex items-center gap-2">
-                    <input type="text" id="wl-judul" placeholder="Judul film / series + tahun" maxlength="150" enterkeyhint="search" class="min-w-0 flex-1 min-h-[44px] px-3.5 py-2.5 bg-neutral-900 border border-neutral-800 rounded-xl text-base focus:outline-none focus:border-amber-400 text-neutral-100 placeholder:text-neutral-400 transition" onkeydown="if(event.key==='Enter'){event.preventDefault();searchTmdb('wl-judul','wl-tmdb-results','applyTmdbToWatchlist');}">
+                    <input type="text" id="wl-judul" aria-label="Judul film yang mau ditonton" placeholder="Judul film / series + tahun" maxlength="150" enterkeyhint="search" class="min-w-0 flex-1 min-h-[44px] px-3.5 py-2.5 bg-neutral-900 border border-neutral-800 rounded-xl text-base focus:outline-none focus:border-amber-400 text-neutral-100 placeholder:text-neutral-400 transition" onkeydown="if(event.key==='Enter'){event.preventDefault();searchTmdb('wl-judul','wl-tmdb-results','applyTmdbToWatchlist');}">
                     <button type="button" onclick="searchTmdb('wl-judul','wl-tmdb-results','applyTmdbToWatchlist')" class="shrink-0 w-11 h-11 rounded-xl bg-neutral-900 border border-neutral-800 text-amber-400 tap-scale hover:border-amber-400" aria-label="Cari di TMDB"><i class="fa-solid fa-magnifying-glass"></i></button>
                     <button type="button" onclick="addWatchlistFromInput()" class="shrink-0 w-11 h-11 rounded-xl popcorn-gradient text-black tap-scale" aria-label="Tambah ke antrean"><i class="fa-solid fa-plus"></i></button>
                 </div>
@@ -520,7 +522,7 @@
                         </div>
                         <div class="shrink-0 text-right">
                             <div id="zald-countdown" class="font-display font-extrabold text-2xl text-amber-400 leading-none">--</div>
-                            <div id="zald-countdown-label" class="mt-1 text-micro font-bold uppercase tracking-wider text-neutral-400">menuju ultah</div>
+                            <div id="zald-countdown-label" class="mt-1 text-caption font-bold uppercase tracking-wider text-neutral-400">menuju ultah</div>
                         </div>
                     </div>
                     <div class="flex items-center gap-3 p-2.5 rounded-xl bg-pink-950/30">
@@ -532,7 +534,7 @@
                         </div>
                         <div class="shrink-0 text-right">
                             <div id="micel-countdown" class="font-display font-extrabold text-2xl text-amber-400 leading-none">--</div>
-                            <div id="micel-countdown-label" class="mt-1 text-micro font-bold uppercase tracking-wider text-neutral-400">menuju ultah</div>
+                            <div id="micel-countdown-label" class="mt-1 text-caption font-bold uppercase tracking-wider text-neutral-400">menuju ultah</div>
                         </div>
                     </div>
                 </div>
@@ -551,7 +553,7 @@
                     </div>
                     <a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer" class="mt-3.5 pt-3.5 border-t border-neutral-800 flex items-start gap-3">
                         <img src="assets/logo/tmdb-logo.svg" alt="TMDB" width="273" height="36" class="mt-0.5 h-3 w-auto shrink-0 opacity-90">
-                        <span class="text-micro leading-snug text-neutral-400">This product uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.</span>
+                        <span class="text-caption leading-snug text-neutral-400">This product uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.</span>
                     </a>
                 </div>
 
@@ -559,9 +561,9 @@
                 <details class="group mt-2 px-1">
                     <summary class="cursor-pointer list-none flex items-center justify-between min-h-11 text-caption text-neutral-400">
                         <span>&copy; 2026 Bubi's Popcorn</span>
-                        <span class="inline-flex items-center gap-1.5 hover:text-neutral-200">Kredit &amp; Lisensi <i class="fa-solid fa-chevron-down text-micro transition-transform group-open:rotate-180"></i></span>
+                        <span class="inline-flex items-center gap-1.5 hover:text-neutral-200">Kredit &amp; Lisensi <i class="fa-solid fa-chevron-down text-caption transition-transform group-open:rotate-180"></i></span>
                     </summary>
-                    <div class="mt-2.5 p-3 rounded-xl bg-neutral-950 border border-neutral-900 space-y-2 text-micro leading-relaxed text-neutral-400">
+                    <div class="mt-2.5 p-3 rounded-xl bg-neutral-950 border border-neutral-900 space-y-2 text-caption leading-relaxed text-neutral-400">
                         <p><a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">TMDB</a>: data film (judul, poster, sinopsis, genre, pemeran, trailer).</p>
                         <p><a href="https://www.justwatch.com/" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">JustWatch</a>: data ketersediaan streaming, lewat TMDB.</p>
                         <p><a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener noreferrer" class="text-neutral-200 underline">YouTube</a>: pemutar trailer, tunduk pada Ketentuan Layanan YouTube.</p>
@@ -587,7 +589,7 @@
             </div>
             <div id="rec-trailer-frame" class="aspect-video w-full rounded-xl overflow-hidden bg-black flex items-center justify-center text-sm text-neutral-400"></div>
             <button type="button" id="rec-trailer-queue" onclick="addRecFromTrailer()" class="hidden w-full min-h-[44px] rounded-xl bg-amber-400/10 border border-amber-500/40 text-amber-400 text-xs font-bold tap-scale">+ Antrean</button>
-            <a id="rec-trailer-yt" href="#" target="_blank" rel="noopener noreferrer" class="hidden text-micro text-neutral-400 hover:text-neutral-200 underline">Video tidak muncul? Buka di YouTube</a>
+            <a id="rec-trailer-yt" href="#" target="_blank" rel="noopener noreferrer" class="hidden text-caption text-neutral-400 hover:text-neutral-200 underline">Video tidak muncul? Buka di YouTube</a>
         </div>
     </div>
     <div id="ctx-scrim" class="hidden" onclick="closeCtxMenu()"></div>
@@ -658,7 +660,7 @@
                             <i class="fa-solid fa-file-arrow-up mr-1"></i> Impor CSV (admin)
                             <input type="file" accept=".csv,text/csv" class="sr-only" onchange="importCsv(this)">
                         </label>
-                        <p class="mt-1.5 text-micro text-neutral-400">Format sendiri atau ekspor diary Letterboxd. Film dengan judul dan bulan yang sama dilewati.</p>
+                        <p class="mt-1.5 text-caption text-neutral-400">Format sendiri atau ekspor diary Letterboxd. Film dengan judul dan bulan yang sama dilewati.</p>
                     </div>
                     <div id="tmdb-sync-wrap" class="hidden pt-1">
                         <button type="button" id="tmdb-sync-btn" onclick="triggerHaptic(); planTmdbSync()" class="w-full py-2 rounded-xl bg-neutral-900 border border-neutral-800 text-neutral-100 text-xs font-bold tap-scale hover:border-amber-400">
@@ -674,7 +676,7 @@
 
     <!-- Modal Konverter Waktu Ultra Clean -->
     <div id="time-calc-modal" role="dialog" aria-modal="true" aria-labelledby="time-calc-title" class="fixed inset-0 z-50 bg-black/90 flex items-end sm:items-center justify-center hidden">
-        <div id="time-calc-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-xs rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col transform transition-all pb-[env(safe-area-inset-bottom)]">
+        <div id="time-calc-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-xs rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col transform transition-transform pb-[env(safe-area-inset-bottom)]">
             <div class="sheet-handle sm:hidden" data-sheet-grab aria-hidden="true"></div>
             <!-- Header Modal Clean -->
             <div data-sheet-grab class="px-4 py-3 border-b border-neutral-900 flex items-center justify-between bg-neutral-950">
@@ -693,19 +695,19 @@
                     <span id="conv-input-label" class="text-xs font-bold text-pink-400">
                         Waktu Jepang (JST):
                     </span>
-                    <button type="button" onclick="toggleConverterDirection()" class="px-2.5 py-1 rounded-lg bg-black hover:bg-neutral-800 border border-neutral-800 text-amber-300 text-micro font-bold tap-scale transition flex items-center gap-1">
+                    <button type="button" onclick="toggleConverterDirection()" class="px-2.5 py-1 rounded-lg bg-black hover:bg-neutral-800 border border-neutral-800 text-amber-300 text-caption font-bold tap-scale transition flex items-center gap-1">
                         <span id="conv-dir-btn-text">Tukar Arah</span>
-                        <i class="fa-solid fa-arrows-rotate text-micro"></i>
+                        <i class="fa-solid fa-arrows-rotate text-caption"></i>
                     </button>
                 </div>
 
                 <!-- Input Time (Manual Input - Default Waktu Jepang) -->
-                <input type="time" id="conv-time-input" value="09:30" onchange="updateConvertedTime()" oninput="updateConvertedTime()"
+                <input type="time" id="conv-time-input" aria-labelledby="conv-input-label" value="09:30" onchange="updateConvertedTime()" oninput="updateConvertedTime()"
                     class="w-full px-3 py-3 bg-black border border-neutral-700 rounded-xl text-2xl font-black font-mono text-center text-neutral-50 focus:outline-none focus:border-amber-400 transition shadow-inner">
 
                 <!-- Output Hasil Perbedaan Jam Clean -->
                 <div class="p-4 rounded-2xl bg-black border border-neutral-800 text-center space-y-1 shadow-md">
-                    <span id="conv-target-label" class="text-micro font-semibold text-neutral-300 block uppercase tracking-wider">Hasil Waktu Zald:</span>
+                    <span id="conv-target-label" class="text-caption font-semibold text-neutral-300 block uppercase tracking-wider">Hasil Waktu Zald:</span>
                     <div id="conv-target-result" class="text-3xl font-black font-display text-amber-300 tracking-tight">
                         06:00 AM
                     </div>
@@ -741,7 +743,7 @@
 
     <!-- Mobile Bottom Sheet / Modal Form -->
     <div id="add-modal" role="dialog" aria-modal="true" aria-labelledby="modal-form-title" class="fixed inset-0 z-50 bg-black/90 flex items-end sm:items-center justify-center hidden">
-        <div id="add-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md md:max-w-lg rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[85dvh] sm:h-auto sm:max-h-[85dvh] transform transition-all pb-[env(safe-area-inset-bottom)]">
+        <div id="add-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md md:max-w-lg rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[85dvh] sm:h-auto sm:max-h-[85dvh] transform transition-transform pb-[env(safe-area-inset-bottom)]">
             <div class="sheet-handle sm:hidden" data-sheet-grab aria-hidden="true"></div>
             <div data-sheet-grab class="px-5 py-3.5 border-b border-neutral-900 flex items-center justify-between flex-shrink-0 bg-neutral-950">
                 <div class="flex items-center gap-2.5">
@@ -759,7 +761,7 @@
                 <input type="hidden" name="tmdb_media" id="form-tmdb-media" value="">
                 
                 <div>
-                    <label class="block text-xs font-semibold text-neutral-300 mb-1.5">Judul Film *</label>
+                    <label for="form-judul" class="block text-xs font-semibold text-neutral-300 mb-1.5">Judul Film *</label>
                     <div class="flex gap-2">
                         <input type="text" name="judul" id="form-judul" required placeholder="Judul film..." oninput="onFormTitleInput()" 
                             class="w-full px-3.5 py-3 bg-black border border-neutral-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-neutral-100 transition shadow-inner">
@@ -772,7 +774,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-neutral-300 mb-1.5">URL Poster Gambar (Opsional)</label>
+                    <label for="form-poster" class="block text-xs font-semibold text-neutral-300 mb-1.5">URL Poster Gambar (Opsional)</label>
                     <input type="url" name="poster" id="form-poster" placeholder="https://..." 
                         class="w-full px-3.5 py-3 bg-black border border-neutral-800 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-amber-400 text-neutral-100 transition shadow-inner">
                 </div>
@@ -824,12 +826,12 @@
                         </div>
                         <div>
                             <span class="block text-xs font-bold text-amber-300 font-display">Certified Fresh</span>
-                            <span class="block text-micro text-neutral-300">Penghargaan khusus film terbaik</span>
+                            <span class="block text-caption text-neutral-300">Penghargaan khusus film terbaik</span>
                         </div>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" name="is_certified" id="form-is-certified" value="true" class="sr-only peer">
-                        <div class="w-10 h-6 bg-neutral-900 peer-focus-visible:ring-2 peer-focus-visible:ring-amber-400 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-neutral-950 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+                        <div class="w-10 h-6 bg-neutral-900 peer-focus-visible:ring-2 peer-focus-visible:ring-amber-400 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-neutral-950 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-transform peer-checked:bg-amber-500"></div>
                     </label>
                 </div>
 
@@ -842,7 +844,7 @@
                                 <span class="text-xs font-bold text-sky-400 tracking-wide">ZALD REVIEW</span>
                             </div>
                             <div class="flex items-center gap-1.5">
-                                <span id="err-hint-aku" class="hidden text-micro font-bold text-red-400 animate-pulse">Max 10!</span>
+                                <span id="err-hint-aku" class="hidden text-caption font-bold text-red-400 animate-pulse">Max 10!</span>
                                 <label for="form-rating-aku" class="sr-only">Rating Zald dari 0 sampai 10</label>
                                 <input type="number" step="0.1" name="rating_aku" id="form-rating-aku" aria-describedby="err-hint-aku" placeholder="0 - 10" 
                                     oninput="validateRatingInput(this, 'err-hint-aku', 'sky')"
@@ -870,7 +872,7 @@
                                 <span class="text-xs font-bold text-pink-400 tracking-wide">MICEL REVIEW</span>
                             </div>
                             <div class="flex items-center gap-1.5">
-                                <span id="err-hint-dia" class="hidden text-micro font-bold text-red-400 animate-pulse">Max 10!</span>
+                                <span id="err-hint-dia" class="hidden text-caption font-bold text-red-400 animate-pulse">Max 10!</span>
                                 <label for="form-rating-dia" class="sr-only">Rating Micel dari 0 sampai 10</label>
                                 <input type="number" step="0.1" name="rating_dia" id="form-rating-dia" aria-describedby="err-hint-dia" placeholder="0 - 10" 
                                     oninput="validateRatingInput(this, 'err-hint-dia', 'pink')"
@@ -892,7 +894,7 @@
                 </div>
 
                 <div id="kutipan-field" class="hidden pt-4 border-t border-neutral-900 space-y-1.5">
-                    <label for="form-kutipan" class="text-micro font-bold text-amber-300 uppercase tracking-wider">Kutipan Favorit (opsional)</label>
+                    <label for="form-kutipan" class="text-caption font-bold text-amber-300 uppercase tracking-wider">Kutipan Favorit (opsional)</label>
                     <input type="text" name="kutipan" id="form-kutipan" maxlength="200" placeholder="Dialog yang paling nempel di kepala..."
                         class="w-full p-3 bg-neutral-950 border border-neutral-800 rounded-xl text-base text-neutral-100 focus:outline-none focus:border-amber-400 transition shadow-inner">
                 </div>
@@ -909,7 +911,7 @@
 
     <!-- Mobile Detail Modal -->
     <div id="detail-modal" role="dialog" aria-modal="true" aria-labelledby="detail-title" class="fixed inset-0 z-50 bg-black/90 flex items-end sm:items-center justify-center hidden">
-        <div id="detail-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md md:max-w-xl rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90dvh] flex flex-col transform transition-all pb-[env(safe-area-inset-bottom)]">
+        <div id="detail-modal-content" class="bg-neutral-950 border-t sm:border border-neutral-800 w-full max-w-md md:max-w-xl rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden max-h-[90dvh] flex flex-col transform transition-transform pb-[env(safe-area-inset-bottom)]">
             <div data-sheet-grab class="relative h-48 bg-black overflow-hidden flex-shrink-0">
                 <div class="sheet-handle sm:hidden absolute top-0 inset-x-0 z-10" aria-hidden="true"></div>
                 <img id="detail-banner-img" alt="Banner" class="w-full h-full object-cover opacity-40 blur-sm scale-105" onerror="posterFallback(this)">
@@ -924,10 +926,10 @@
                         <h2 id="detail-title" class="text-2xl font-black font-display tracking-tight line-clamp-1 text-white">Title</h2>
                         <div class="flex items-center gap-1.5 mt-2 flex-wrap">
                             <span id="detail-year" class="text-xs text-neutral-200 font-semibold">2026</span>
-                            <span id="detail-watch-month" class="px-2 py-0.5 rounded-lg bg-neutral-900 text-amber-300 text-micro font-semibold">Januari 2026</span>
-                            <span id="detail-viewer-badge" class="px-2 py-0.5 rounded-lg bg-neutral-900 text-neutral-200 text-micro font-bold">Nonton Bareng</span>
-                            <span id="detail-badge-wrapper" class="hidden px-2 py-0.5 rounded-lg gold-badge text-micro font-bold flex items-center gap-1 shadow-md">
-                                <i class="fa-solid fa-award text-micro"></i> Certified Fresh
+                            <span id="detail-watch-month" class="px-2 py-0.5 rounded-lg bg-neutral-900 text-amber-300 text-caption font-semibold">Januari 2026</span>
+                            <span id="detail-viewer-badge" class="px-2 py-0.5 rounded-lg bg-neutral-900 text-neutral-200 text-caption font-bold">Nonton Bareng</span>
+                            <span id="detail-badge-wrapper" class="hidden px-2 py-0.5 rounded-lg gold-badge text-caption font-bold flex items-center gap-1 shadow-md">
+                                <i class="fa-solid fa-award text-caption"></i> Certified Fresh
                             </span>
                         </div>
                     </div>
@@ -961,7 +963,7 @@
                 </div>
 
                 <figure id="detail-kutipan-wrap" class="hidden bg-black/80 border border-amber-400/25 rounded-2xl p-3.5 space-y-1">
-                    <figcaption class="text-micro font-bold text-amber-300 uppercase tracking-wider"><i class="fa-solid fa-quote-left mr-1"></i>Kutipan Favorit</figcaption>
+                    <figcaption class="text-caption font-bold text-amber-300 uppercase tracking-wider"><i class="fa-solid fa-quote-left mr-1"></i>Kutipan Favorit</figcaption>
                     <blockquote id="detail-kutipan" class="text-sm text-neutral-50 italic leading-relaxed"></blockquote>
                 </figure>
 
@@ -975,7 +977,7 @@
                     <p id="detail-tmdb-stream" class="text-caption text-neutral-400"></p>
                     <div id="detail-tmdb-player" class="hidden space-y-1.5">
                         <div id="detail-tmdb-frame" class="aspect-video w-full rounded-xl overflow-hidden bg-black border border-neutral-800"></div>
-                        <a id="detail-tmdb-yt-link" href="#" target="_blank" rel="noopener noreferrer" class="text-micro text-neutral-400 hover:text-neutral-200 underline">Video tidak muncul? Buka di YouTube</a>
+                        <a id="detail-tmdb-yt-link" href="#" target="_blank" rel="noopener noreferrer" class="text-caption text-neutral-400 hover:text-neutral-200 underline">Video tidak muncul? Buka di YouTube</a>
                     </div>
                 </div>
 
@@ -1437,7 +1439,10 @@
             const countdownEl = document.getElementById(countdownElementId);
             const labelEl = document.getElementById(countdownElementId + '-label');
             const isToday = now.getMonth() === birthDate.getMonth() && now.getDate() === birthDate.getDate();
-            if (countdownEl) countdownEl.innerText = isToday ? '🎂' : `H-${diffDays}`;
+            if (countdownEl) {
+                if (isToday) countdownEl.innerHTML = '<i class="fa-solid fa-cake-candles" aria-hidden="true"></i><span class="sr-only">Hari ini</span>';
+                else countdownEl.innerText = `H-${diffDays}`;
+            }
             if (labelEl) labelEl.innerText = isToday ? 'ultah hari ini' : 'menuju ultah';
         }
 
@@ -1631,7 +1636,7 @@
                     // Tampil instan dari salinan terakhir (stale-while-revalidate); data segar menggantikan setelah fetch
                     try {
                         const cached = JSON.parse(localStorage.getItem(MOVIES_CACHE_KEY) || 'null');
-                        if (Array.isArray(cached) && cached.length) { moviesData = cached; processFilterAndRender(); preloadPosters(moviesData); }
+                        if (Array.isArray(cached) && cached.length) { moviesData = cached; processFilterAndRender(); preloadPosters(moviesData); primeHomeRecs(); }
                     } catch (e) {}
                 }
                 if (moviesData.length === 0) renderSkeletonGrid();
@@ -1717,7 +1722,7 @@
             if (watcher === 'zald' || watcher === 'micel') {
                 // penanda pemilik sudah ada di pil rating di bawah judul; tidak diulang di poster
             } else if (isCertified) {
-                watcherBadgeHTML = `<span class="absolute top-2.5 left-2.5 gold-badge px-2 py-0.5 rounded-lg text-micro font-bold flex items-center gap-1"><i class="fa-solid fa-award text-micro"></i> FRESH</span>`;
+                watcherBadgeHTML = `<span class="absolute top-2.5 left-2.5 gold-badge px-2 py-0.5 rounded-lg text-caption font-bold flex items-center gap-1"><i class="fa-solid fa-award text-caption"></i> FRESH</span>`;
             }
 
             let ratingsHTML = '';
@@ -1756,7 +1761,7 @@
             card.innerHTML = `
                 <div class="relative aspect-[2/3] w-full overflow-hidden bg-black">
                     ${posterBox(posterUrl, movie.judul, 'w-full h-full object-cover')}
-                    <span class="absolute top-2.5 right-2.5 bg-black/85 px-2 py-0.5 rounded-lg text-micro font-bold text-neutral-200 border border-neutral-800 shadow">${escapeHtml(movie.tahun || '')}${seasonNum(movie) ? ` · S${seasonNum(movie)}` : ''}</span>
+                    <span class="absolute top-2.5 right-2.5 bg-black/85 px-2 py-0.5 rounded-lg text-caption font-bold text-neutral-200 border border-neutral-800 shadow">${escapeHtml(movie.tahun || '')}${seasonNum(movie) ? ` · S${seasonNum(movie)}` : ''}</span>
                     ${watcherBadgeHTML}
                 </div>
                 <div class="p-3 flex flex-col justify-between flex-grow space-y-2.5">
@@ -1904,16 +1909,16 @@
             const when = it.date ? new Date(it.date + 'T00:00:00').toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : 'TBA';
             const sub = soon ? [it.sub, when].filter(Boolean).join(' · ') : (it.hideSub ? '' : (it.sub || (it.year ? String(it.year) : '')));
             const home = key === 'home';
-            const btn = home ? 'w-full min-h-[44px] rounded-xl text-xs font-bold tap-scale' : 'mt-1 px-2 py-1 rounded-lg text-micro font-bold tap-scale';
+            const btn = home ? 'w-full min-h-[44px] rounded-xl text-xs font-bold tap-scale' : 'mt-1 px-2 py-1 rounded-lg text-caption font-bold tap-scale';
             const action = it.noQueue ? ''
                 : queued
-                ? '<div class="mt-1 text-micro text-neutral-400">Di antrean</div>'
+                ? '<div class="mt-1 text-caption text-neutral-400">Di antrean</div>'
                 : (isAdminUnlocked && watchlistAvailable ? `<button type="button" onclick="addRelated('${key}', ${idx})" class="${btn} bg-amber-400/10 border border-amber-500/40 text-amber-400">+ Antrean</button>` : '');
-            const trailerBtn = home ? `<button type="button" onclick="openRecTrailer(${idx})" class="${btn} bg-white/10 border border-white/20 text-neutral-100"><i class="fa-solid fa-play text-micro mr-1"></i>Trailer</button>` : '';
+            const trailerBtn = home ? `<button type="button" onclick="openRecTrailer(${idx})" class="${btn} bg-white/10 border border-white/20 text-neutral-100"><i class="fa-solid fa-play text-caption mr-1"></i>Trailer</button>` : '';
             return `<div class="${home ? 'w-36 md:w-44 flex flex-col' : 'w-24'} shrink-0 snap-start">
-                <div class="relative aspect-[2/3] rounded-xl overflow-hidden bg-neutral-900 ring-1 ring-white/10">${poster}${soon ? '<span class="absolute inset-x-0 bottom-0 py-1 text-center text-micro font-extrabold uppercase tracking-wider bg-amber-400 text-black">Coming soon</span>' : ''}</div>
+                <div class="relative aspect-[2/3] rounded-xl overflow-hidden bg-neutral-900 ring-1 ring-white/10">${poster}${soon ? '<span class="absolute inset-x-0 bottom-0 py-1 text-center text-caption font-extrabold uppercase tracking-wider bg-amber-400 text-black">Coming soon</span>' : ''}</div>
                 <div class="mt-1.5 ${home ? 'text-xs' : 'text-caption'} font-semibold text-neutral-100 line-clamp-2 leading-tight">${escapeHtml(it.title)}</div>
-                ${sub ? `<div class="text-micro text-neutral-400 truncate">${escapeHtml(sub)}</div>` : ''}
+                ${sub ? `<div class="text-caption text-neutral-400 truncate">${escapeHtml(sub)}</div>` : ''}
                 ${home ? `<div class="mt-auto pt-2">${trailerBtn}</div>` : action}</div>`; // Beranda: tombol menempel di dasar kartu agar sejajar walau judul 1 atau 2 baris
         }
         function relatedRow(key, list) {
@@ -1944,7 +1949,7 @@
             }
             if (!groups.length) { box.classList.add('hidden'); box.innerHTML = ''; return; }
             box.innerHTML = groups.map(([label, key, list]) => `<div class="space-y-2">
-                <h3 class="text-micro font-bold text-amber-300 uppercase tracking-wider">${label}</h3>${relatedRow('detail-' + key, list)}</div>`).join('');
+                <h3 class="text-caption font-bold text-amber-300 uppercase tracking-wider">${label}</h3>${relatedRow('detail-' + key, list)}</div>`).join('');
             box.classList.remove('hidden');
         }
 
@@ -2023,7 +2028,7 @@
             await insertWatchlist({ judul: it.title, tahun: it.year, poster: it.poster });
         }
         function refreshRelatedViews() {
-            try { renderDetailRelated(); renderHomeRecs(); } catch (err) { console.warn(err); }
+            try { renderDetailRelated(); if (!document.getElementById('rekomendasi-section')?.hasAttribute('aria-busy')) renderHomeRecs(); } catch (err) { console.warn(err); } // skeleton rekomendasi masih menunggu loadHomeRecs: jangan sembunyikan dengan daftar kosong
         }
 
         // Rekomendasi di Beranda: rilisan BARU (3 bulan terakhir) yang sudah streaming langganan di Indonesia (TMDB Discover + JustWatch),
@@ -2135,11 +2140,22 @@
                 const lastWeek = new Set((cached && cached.items || []).map(it => `${it.media}:${it.id}`)); // jangan ulang isi minggu lalu bila stok cukup
                 const fresh = items.filter(it => !lastWeek.has(`${it.media}:${it.id}`));
                 items = (fresh.length >= 12 ? fresh : items).slice(0, 24);
-                if (!items.length) return; // gagal total: biarkan tampilan lama, coba lagi saat data dimuat berikutnya
+                if (!items.length) return; // gagal total: biarkan tampilan lama (finally menyembunyikan skeleton bila belum ada isi), coba lagi saat data dimuat berikutnya
                 homeRecItems = items; homeRecsWeek = week;
                 try { localStorage.setItem(RECS_KEY, JSON.stringify({ week, items })); } catch (e) {}
                 renderHomeRecs();
-            } finally { homeRecsBusy = false; }
+            } finally {
+                homeRecsBusy = false;
+                if (document.getElementById('rekomendasi-section')?.hasAttribute('aria-busy')) renderHomeRecs(); // jangan biarkan skeleton menggantung
+            }
+        }
+        // Isi dari cache mingguan secara sinkron (sebelum jaringan) agar ruang slider langsung terisi
+        function primeHomeRecs() {
+            if (!TMDB_API_KEY || !moviesData.length) return;
+            try {
+                const cached = JSON.parse(localStorage.getItem(RECS_KEY) || 'null'), week = weekKey();
+                if (cached && cached.week === week && Array.isArray(cached.items)) { homeRecsWeek = week; homeRecItems = cached.items; renderHomeRecs(); }
+            } catch (e) {}
         }
         function renderHomeRecs() {
             const sec = document.getElementById('rekomendasi-section');
@@ -2147,6 +2163,7 @@
             const list = homeRecItems.filter(it => it.poster && isReleased(it.date) && !isWatched(it) && !isQueued(it)).slice(0, 12)
                 .map(it => ({ ...it, sub: (it.providers || []).join(' · '), hideSub: !(it.providers && it.providers.length) })); // keterangan = layanan streaming
             sec.classList.toggle('hidden', !list.length);
+            sec.removeAttribute('aria-busy');
             if (!list.length) return;
             relatedLists.home = list;
             const canQueue = isAdminUnlocked && watchlistAvailable;
@@ -2160,7 +2177,7 @@
                             ${it.sub ? `<div class="mt-0.5 text-caption text-neutral-200 truncate">${escapeHtml(it.sub)}</div>` : ''}
                         </div>
                         ${canQueue && !isQueued(it) ? `<button type="button" onclick="addRelated('home', ${i})" class="shrink-0 w-11 h-11 rounded-full bg-black/60 border border-amber-500/40 text-amber-400 tap-scale" aria-label="Tambah ${escapeHtml(it.title)} ke antrean"><i class="fa-solid fa-plus"></i></button>` : ''}
-                        <button type="button" onclick="openRecTrailer(${i})" class="shrink-0 h-11 px-4 rounded-full bg-neutral-50 text-black text-xs font-bold tap-scale" aria-label="Putar trailer ${escapeHtml(it.title)}"><i class="fa-solid fa-play text-micro mr-1"></i>Trailer</button>
+                        <button type="button" onclick="openRecTrailer(${i})" class="shrink-0 h-11 px-4 rounded-full bg-neutral-50 text-black text-xs font-bold tap-scale" aria-label="Putar trailer ${escapeHtml(it.title)}"><i class="fa-solid fa-play text-caption mr-1"></i>Trailer</button>
                     </div>
                 </div>`).join('');
             document.getElementById('rekomendasi-list').innerHTML = `
@@ -2499,13 +2516,13 @@
 
             if (watcher === 'zald') {
                 viewerBadge.innerText = "Zald Picks";
-                viewerBadge.className = "px-2 py-0.5 rounded-lg bg-black border border-sky-500/40 text-sky-400 text-micro font-bold";
+                viewerBadge.className = "px-2 py-0.5 rounded-lg bg-black border border-sky-500/40 text-sky-400 text-caption font-bold";
             } else if (watcher === 'micel') {
                 viewerBadge.innerText = "Micel Picks";
-                viewerBadge.className = "px-2 py-0.5 rounded-lg bg-black border border-pink-500/40 text-pink-400 text-micro font-bold";
+                viewerBadge.className = "px-2 py-0.5 rounded-lg bg-black border border-pink-500/40 text-pink-400 text-caption font-bold";
             } else {
                 viewerBadge.innerText = "Nonton Bareng";
-                viewerBadge.className = "px-2 py-0.5 rounded-lg bg-neutral-900 text-amber-300 text-micro font-bold";
+                viewerBadge.className = "px-2 py-0.5 rounded-lg bg-neutral-900 text-amber-300 text-caption font-bold";
             }
             wrapZald.style.display = watcher === 'micel' ? 'none' : 'block';
             wrapMicel.style.display = watcher === 'zald' ? 'none' : 'block';
@@ -2574,11 +2591,16 @@
 
         async function refreshData(btn) {
             const icon = document.getElementById('refresh-icon');
+            if (btn) { btn.disabled = true; btn.setAttribute('aria-busy', 'true'); }
             if (icon) icon.classList.add('refresh-spin');
-            await fetchSupabaseData();
-            if (icon) icon.classList.remove('refresh-spin');
+            try {
+                await fetchSupabaseData();
+            } finally {
+                if (icon) icon.classList.remove('refresh-spin');
+                if (btn) { btn.disabled = false; btn.removeAttribute('aria-busy'); }
+            }
             if (hasFetchError) showToast("Gagal memuat. Menampilkan data tersimpan.", "warning");
-            else showToast("Data diperbarui! 🔄", "success");
+            else showToast("Data diperbarui!", "success");
         }
 
         // Tahun tidak lagi diketik: bila judul diketik manual tanpa memilih hasil TMDB, tahun diambil dari hasil teratas TMDB.
@@ -2787,7 +2809,7 @@
             const bgColor = type === 'success' ? 'bg-amber-950 border-amber-400' : 
                             type === 'warning' ? 'bg-red-950 border-red-500' : 'bg-neutral-900 border-neutral-700';
             
-            toast.className = `px-3.5 py-2 rounded-xl border ${bgColor} text-neutral-50 text-xs font-semibold shadow-xl transition-all duration-300 transform -translate-y-4 opacity-0 pointer-events-auto`;
+            toast.className = `px-3.5 py-2 rounded-xl border ${bgColor} text-neutral-50 text-xs font-semibold shadow-xl transition duration-300 transform -translate-y-4 opacity-0 pointer-events-auto`;
             toast.innerText = message;
 
             container.appendChild(toast);
@@ -2859,7 +2881,7 @@
             ];
             grid.innerHTML = cards.map(([label, value]) => `
                 <div class="p-3 rounded-xl bg-neutral-900/60 border border-neutral-800">
-                    <div class="text-micro text-neutral-400 uppercase tracking-wider">${escapeHtml(label)}</div>
+                    <div class="text-caption text-neutral-400 uppercase tracking-wider">${escapeHtml(label)}</div>
                     <div class="mt-1 text-xs font-bold text-neutral-50 break-words">${escapeHtml(String(value))}</div>
                 </div>`).join('');
         }
@@ -2906,6 +2928,7 @@
 
         // --- AUTOFILL TMDB ---
         const TMDB_API_KEY = '70e49fe58166973b49c4649822f0b5e9'; // API Key v3 (hanya baca, aman di klien). Kosong = fitur nonaktif.
+        if (!TMDB_API_KEY) { const rs = document.getElementById('rekomendasi-section'); rs.classList.add('hidden'); rs.removeAttribute('aria-busy'); } // fitur mati: tanpa skeleton
         const TMDB_IMG = 'https://image.tmdb.org/t/p/w500';
         // Judul: film berbahasa Indonesia memakai judul aslinya; lainnya terjemahan id-ID (TMDB mengembalikan judul asli bila tidak ada terjemahan)
         const tmdbTitle = r => (r.original_language === 'id' ? (r.original_title || r.original_name) : '') || r.title || r.name || '';
@@ -3119,7 +3142,7 @@
                     banner.src = pre.src; banner.className = 'w-full h-full object-cover opacity-80 transition-opacity duration-500'; };
                 pre.src = `https://image.tmdb.org/t/p/w780${x.backdrop}`;
             }
-            const chip = t => `<span class="px-2 py-0.5 rounded-lg bg-neutral-900 text-neutral-200 text-micro font-semibold">${escapeHtml(t)}</span>`;
+            const chip = t => `<span class="px-2 py-0.5 rounded-lg bg-neutral-900 text-neutral-200 text-caption font-semibold">${escapeHtml(t)}</span>`;
             const meta = [x.type, ...x.genres];
             if (x.episodes) meta.push(`${x.episodes} eps`);
             if (x.runtime) meta.push(`${x.runtime} mnt`);
@@ -3281,10 +3304,10 @@
             const rows = tmdbSyncPlan.map((x, i) => `
                 <label class="flex items-center gap-2 p-1.5 rounded-lg bg-black border border-neutral-800 cursor-pointer">
                     <input type="checkbox" data-sync="${i}" checked class="accent-amber-400">
-                    ${img(x.old)}<i class="fa-solid fa-arrow-right text-micro text-neutral-400"></i>${img(x.next)}
-                    <span class="text-caption text-neutral-200 min-w-0 flex-1 truncate">${escapeHtml(x.judul)}<span class="block text-micro text-neutral-400 truncate">TMDB: ${escapeHtml(x.tmdbTitle)}${x.newId ? ' · + ID TMDB' : ''}</span></span>
+                    ${img(x.old)}<i class="fa-solid fa-arrow-right text-caption text-neutral-400"></i>${img(x.next)}
+                    <span class="text-caption text-neutral-200 min-w-0 flex-1 truncate">${escapeHtml(x.judul)}<span class="block text-caption text-neutral-400 truncate">TMDB: ${escapeHtml(x.tmdbTitle)}${x.newId ? ' · + ID TMDB' : ''}</span></span>
                 </label>`).join('');
-            const skipNote = skipped.length ? `<p class="text-micro text-neutral-400">Dilewati (${skipped.length}): ${escapeHtml(skipped.join('; '))}</p>` : '';
+            const skipNote = skipped.length ? `<p class="text-caption text-neutral-400">Dilewati (${skipped.length}): ${escapeHtml(skipped.join('; '))}</p>` : '';
             list.innerHTML = (rows || '<p class="text-caption text-neutral-400">Semua poster dan ID TMDB sudah lengkap.</p>') + skipNote;
             applyBtn.classList.toggle('hidden', !tmdbSyncPlan.length);
         }
@@ -3372,8 +3395,8 @@
                 const id = escapeHtml(w.id);
                 const img = w.poster ? `<img src="${escapeHtml(tmdbSized(w.poster, 'w92'))}" alt="" loading="lazy" class="w-full h-full object-cover">` : '';
                 const thumb = TMDB_API_KEY
-                    ? `<button type="button" onclick="openQueueTrailer('${id}')" class="relative w-10 shrink-0 aspect-[2/3] rounded-md overflow-hidden bg-neutral-800 tap-scale" aria-label="Putar trailer ${escapeHtml(w.judul)}">${img}<span class="absolute inset-0 flex items-center justify-center bg-black/35"><i class="fa-solid fa-play text-micro text-neutral-50"></i></span></button>`
-                    : `<div class="w-10 shrink-0 aspect-[2/3] rounded-md overflow-hidden bg-neutral-800">${img}</div>`;
+                    ? `<button type="button" onclick="openQueueTrailer('${id}')" class="relative w-11 shrink-0 aspect-[2/3] rounded-md overflow-hidden bg-neutral-800 tap-scale" aria-label="Putar trailer ${escapeHtml(w.judul)}">${img}<span class="absolute inset-0 flex items-center justify-center bg-black/35"><i class="fa-solid fa-play text-caption text-neutral-50"></i></span></button>`
+                    : `<div class="w-11 shrink-0 aspect-[2/3] rounded-md overflow-hidden bg-neutral-800">${img}</div>`;
                 const actions = isAdminUnlocked ? `
                     <button type="button" onclick="markWatchlistWatched('${id}')" class="shrink-0 w-11 h-11 rounded-full text-amber-400 hover:bg-amber-400/10 tap-scale" aria-label="Sudah ditonton"><i class="fa-solid fa-check"></i></button>
                     <button type="button" onclick="deleteWatchlistItem('${id}')" class="shrink-0 w-11 h-11 rounded-full text-neutral-400 hover:text-red-400 tap-scale" aria-label="Hapus dari antrean"><i class="fa-solid fa-trash text-xs"></i></button>` : '';
